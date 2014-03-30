@@ -26,10 +26,6 @@ build() {
     ./node_modules/.bin/grunt $@
 }
 
-runIntegrationTest() {
-    PATH=`pwd`/slimerjs/:$PATH SLIMERJSLAUNCHER=$FIREFOX_PATH slimerjs test/phantomIntegrationTest.js
-}
-
 runCharacterisationTest() {
     PATH=`pwd`/slimerjs/:$PATH SLIMERJSLAUNCHER=$FIREFOX_PATH ./test/inlineIntegration/runInlineTests.sh
 }
@@ -44,7 +40,6 @@ main() {
     fi
 
     build
-    runIntegrationTest
     runCharacterisationTest
 }
 

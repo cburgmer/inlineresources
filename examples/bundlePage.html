@@ -9,7 +9,6 @@
     <script type="text/javascript" src="../src/inlineUtil.js"></script>
     <script type="text/javascript" src="../src/inlineCss.js"></script>
     <script type="text/javascript" src="../src/inline.js"></script>
-    <script type="text/javascript" src="../src/util.js"></script>
     <script>
         var sendMessage = function (cmd, content) {
             console.log(JSON.stringify({
@@ -17,8 +16,39 @@
                 content: content
             }));
         };
+
+        var loadDocument = function (url) {
+            var ajaxRequest = new window.XMLHttpRequest(),
+                defer = ayepromise.defer(),
+                doReject = function () {
+                    defer.reject({message: "Unable to load page"});
+                };
+
+            ajaxRequest.addEventListener("load", function () {
+                if (ajaxRequest.status === 200 || ajaxRequest.status === 0) {
+                    defer.resolve(ajaxRequest.responseXML);
+                } else {
+                    doReject();
+                }
+            }, false);
+
+            ajaxRequest.addEventListener("error", function () {
+                doReject();
+            }, false);
+
+            try {
+                ajaxRequest.open('GET', url, true);
+                ajaxRequest.responseType = "document";
+                ajaxRequest.send(null);
+            } catch (err) {
+                doReject();
+            }
+
+            return defer.promise;
+        };
+
         window.bundlePage = function (url) {
-            util.loadDocument(url, {}).then(function (doc) {
+            loadDocument(url).then(function (doc) {
                 inline.inlineReferences(doc, {}).then(function (errors) {
                     var xhtml;
 

@@ -14,7 +14,7 @@ deploy:
     secure: EsvyCKvVOxMZDU5yvIGiwpqWTGlHUWZtcFLTaXqdJB4PseJQpDoWohFL+aH/N3cc5DgxwtCTRunwQ1jesGsQb++AWMZ5TeWuYDQXvvU6vs5oGY7wChqb70Ksjbcyp4MIzyUEotfwt+PGlDKPEOb/S3wnBBRjF9m5fWfnS4RjVZQ=
   on:
     tags: true
-    repo: cburgmer/rasterizeHTML.js
+    repo: cburgmer/inline-html-resources
 branches:
   only:
     - master
