@@ -163,9 +163,7 @@ module.exports = function (grunt) {
                         expect: true,
                         spyOn: true,
 
-                        ifNotInWebkitIt: true,
                         ifNotInPhantomJsIt: true,
-                        ifNotInPhantomJSAndNotLocalRunnerIt: true,
                         testHelper: true,
 
                         inlineUtil: true,

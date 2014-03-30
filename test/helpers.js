@@ -1,22 +1,6 @@
-var isWebkit = navigator.userAgent.indexOf("WebKit") >= 0,
-    isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
-    isLocalRunner = document.baseURI.substr(0, 'file://'.length) === 'file://',
-    ifNotInWebkitIt = function(text, functionHandle) {
-        if (! isWebkit) {
-            return it(text, functionHandle);
-        } else {
-            console.log('Warning: "' + text + '" is disabled on this platform');
-        }
-    },
+var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
     ifNotInPhantomJsIt = function(text, functionHandle) {
         if (! isPhantomJs) {
-            return it(text, functionHandle);
-        } else {
-            console.log('Warning: "' + text + '" is disabled on this platform');
-        }
-    },
-    ifNotInPhantomJSAndNotLocalRunnerIt = function (text, functionHandle) {
-        if (! isPhantomJs && ! isLocalRunner) {
             return it(text, functionHandle);
         } else {
             console.log('Warning: "' + text + '" is disabled on this platform');
@@ -35,21 +19,6 @@ var testHelper = (function () {
         xhr.open('GET', fixtureUrl, false);
         xhr.send(null);
         return xhr.response;
-    };
-
-    module.readHTMLDocumentFixture = function (url, callback) {
-        var fixtureUrl = module.fixturesPath + url,
-            xhr = new window.XMLHttpRequest();
-
-        xhr.addEventListener("load", function () {
-            if (xhr.status === 200 || xhr.status === 0) {
-                callback(xhr.responseXML);
-            }
-        }, false);
-
-        xhr.open('GET', fixtureUrl, true);
-        xhr.responseType = "document";
-        xhr.send(null);
     };
 
     module.readDocumentFixture = function (url) {
