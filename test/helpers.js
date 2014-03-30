@@ -23,7 +23,7 @@ var isWebkit = navigator.userAgent.indexOf("WebKit") >= 0,
         }
     };
 
-var rasterizeHTMLTestHelper = (function () {
+var testHelper = (function () {
     var module = {};
 
     module.fixturesPath = 'fixtures/';

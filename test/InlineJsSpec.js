@@ -141,7 +141,7 @@ describe("JS inline", function () {
     it("should respect the document's baseURI when loading linked JS", function (done) {
         var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("externalJS.html");
+        doc = testHelper.readDocumentFixture("externalJS.html");
 
         inline.loadAndInlineScript(doc, {}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith("some.js", {baseUrl: doc.baseURI});
@@ -162,7 +162,7 @@ describe("JS inline", function () {
     });
 
     it("should favour explicit baseUrl over document.baseURI when loading linked JS", function (done) {
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("externalJS.html");
+        doc = testHelper.readDocumentFixture("externalJS.html");
         expect(doc.baseURI).not.toBeNull();
         expect(doc.baseURI).not.toEqual("about:blank");
 
@@ -212,7 +212,7 @@ describe("JS inline", function () {
             doc.head.appendChild(brokenJsScript);
 
             inline.loadAndInlineScript(doc, {}).then(function (errors) {
-                errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
+                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
                 expect(errors).toEqual([{
                     resourceType: "script",
                     url: 'THEURL' + "a_document_that_doesnt_exist.js",
@@ -228,7 +228,7 @@ describe("JS inline", function () {
             doc.head.appendChild(anExternalScript());
 
             inline.loadAndInlineScript(doc, {}).then(function (errors) {
-                errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
+                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
                 expect(errors).toEqual([{
                     resourceType: "script",
                     url: 'THEURL' + "a_document_that_doesnt_exist.js",

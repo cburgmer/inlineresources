@@ -29,8 +29,8 @@ describe("Inline utilities function", function () {
         };
 
         it("should return a document's base url", function () {
-            var fixturePath = rasterizeHTMLTestHelper.fixturesPath + "image.html",
-                doc = rasterizeHTMLTestHelper.readDocumentFixture("image.html"),
+            var fixturePath = testHelper.fixturesPath + "image.html",
+                doc = testHelper.readDocumentFixture("image.html"),
                 url, nonQueryPart;
 
             url = inlineUtil.getDocumentBaseUrl(doc);
@@ -201,7 +201,7 @@ describe("Inline utilities function", function () {
 
     describe("ajax", function () {
         it("should load content from a URL", function (done) {
-            inlineUtil.ajax(rasterizeHTMLTestHelper.fixturesPath + "some.css", {})
+            inlineUtil.ajax(testHelper.fixturesPath + "some.css", {})
                 .then(function (loadedContent) {
                     expect(loadedContent).toEqual("p { font-size: 14px; }");
 
@@ -338,7 +338,7 @@ describe("Inline utilities function", function () {
         });
 
         it("should load binary data", function (done) {
-            inlineUtil.binaryAjax(rasterizeHTMLTestHelper.fixturesPath + "green.png", {})
+            inlineUtil.binaryAjax(testHelper.fixturesPath + "green.png", {})
                 .then(function (loadedContent) {
                     expect(btoa(loadedContent)).toEqual("iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABFElEQVR4nO3OMQ0AAAjAMPybhnsKxrHUQGc2r+iBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YGQHgjpgZAeCOmBkB4I6YHAAV821mT1w27RAAAAAElFTkSuQmCC");
 

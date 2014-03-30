@@ -96,7 +96,7 @@ describe("Image and image input inline", function () {
     it("should respect the document's baseURI when loading the image", function () {
         var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("image.html");
+        doc = testHelper.readDocumentFixture("image.html");
 
         inline.loadAndInlineImages(doc, {});
 
@@ -105,7 +105,7 @@ describe("Image and image input inline", function () {
     });
 
     it("should respect optional baseUrl when loading the image", function () {
-        doc = rasterizeHTMLTestHelper.readDocumentFixtureWithoutBaseURI("image.html");
+        doc = testHelper.readDocumentFixtureWithoutBaseURI("image.html");
 
         inline.loadAndInlineImages(doc, {baseUrl: "aBaseUrl"});
 
@@ -115,7 +115,7 @@ describe("Image and image input inline", function () {
     it("should favour explicit baseUrl over document.baseURI when loading the image", function () {
         var baseUrl = "aBaseUrl";
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("image.html");
+        doc = testHelper.readDocumentFixture("image.html");
         expect(doc.baseURI).not.toBeNull();
         expect(doc.baseURI).not.toEqual("about:blank");
         expect(doc.baseURI).not.toEqual(baseUrl);
@@ -154,7 +154,7 @@ describe("Image and image input inline", function () {
             doc.body.innerHTML = '<img src="image_that_doesnt_exist.png" alt="test image"/>';
 
             inline.loadAndInlineImages(doc, {}).then(function (errors) {
-                errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
+                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
 
                 expect(errors).toEqual([{
                     resourceType: "image",
@@ -173,7 +173,7 @@ describe("Image and image input inline", function () {
             );
 
             inline.loadAndInlineImages(doc, {}).then(function (errors) {
-                errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
+                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
 
                 expect(errors).toEqual([{
                     resourceType: "image",

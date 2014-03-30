@@ -36,7 +36,7 @@ For linting, tests and minification install Node.js and Firefox and run
 
     $ ./go
 
-[![Build Status](https://secure.travis-ci.org/cburgmer/inline-html-resources.png?branch=master)](http://travis-ci.org/cburgmer/inline-html-resources)
+[![Build Status](https://travis-ci.org/cburgmer/inline-html-resources.svg?branch=master)](https://travis-ci.org/cburgmer/inline-html-resources)
 
 Where is it used?
 -----------------

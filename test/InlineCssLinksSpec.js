@@ -191,7 +191,7 @@ describe("Inline CSS links", function () {
     it("should respect the document's baseURI when loading linked CSS", function (done) {
         var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("externalCSS.html");
+        doc = testHelper.readDocumentFixture("externalCSS.html");
 
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
@@ -212,33 +212,33 @@ describe("Inline CSS links", function () {
     it("should respect optional baseUrl when loading linked CSS", function (done) {
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixtureWithoutBaseURI("externalCSS.html");
+        doc = testHelper.readDocumentFixtureWithoutBaseURI("externalCSS.html");
 
-        inline.loadAndInlineCssLinks(doc, {baseUrl: rasterizeHTMLTestHelper.fixturesPath}).then(function () {
-            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
+        inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
+            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
+            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
+            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
             done();
         });
     });
 
     it("should favour explicit baseUrl over document.baseURI when loading linked CSS", function (done) {
-        var baseUrl = rasterizeHTMLTestHelper.fixturesPath;
+        var baseUrl = testHelper.fixturesPath;
 
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("externalCSS.html");
+        doc = testHelper.readDocumentFixture("externalCSS.html");
         expect(doc.baseURI).not.toBeNull();
         expect(doc.baseURI).not.toEqual("about:blank");
         expect(doc.baseURI).not.toEqual(baseUrl);
 
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        inline.loadAndInlineCssLinks(doc, {baseUrl: rasterizeHTMLTestHelper.fixturesPath}).then(function () {
-            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
+        inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
+            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(rasterizeHTMLTestHelper.fixturesPath);
+            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
+            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
             done();
         });
@@ -331,7 +331,7 @@ describe("Inline CSS links", function () {
         joinUrlSpy.and.callThrough();
 
         // first call
-        doc = rasterizeHTMLTestHelper.readDocumentFixture("empty1.html");
+        doc = testHelper.readDocumentFixture("empty1.html");
         doc.getElementsByTagName("head")[0].appendChild(aCssLink());
 
         inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
@@ -340,7 +340,7 @@ describe("Inline CSS links", function () {
             loadAndInlineCSSResourcesForRulesSpy.calls.reset();
 
             // second call
-            doc = rasterizeHTMLTestHelper.readDocumentFixture("empty2.html"); // use a document with different url, but same baseUrl
+            doc = testHelper.readDocumentFixture("empty2.html"); // use a document with different url, but same baseUrl
             doc.getElementsByTagName("head")[0].appendChild(aCssLink());
 
             inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {

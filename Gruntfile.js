@@ -168,7 +168,7 @@ module.exports = function (grunt) {
                         ifNotInWebkitIt: true,
                         ifNotInPhantomJsIt: true,
                         ifNotInPhantomJSAndNotLocalRunnerIt: true,
-                        rasterizeHTMLTestHelper: true,
+                        testHelper: true,
 
                         inlineUtil: true,
                         inlineCss: true,

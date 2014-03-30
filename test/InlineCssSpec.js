@@ -470,7 +470,7 @@ describe("Inline CSS content", function () {
                 var rules = cssom.parse('@import url("does_not_exist.css");').cssRules;
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(result.hasChanges).toEqual(false);
                     expect(errors).toEqual([{
                         resourceType: "stylesheet",
@@ -487,7 +487,7 @@ describe("Inline CSS content", function () {
                     '@import url("does_not_exist.css");').cssRules;
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(errors).toEqual([{
                         resourceType: "stylesheet",
                         url: "THEURL" + "does_not_exist.css",
@@ -514,7 +514,7 @@ describe("Inline CSS content", function () {
                 var rules = cssom.parse('@import url("existing_with_second_level_nonexisting.css");').cssRules;
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(errors).toEqual([{
                             resourceType: "stylesheet",
                             url: "THEURL" + "nonexisting.css",
@@ -776,7 +776,7 @@ describe("Inline CSS content", function () {
                 var rules = cssom.parse('span { background-image: url("a_backgroundImage_that_doesnt_exist.png"); }').cssRules;
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
 
                     expect(result.hasChanges).toBe(false);
                     expect(errors).toEqual([{
@@ -794,7 +794,7 @@ describe("Inline CSS content", function () {
                     'span { background-image: url("' + aBackgroundImageThatDoesExist + '"); }').cssRules;
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(errors).toEqual([{
                         resourceType: "backgroundImage",
                         url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png",
@@ -822,7 +822,7 @@ describe("Inline CSS content", function () {
                 var rules = cssom.parse('span { background-image: url("' + aBackgroundImageThatDoesExist + '"), url("a_backgroundImage_that_doesnt_exist.png"); }').cssRules;
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(errors).toEqual([{
                         resourceType: "backgroundImage",
                         url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png",
@@ -1072,7 +1072,7 @@ describe("Inline CSS content", function () {
                 var rules = cssom.parse('@font-face { font-family: "test font"; src: url("a_font_that_doesnt_exist.woff"); }').cssRules;
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(result.hasChanges).toBe(false);
                     expect(errors).toEqual([{
                         resourceType: "fontFace",
@@ -1089,7 +1089,7 @@ describe("Inline CSS content", function () {
                     '@font-face { font-family: "test font2"; src: url("' + aFontReferenceThatDoesExist + '"); }').cssRules;
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = rasterizeHTMLTestHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
+                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(errors).toEqual([{
                         resourceType: "fontFace",
                         url: "THEURL" + "a_font_that_doesnt_exist.woff",
