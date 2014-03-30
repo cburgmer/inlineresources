@@ -59,7 +59,7 @@ module.exports = function (grunt) {
                 objectToExport: 'inline',
                 indent: '    ',
                 deps: {
-                    'default': ['url', 'xmlserializer', 'cssom', 'ayepromise']
+                    'default': ['url', 'cssom', 'ayepromise']
                 }
             }
         },
@@ -107,8 +107,7 @@ module.exports = function (grunt) {
                         '/* Integrated dependencies:\n' +
                         ' * url (MIT License),\n' +
                         ' * CSSOM.js (MIT License),\n' +
-                        ' * ayepromise (BSD License & WTFPL),\n' +
-                        ' * xmlserializer (MIT License) */\n'
+                        ' * ayepromise (BSD License & WTFPL) */\n'
                 },
                 files: {
                     'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
@@ -142,7 +141,6 @@ module.exports = function (grunt) {
 
                     cssom: true,
                     url: true,
-                    xmlserializer: true,
                     ayepromise: true
                 },
                 exported: ['inline', 'inlineCss', 'inlineUtil']
@@ -211,13 +209,13 @@ module.exports = function (grunt) {
     grunt.registerTask('deps', [
         'browserify:cssom',
         'browserify:url',
-        'browserify:xmlserializer',
+        'browserify:xmlserializer'
     ]);
 
     grunt.registerTask('test', [
         'jshint',
         'jasmine',
-        'regex-check',
+        'regex-check'
     ]);
 
     grunt.registerTask('build', [

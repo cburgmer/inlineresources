@@ -28,7 +28,6 @@
   "dependencies": {
     "cssom": "~0.3.0",
     "url": "~0.7.9",
-    "xmlserializer": "~0.3.0",
     "ayepromise": "~1.0.0"
   },
   "devDependencies": {
@@ -44,7 +43,8 @@
     "browserify": "~3.31.2",
     "grunt-browserify": "~1.3.1",
     "jasmine-core": "~2.0.0",
-    "grunt-umd": "~1.6.2"
+    "grunt-umd": "~1.6.2",
+    "xmlserializer": "~0.3.0"
   },
   "scripts": {
     "test": "bash go --verbose"
