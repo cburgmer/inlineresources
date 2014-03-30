@@ -1,3 +1,6 @@
+var ayepromise = require('ayepromise'),
+    inline = require('../src/inline');
+
 describe("Inline main", function () {
     var loadAndInlineImages, loadAndInlineCssLinks, loadAndInlineStyles, loadAndInlineScript;
 

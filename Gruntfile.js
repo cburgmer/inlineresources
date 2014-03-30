@@ -4,14 +4,9 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         jasmine: {
             src: [
-                'build/dependencies/*.js',
-                'node_modules/ayepromise/ayepromise.js',
-                'src/inlineUtil.js',
-                'src/inlineCss.js',
-                'src/inline.js'
+                'build/testSuite.js'
             ],
             options: {
-                specs: 'test/*Spec.js',
                 helpers: [
                     'test/helpers.js',
                     'test/gruntpath.js'
@@ -39,6 +34,10 @@ module.exports = function (grunt) {
                 options: {
                     'standalone': 'url'
                 }
+            },
+            testSuite: {
+                src: 'test/*Spec.js',
+                dest: 'build/testSuite.js'
             },
             browser: {
                 src: 'src/inline.js',
@@ -124,6 +123,9 @@ module.exports = function (grunt) {
                 trailing: true,
                 browser: true,
                 globals: {
+                    require: true,
+                    exports: true,
+
                     inlineUtil: true,
                     inlineCss: true,
                     inline: true,
@@ -200,6 +202,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('test', [
+        'browserify:testSuite',
         'jshint',
         'jasmine',
         'regex-check'

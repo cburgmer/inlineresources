@@ -1,3 +1,6 @@
+var ayepromise = require('ayepromise'),
+    inlineUtil = require('../src/inlineUtil');
+
 describe("Inline utilities function", function () {
     describe("clone", function () {
         it("should create a copy of the given object", function () {

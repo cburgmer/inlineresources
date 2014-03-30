@@ -1,3 +1,8 @@
+var ayepromise = require('ayepromise'),
+    cssom = require('cssom'),
+    inlineCss = require('../src/inlineCss');
+    inlineUtil = require('../src/inlineUtil');
+
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
 
