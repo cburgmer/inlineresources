@@ -6,7 +6,7 @@ inline-html-resources
          align="right" alt="NPM version" />
 </a>
 
-Inlines CSS, images, fonts and scripts in HTML documents.
+Inlines CSS, images, fonts and scripts in HTML documents. Works in the browser.
 
 See the [API](https://github.com/cburgmer/inline-html-resources/wiki/API).
 
@@ -14,6 +14,20 @@ Limitations
 -----------
 
 Resources referenced in the document (CSS, images, fonts and JS) can only be loaded if from the [same origin](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript), unless techniques like [CORS](http://enable-cors.org) are used.
+
+Similar projects for Node.js
+----------------------------
+
+* [jasonbellamy/asset-inliner](https://github.com/jasonbellamy/asset-inliner)
+* [cdata/collapsify](https://github.com/cdata/collapsify)
+* [EE/grunt-inline-images](https://github.com/EE/grunt-inline-images)
+* [popeindustries/inline-source](https://github.com/popeindustries/inline-source)
+* [LearnBoost/juice](https://github.com/LearnBoost/juice)
+* [fb55/node-inline](https://github.com/fb55/node-inline)
+* [callumlocke/resource-embedder](https://github.com/callumlocke/resource-embedder)
+* [kevva/rework-inline](https://github.com/kevva/rework-inline)
+* [andreypopp/xcss-inline-woff](https://github.com/andreypopp/xcss-inline-woff)
+* ... and many more
 
 Development
 -----------
