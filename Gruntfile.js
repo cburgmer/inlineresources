@@ -40,8 +40,16 @@ module.exports = function (grunt) {
                     'standalone': 'url'
                 }
             },
+            browser: {
+                src: 'src/inline.js',
+                dest: 'build/<%= pkg.name %>.js',
+                options: {
+                    'standalone': 'inlineHtmlResources',
+                    external: ['cssom', 'ayepromise', 'url']
+                }
+            },
             allinone: {
-                src: 'dist/<%= pkg.name %>.js',
+                src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.allinone.js',
                 options: {
                     'standalone': 'inlineHtmlResources'
@@ -52,26 +60,7 @@ module.exports = function (grunt) {
             dist: ['build/*.js', 'build/dependencies/'],
             all: ['build']
         },
-        umd: {
-            all: {
-                src: 'build/<%= pkg.name %>.concat.js',
-                dest: 'build/<%= pkg.name %>.umd.js',
-                objectToExport: 'inline',
-                indent: '    ',
-                deps: {
-                    'default': ['url', 'cssom', 'ayepromise']
-                }
-            }
-        },
         concat: {
-            one: {
-                src: [
-                    'src/inlineUtil.js',
-                    'src/inlineCss.js',
-                    'src/inline.js'
-                ],
-                dest: 'build/<%= pkg.name %>.concat.js'
-            },
             dist: {
                 options: {
                     banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
@@ -80,7 +69,7 @@ module.exports = function (grunt) {
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
                         ' Licensed <%= pkg.license %> */\n'
                 },
-                src: ['build/<%= pkg.name %>.umd.js'],
+                src: ['build/<%= pkg.name %>.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
@@ -217,8 +206,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('build', [
-        'concat:one',
-        'umd',
+        'browserify:browser',
         'concat:dist',
         'browserify:allinone',
         'uglify'
