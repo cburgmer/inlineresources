@@ -136,6 +136,23 @@ var extractFontFaceSrcUrl = function (reference) {
     } catch (e) {}
 };
 
+var exchangeRule = function (cssRules, rule, newRuleText) {
+    var ruleIdx = cssRules.indexOf(rule),
+        styleSheet = rule.parentStyleSheet;
+
+    // Generate a new rule
+    styleSheet.insertRule(newRuleText, ruleIdx+1);
+    styleSheet.deleteRule(ruleIdx);
+    // Exchange with the new
+    cssRules[ruleIdx] = styleSheet.cssRules[ruleIdx];
+};
+
+var findCSSImportRules = function (cssRules) {
+    return cssRules.filter(function (rule) {
+        return rule.type === window.CSSRule.IMPORT_RULE && rule.href;
+    });
+};
+
 // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=443978
 var changeFontFaceRuleSrc = function (cssRules, rule, newSrc) {
     var newRuleText = '@font-face { font-family: ' + rule.style.getPropertyValue("font-family") + '; ';
@@ -152,15 +169,176 @@ var changeFontFaceRuleSrc = function (cssRules, rule, newSrc) {
     exchangeRule(cssRules, rule, newRuleText);
 };
 
-var exchangeRule = function (cssRules, rule, newRuleText) {
-    var ruleIdx = cssRules.indexOf(rule),
-        styleSheet = rule.parentStyleSheet;
+var sliceBackgroundDeclaration = function (backgroundDeclarationText) {
+    var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
+        valueRegexS = "(" + "url\\(" + functionParamRegexS + "\\)" + "|" + "[^,\\s]+" + ")",
+        simpleSingularBackgroundRegexS = "(?:\\s*" + valueRegexS + ")+",
+        simpleBackgroundRegexS = "^\\s*(" + simpleSingularBackgroundRegexS + ")" +
+                                  "(?:\\s*,\\s*(" + simpleSingularBackgroundRegexS + "))*" +
+                                  "\\s*$",
+        simpleSingularBackgroundRegex = new RegExp(simpleSingularBackgroundRegexS, "g"),
+        outerRepeatedMatch,
+        backgroundLayers = [],
+        getValues = function (singularBackgroundDeclaration) {
+            var valueRegex = new RegExp(valueRegexS, "g"),
+                backgroundValues = [],
+                repeatedMatch;
 
-    // Generate a new rule
-    styleSheet.insertRule(newRuleText, ruleIdx+1);
-    styleSheet.deleteRule(ruleIdx);
-    // Exchange with the new
-    cssRules[ruleIdx] = styleSheet.cssRules[ruleIdx];
+            repeatedMatch = valueRegex.exec(singularBackgroundDeclaration);
+            while (repeatedMatch) {
+                backgroundValues.push(repeatedMatch[1]);
+                repeatedMatch = valueRegex.exec(singularBackgroundDeclaration);
+            }
+            return backgroundValues;
+        };
+
+    if (backgroundDeclarationText.match(new RegExp(simpleBackgroundRegexS))) {
+        outerRepeatedMatch = simpleSingularBackgroundRegex.exec(backgroundDeclarationText);
+        while (outerRepeatedMatch) {
+            backgroundLayers.push(getValues(outerRepeatedMatch[0]));
+            outerRepeatedMatch = simpleSingularBackgroundRegex.exec(backgroundDeclarationText);
+        }
+
+        return backgroundLayers;
+    }
+    return [];
+};
+
+var findBackgroundImageUrlInValues = function (values) {
+    var i, url;
+
+    for(i = 0; i < values.length; i++) {
+        try {
+            url = exports.extractCssUrl(values[i]);
+            return {
+                url: url,
+                idx: i
+            };
+        } catch (e) {}
+    }
+};
+
+var parseBackgroundDeclaration = function (backgroundValue) {
+    var backgroundLayers = sliceBackgroundDeclaration(backgroundValue);
+
+    return backgroundLayers.map(function (backgroundLayerValues) {
+        var urlMatch = findBackgroundImageUrlInValues(backgroundLayerValues);
+
+        if (urlMatch) {
+            return {
+                preUrl: backgroundLayerValues.slice(0, urlMatch.idx),
+                url: urlMatch.url,
+                postUrl: backgroundLayerValues.slice(urlMatch.idx+1),
+            };
+        } else {
+            return {
+                preUrl: backgroundLayerValues
+            };
+        }
+    });
+};
+
+var findExternalBackgroundUrls = function (parsedBackground) {
+    var matchIndices = [];
+
+    parsedBackground.forEach(function (backgroundLayer, i) {
+        if (backgroundLayer.url && !inlineUtil.isDataUri(backgroundLayer.url)) {
+            matchIndices.push(i);
+        }
+    });
+
+    return matchIndices;
+};
+
+var findExternalFontFaceUrls = function (parsedFontFaceSources) {
+    var sourceIndices = [];
+    parsedFontFaceSources.forEach(function (sourceItem, i) {
+        if (sourceItem.url && !inlineUtil.isDataUri(sourceItem.url)) {
+            sourceIndices.push(i);
+        }
+    });
+    return sourceIndices;
+};
+
+var parsedBackgroundDeclarationToText = function (parsedBackground) {
+    var backgroundLayers = parsedBackground.map(function (backgroundLayer) {
+        var values = [].concat(backgroundLayer.preUrl);
+
+        if (backgroundLayer.url) {
+            values.push('url("' + backgroundLayer.url + '")');
+        }
+        if (backgroundLayer.postUrl) {
+            values = values.concat(backgroundLayer.postUrl);
+        }
+
+        return values.join(' ');
+    });
+
+    return backgroundLayers.join(', ');
+};
+
+var sliceFontFaceSrcReferences = function (fontFaceSrc) {
+    var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
+        referenceRegexS = "(local\\(" + functionParamRegexS + "\\))" + "|" +
+                          "(url\\(" + functionParamRegexS + "\\))" + "(?:\\s+(format\\(" + functionParamRegexS + "\\)))?",
+        simpleFontFaceSrcRegexS = "^\\s*(" + referenceRegexS + ")" +
+                                  "(?:\\s*,\\s*(" + referenceRegexS + "))*" +
+                                  "\\s*$",
+        referenceRegex = new RegExp(referenceRegexS, "g"),
+        repeatedMatch,
+        fontFaceSrcReferences = [],
+        getReferences = function (match) {
+            var references = [];
+            match.slice(1).forEach(function (elem) {
+                if (elem) {
+                    references.push(elem);
+                }
+            });
+            return references;
+        };
+
+    if (fontFaceSrc.match(new RegExp(simpleFontFaceSrcRegexS))) {
+        repeatedMatch = referenceRegex.exec(fontFaceSrc);
+        while (repeatedMatch) {
+            fontFaceSrcReferences.push(getReferences(repeatedMatch));
+            repeatedMatch = referenceRegex.exec(fontFaceSrc);
+        }
+        return fontFaceSrcReferences;
+    }
+    // we should probably throw an exception here
+    return [];
+};
+
+var parseFontFaceSrcDeclaration = function (fontFaceSourceValue) {
+    var fontReferences = sliceFontFaceSrcReferences(fontFaceSourceValue);
+
+    return fontReferences.map(function (reference) {
+        var fontSrc = extractFontFaceSrcUrl(reference);
+
+        if (fontSrc) {
+            return fontSrc;
+        } else {
+            return {
+                local: reference
+            };
+        }
+    });
+};
+
+var parsedFontFaceSrcDeclarationToText = function (parsedFontFaceSources) {
+    return parsedFontFaceSources.map(function (sourceItem) {
+        var itemValue;
+
+        if (sourceItem.url) {
+            itemValue = 'url("' + sourceItem.url + '")';
+            if (sourceItem.format) {
+                itemValue += ' format("' + sourceItem.format + '")';
+            }
+        } else {
+            itemValue = sourceItem.local;
+        }
+        return itemValue;
+    }).join(', ');
 };
 
 exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
@@ -218,12 +396,6 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
 };
 
 /* CSS import inlining */
-
-var findCSSImportRules = function (cssRules) {
-    return cssRules.filter(function (rule) {
-        return rule.type === window.CSSRule.IMPORT_RULE && rule.href;
-    });
-};
 
 var substituteRule = function (cssRules, rule, newCssRules) {
     var position = cssRules.indexOf(rule);
@@ -311,104 +483,6 @@ exports.loadCSSImportsForRules = function (cssRules, alreadyLoadedCssUrls, optio
 
 /* CSS linked resource inlining */
 
-var sliceBackgroundDeclaration = function (backgroundDeclarationText) {
-    var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
-        valueRegexS = "(" + "url\\(" + functionParamRegexS + "\\)" + "|" + "[^,\\s]+" + ")",
-        simpleSingularBackgroundRegexS = "(?:\\s*" + valueRegexS + ")+",
-        simpleBackgroundRegexS = "^\\s*(" + simpleSingularBackgroundRegexS + ")" +
-                                  "(?:\\s*,\\s*(" + simpleSingularBackgroundRegexS + "))*" +
-                                  "\\s*$",
-        simpleSingularBackgroundRegex = new RegExp(simpleSingularBackgroundRegexS, "g"),
-        outerRepeatedMatch,
-        backgroundLayers = [],
-        getValues = function (singularBackgroundDeclaration) {
-            var valueRegex = new RegExp(valueRegexS, "g"),
-                backgroundValues = [],
-                repeatedMatch;
-
-            repeatedMatch = valueRegex.exec(singularBackgroundDeclaration);
-            while (repeatedMatch) {
-                backgroundValues.push(repeatedMatch[1]);
-                repeatedMatch = valueRegex.exec(singularBackgroundDeclaration);
-            }
-            return backgroundValues;
-        };
-
-    if (backgroundDeclarationText.match(new RegExp(simpleBackgroundRegexS))) {
-        outerRepeatedMatch = simpleSingularBackgroundRegex.exec(backgroundDeclarationText);
-        while (outerRepeatedMatch) {
-            backgroundLayers.push(getValues(outerRepeatedMatch[0]));
-            outerRepeatedMatch = simpleSingularBackgroundRegex.exec(backgroundDeclarationText);
-        }
-
-        return backgroundLayers;
-    }
-    return [];
-};
-
-var findBackgroundImageUrlInValues = function (values) {
-    var i, url;
-
-    for(i = 0; i < values.length; i++) {
-        try {
-            url = exports.extractCssUrl(values[i]);
-            return {
-                url: url,
-                idx: i
-            };
-        } catch (e) {}
-    }
-};
-
-var parseBackgroundDeclaration = function (backgroundValue) {
-    var backgroundLayers = sliceBackgroundDeclaration(backgroundValue);
-
-    return backgroundLayers.map(function (backgroundLayerValues) {
-        var urlMatch = findBackgroundImageUrlInValues(backgroundLayerValues);
-
-        if (urlMatch) {
-            return {
-                preUrl: backgroundLayerValues.slice(0, urlMatch.idx),
-                url: urlMatch.url,
-                postUrl: backgroundLayerValues.slice(urlMatch.idx+1),
-            };
-        } else {
-            return {
-                preUrl: backgroundLayerValues
-            };
-        }
-    });
-};
-
-var findExternalBackgroundUrls = function (parsedBackground) {
-    var matchIndices = [];
-
-    parsedBackground.forEach(function (backgroundLayer, i) {
-        if (backgroundLayer.url && !inlineUtil.isDataUri(backgroundLayer.url)) {
-            matchIndices.push(i);
-        }
-    });
-
-    return matchIndices;
-};
-
-var parsedBackgroundDeclarationToText = function (parsedBackground) {
-    var backgroundLayers = parsedBackground.map(function (backgroundLayer) {
-        var values = [].concat(backgroundLayer.preUrl);
-
-        if (backgroundLayer.url) {
-            values.push('url("' + backgroundLayer.url + '")');
-        }
-        if (backgroundLayer.postUrl) {
-            values = values.concat(backgroundLayer.postUrl);
-        }
-
-        return values.join(' ');
-    });
-
-    return backgroundLayers.join(', ');
-};
-
 var loadAndInlineBackgroundImages = function (backgroundValue, options) {
     var parsedBackground = parseBackgroundDeclaration(backgroundValue),
         externalBackgroundLayerIndices = findExternalBackgroundUrls(parsedBackground),
@@ -461,80 +535,6 @@ var iterateOverRulesAndInlineBackgroundImages = function (cssRules, options) {
             errors: errors
         };
     });
-};
-
-var sliceFontFaceSrcReferences = function (fontFaceSrc) {
-    var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
-        referenceRegexS = "(local\\(" + functionParamRegexS + "\\))" + "|" +
-                          "(url\\(" + functionParamRegexS + "\\))" + "(?:\\s+(format\\(" + functionParamRegexS + "\\)))?",
-        simpleFontFaceSrcRegexS = "^\\s*(" + referenceRegexS + ")" +
-                                  "(?:\\s*,\\s*(" + referenceRegexS + "))*" +
-                                  "\\s*$",
-        referenceRegex = new RegExp(referenceRegexS, "g"),
-        repeatedMatch,
-        fontFaceSrcReferences = [],
-        getReferences = function (match) {
-            var references = [];
-            match.slice(1).forEach(function (elem) {
-                if (elem) {
-                    references.push(elem);
-                }
-            });
-            return references;
-        };
-
-    if (fontFaceSrc.match(new RegExp(simpleFontFaceSrcRegexS))) {
-        repeatedMatch = referenceRegex.exec(fontFaceSrc);
-        while (repeatedMatch) {
-            fontFaceSrcReferences.push(getReferences(repeatedMatch));
-            repeatedMatch = referenceRegex.exec(fontFaceSrc);
-        }
-        return fontFaceSrcReferences;
-    }
-    // we should probably throw an exception here
-    return [];
-};
-
-var parseFontFaceSrcDeclaration = function (fontFaceSourceValue) {
-    var fontReferences = sliceFontFaceSrcReferences(fontFaceSourceValue);
-
-    return fontReferences.map(function (reference) {
-        var fontSrc = extractFontFaceSrcUrl(reference);
-
-        if (fontSrc) {
-            return fontSrc;
-        } else {
-            return {
-                local: reference
-            };
-        }
-    });
-};
-
-var findExternalFontFaceUrls = function (parsedFontFaceSources) {
-    var sourceIndices = [];
-    parsedFontFaceSources.forEach(function (sourceItem, i) {
-        if (sourceItem.url && !inlineUtil.isDataUri(sourceItem.url)) {
-            sourceIndices.push(i);
-        }
-    });
-    return sourceIndices;
-};
-
-var parsedFontFaceSrcDeclarationToText = function (parsedFontFaceSources) {
-    return parsedFontFaceSources.map(function (sourceItem) {
-        var itemValue;
-
-        if (sourceItem.url) {
-            itemValue = 'url("' + sourceItem.url + '")';
-            if (sourceItem.format) {
-                itemValue += ' format("' + sourceItem.format + '")';
-            }
-        } else {
-            itemValue = sourceItem.local;
-        }
-        return itemValue;
-    }).join(', ');
 };
 
 var loadAndInlineFontFace = function (srcDeclarationValue, options) {

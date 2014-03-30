@@ -122,6 +122,7 @@ module.exports = function (grunt) {
                 eqnull: true,
                 trailing: true,
                 browser: true,
+                node: true,
                 globals: {
                     require: true,
                     exports: true,
