@@ -6,7 +6,7 @@ inlineresources
          align="right" alt="NPM version" />
 </a>
 
-Inlines stylesheets, images, fonts and scripts in HTML documents. Works in the browser.
+Inlines style sheets, images, fonts and scripts in HTML documents. Works in the browser.
 
 See the [API](https://github.com/cburgmer/inlineresources/wiki/API).
 
@@ -14,6 +14,12 @@ Limitations
 -----------
 
 Resources referenced in the document (CSS, images, fonts and JS) can only be loaded if from the [same origin](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript), unless techniques like [CORS](http://enable-cors.org) are used.
+
+Yet to be supported:
+
+* Background images in inline style declarations (`<div style="...">`)
+* Media queries defined on link elements (`<link rel="stylesheet" media="..." />`)
+* Future responsive img solution (`<img srcset="...">`)
 
 Similar projects for Node.js
 ----------------------------
