@@ -43,7 +43,7 @@ module.exports = function (grunt) {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.js',
                 options: {
-                    'standalone': 'inlineHtmlResources',
+                    standalone: '<%= pkg.name %>',
                     external: ['cssom', 'ayepromise', 'url']
                 }
             },
@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.allinone.js',
                 options: {
-                    'standalone': 'inlineHtmlResources'
+                    standalone: '<%= pkg.name %>'
                 }
             }
         },

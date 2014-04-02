@@ -1,14 +1,15 @@
 {
-  "name": "inline-html-resources",
+  "name": "inlineresources",
   "version": "0.1.0",
-  "description": "Inlines CSS, images, fonts and scripts in HTML documents.",
+  "description": "Inlines stylesheets, images, fonts and scripts in HTML documents.",
   "keywords": [
     "inline",
     "assets",
+    "resources",
     "HTML",
     "JS",
     "CSS",
-    "webfont"
+    "webfonts"
   ],
   "homepage": "http://www.github.com/cburgmer/inline-html-resources",
   "bugs": "https://github.com/cburgmer/inline-html-resources/issues",
@@ -17,6 +18,7 @@
     "name": "Christoph Burgmer",
     "email": "christoph.burgmer@gmail.com"
   },
+  "main": "./src/inline.js",
   "directories": {
     "lib": "./src/",
     "example": "./examples/"
