@@ -4,17 +4,17 @@ node_js:
 env:
   - DISPLAY=:99.0
 addons:
-  firefox: "28.0"
+  firefox: '28.0'
 before_script:
   - "sh -e /etc/init.d/xvfb start"
 deploy:
   provider: npm
   email: christoph.burgmer@gmail.com
   api_key:
-    secure: EsvyCKvVOxMZDU5yvIGiwpqWTGlHUWZtcFLTaXqdJB4PseJQpDoWohFL+aH/N3cc5DgxwtCTRunwQ1jesGsQb++AWMZ5TeWuYDQXvvU6vs5oGY7wChqb70Ksjbcyp4MIzyUEotfwt+PGlDKPEOb/S3wnBBRjF9m5fWfnS4RjVZQ=
+    secure: HOwe6SvF5zFW40Bgv13pf7HPEOfo/BO2usIjirTZdBXS+sjZW/QvEjjn0+L0fdcZMBG20bcqWtW4j1tIYyenYsPXK8DsISxV9Oztz9KEIFxh2KaQ/qT41wRTKeB3NYlRnKCbd6bgR3dhc3NYDkweHJQpz/wdN6U5o/AV8wSTreM=
   on:
     tags: true
-    repo: cburgmer/inline-html-resources
+    repo: cburgmer/inlineresources
 branches:
   only:
     - master

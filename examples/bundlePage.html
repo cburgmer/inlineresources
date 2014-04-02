@@ -4,7 +4,7 @@
     <title>Helper page for bundlePage.js</title>
     <script type="text/javascript" src="../build/dependencies/xmlserializer.js"></script>
     <script type="text/javascript" src="../node_modules/ayepromise/ayepromise.js"></script>
-    <script type="text/javascript" src="../dist/inline-html-resources.allinone.js"></script>
+    <script type="text/javascript" src="../dist/inlineresources.allinone.js"></script>
     <script>
         var sendMessage = function (cmd, content) {
             console.log(JSON.stringify({
@@ -45,7 +45,7 @@
 
         window.bundlePage = function (url) {
             loadDocument(url).then(function (doc) {
-                inlineHtmlResources.inlineReferences(doc, {}).then(function (errors) {
+                inlineresources.inlineReferences(doc, {}).then(function (errors) {
                     var xhtml;
 
                     errors.forEach(function (error) {

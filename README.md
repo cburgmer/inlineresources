@@ -1,14 +1,14 @@
-inline-html-resources
-=====================
+inlineresources
+===============
 
-<a href="https://www.npmjs.org/package/inline-html-resources">
-    <img src="https://badge.fury.io/js/inline-html-resources.png"
+<a href="https://www.npmjs.org/package/inlineresources">
+    <img src="https://badge.fury.io/js/inlineresources.png"
          align="right" alt="NPM version" />
 </a>
 
-Inlines CSS, images, fonts and scripts in HTML documents. Works in the browser.
+Inlines stylesheets, images, fonts and scripts in HTML documents. Works in the browser.
 
-See the [API](https://github.com/cburgmer/inline-html-resources/wiki/API).
+See the [API](https://github.com/cburgmer/inlineresources/wiki/API).
 
 Limitations
 -----------
@@ -36,7 +36,7 @@ For linting, tests and minification install Node.js and Firefox and run
 
     $ ./go
 
-[![Build Status](https://travis-ci.org/cburgmer/inline-html-resources.svg?branch=master)](https://travis-ci.org/cburgmer/inline-html-resources)
+[![Build Status](https://travis-ci.org/cburgmer/inlineresources.svg?branch=master)](https://travis-ci.org/cburgmer/inlineresources)
 
 Where is it used?
 -----------------
