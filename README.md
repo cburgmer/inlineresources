@@ -2,8 +2,8 @@ inlineresources
 ===============
 
 <a href="https://www.npmjs.org/package/inlineresources">
-    <img src="https://badge.fury.io/js/inlineresources.png"
-         align="right" alt="NPM version" />
+    <img src="https://badge.fury.io/js/inlineresources.svg" 
+         align="right" alt="NPM version" height="18">
 </a>
 
 Inlines style sheets, images, fonts and scripts in HTML documents. Works in the browser.
