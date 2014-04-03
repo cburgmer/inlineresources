@@ -55,7 +55,7 @@ takeScreenshot() {
 downloadPageData() {
     local testReference="$1"
     local targetDirectory="$2"
-    local pageDataUrl="http://cburgmer.github.io/rasterizeHTML.js/testData/${testReference}.tar.bz"
+    local pageDataUrl="http://cburgmer.github.io/inlineresources/testData/${testReference}.tar.bz"
 
     if [[ ! -d "${targetDirectory}/${testReference}" ]]; then
         echo "Downloading full page from ${pageDataUrl}"
