@@ -903,8 +903,6 @@ describe("Inline CSS content", function () {
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
                     expect(result.hasChanges).toBe(true);
 
-                    expect(extractCssUrlSpy.calls.mostRecent().args[0]).toMatch(new RegExp('url\\("?fake.woff"?\\)'));
-
                     expectFontFaceUrlToMatch(rules[0], "data:font/woff;base64,dGhpcyBpcyBub3QgYSBmb250");
 
                     done();
@@ -913,10 +911,11 @@ describe("Inline CSS content", function () {
 
             it("should take a font from url with alternatives", function (done) {
                 var rules = cssom.parse('@font-face { font-family: "test font"; src: local("font name"), url("fake.woff"); }').cssRules;
-                mockBinaryAjaxUrl('fake.woff', '');
+
+                mockBinaryAjaxUrl('fake.woff', "this is not a font");
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function () {
-                    expect(extractCssUrlSpy.calls.mostRecent().args[0]).toMatch(new RegExp('url\\("?fake.woff"?\\)'));
+                    expectFontFaceUrlToMatch(rules[0], "data:font/woff;base64,dGhpcyBpcyBub3QgYSBmb250");
 
                     done();
                 });

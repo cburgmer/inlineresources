@@ -5,7 +5,7 @@ var cssom = require('cssom'),
     inlineUtil = require('./inlineUtil'),
     cssSupport = require('./cssSupport'),
     backgroundValueParser = require('./backgroundValueParser'),
-    fontFaceSrcValueParser = require('./fontFaceSrcValueParser');
+    fontFaceSrcValueParser = require('css-font-face-src');
 
 
 var updateCssPropertyValue = function (rule, property, value) {
@@ -160,8 +160,14 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
     });
     findFontFaceRules(cssRules).forEach(function (rule) {
         var fontFaceSrcDeclaration = rule.style.getPropertyValue("src"),
-            parsedFontFaceSources = fontFaceSrcValueParser.parse(fontFaceSrcDeclaration),
-            externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources);
+            parsedFontFaceSources, externalFontFaceUrlIndices;
+
+        try {
+            parsedFontFaceSources = fontFaceSrcValueParser.parse(fontFaceSrcDeclaration);
+        } catch (e) {
+            return;
+        }
+        externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources);
 
         if (externalFontFaceUrlIndices.length > 0) {
             externalFontFaceUrlIndices.forEach(function (fontFaceUrlIndex) {
@@ -322,9 +328,15 @@ var iterateOverRulesAndInlineBackgroundImages = function (cssRules, options) {
 };
 
 var loadAndInlineFontFace = function (srcDeclarationValue, options) {
-    var parsedFontFaceSources = fontFaceSrcValueParser.parse(srcDeclarationValue),
-        externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources),
-        hasChanges = false;
+    var hasChanges = false,
+        parsedFontFaceSources, externalFontFaceUrlIndices;
+
+    try {
+        parsedFontFaceSources = fontFaceSrcValueParser.parse(srcDeclarationValue);
+    } catch (e) {
+        parsedFontFaceSources = [];
+    }
+    externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources);
 
     return inlineUtil.collectAndReportErrors(externalFontFaceUrlIndices.map(function (urlIndex) {
         var fontSrc = parsedFontFaceSources[urlIndex],
