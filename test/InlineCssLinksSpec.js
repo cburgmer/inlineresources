@@ -1,7 +1,8 @@
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline');
-    inlineCss = require('../src/inlineCss');
-    inlineUtil = require('../src/inlineUtil');
+    inline = require('../src/inline'),
+    inlineCss = require('../src/inlineCss'),
+    inlineUtil = require('../src/inlineUtil'),
+    cssSupport = require('../src/cssSupport');
 
 describe("Inline CSS links", function () {
     var doc, extractCssUrlSpy, joinUrlSpy, ajaxSpy,
@@ -61,7 +62,7 @@ describe("Inline CSS links", function () {
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
 
-        extractCssUrlSpy = spyOn(inlineCss, "extractCssUrl").and.callFake(function (cssUrl) {
+        extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
             if (/^url/.test(cssUrl)) {
                 return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
             } else {

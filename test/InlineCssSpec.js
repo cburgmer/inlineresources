@@ -1,7 +1,8 @@
 var ayepromise = require('ayepromise'),
     cssom = require('cssom'),
-    inlineCss = require('../src/inlineCss');
-    inlineUtil = require('../src/inlineUtil');
+    inlineCss = require('../src/inlineCss'),
+    inlineUtil = require('../src/inlineUtil'),
+    cssSupport = require('../src/cssSupport');
 
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
@@ -15,64 +16,11 @@ describe("Inline CSS content", function () {
         getDataURIForImageURLSpy = spyOn(inlineUtil, "getDataURIForImageURL");
     });
 
-    describe("extractCssUrl", function () {
-        it("should extract a CSS URL", function () {
-            var url = inlineCss.extractCssUrl('url(path/file.png)');
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should handle double quotes", function () {
-            var url = inlineCss.extractCssUrl('url("path/file.png")');
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should handle single quotes", function () {
-            var url = inlineCss.extractCssUrl("url('path/file.png')");
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should handle whitespace", function () {
-            var url = inlineCss.extractCssUrl('url(   path/file.png )');
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should also handle tab, line feed, carriage return and form feed", function () {
-            var url = inlineCss.extractCssUrl('url(\t\r\f\npath/file.png\t\r\f\n)');
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should keep any other whitspace", function () {
-            var url = inlineCss.extractCssUrl('url(\u2003\u3000path/file.png)');
-            expect(url).toEqual("\u2003\u3000path/file.png");
-        });
-
-        it("should handle whitespace with double quotes", function () {
-            var url = inlineCss.extractCssUrl('url( "path/file.png"  )');
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should handle whitespace with single quotes", function () {
-            var url = inlineCss.extractCssUrl("url( 'path/file.png'  )");
-            expect(url).toEqual("path/file.png");
-        });
-
-        it("should extract a data URI", function () {
-            var url = inlineCss.extractCssUrl('url("data:image/png;base64,soMEfAkebASE64=")');
-            expect(url).toEqual("data:image/png;base64,soMEfAkebASE64=");
-        });
-
-        it("should throw an exception on invalid CSS URL", function () {
-            expect(function () {
-                inlineCss.extractCssUrl('invalid_stuff');
-            }).toThrow(new Error("Invalid url"));
-        });
-    });
-
     describe("adjustPathsOfCssResources", function () {
         var extractCssUrlSpy;
 
         beforeEach(function () {
-            extractCssUrlSpy = spyOn(inlineCss, "extractCssUrl").and.callFake(function (cssUrl) {
+            extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
                 if (/^url/.test(cssUrl)) {
                     return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
                 } else {
@@ -566,7 +514,7 @@ describe("Inline CSS content", function () {
         };
 
         beforeEach(function () {
-            extractCssUrlSpy = spyOn(inlineCss, "extractCssUrl").and.callFake(function (cssUrl) {
+            extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
                 if (/^url/.test(cssUrl)) {
                     return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
                 } else {
