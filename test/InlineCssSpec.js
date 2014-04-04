@@ -3,8 +3,7 @@ var ayepromise = require('ayepromise'),
     inlineCss = require('../src/inlineCss'),
     inlineUtil = require('../src/inlineUtil'),
     cssSupport = require('../src/cssSupport'),
-    testHelper = require('./testHelper'),
-    ifNotInPhantomJsIt = testHelper.ifNotInPhantomJsIt;
+    testHelper = require('./testHelper');
 
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
@@ -93,7 +92,7 @@ describe("Inline CSS content", function () {
             expect(hasChanges).toBe(false);
         });
 
-        ifNotInPhantomJsIt("should keep all src references intact when mapping resource paths", function () {
+        it("should keep all src references intact when mapping resource paths", function () {
             var rules = cssom.parse('@font-face { font-family: "test font"; src: local("some font"), url("fake.woff"); }').cssRules;
 
             joinUrlSpy.and.callFake(function (base, url) {
@@ -959,7 +958,7 @@ describe("Inline CSS content", function () {
                 });
             });
 
-            ifNotInPhantomJsIt("should keep all src references intact", function (done) {
+            it("should keep all src references intact", function (done) {
                 var rules = cssom.parse('@font-face { font-family: "test font"; src: local("Fake Font"), url("fake.otf") format("opentype"), url("fake.woff"), local("Another Fake Font"); }').cssRules;
 
                 mockBinaryAjaxUrl('fake.woff', "font");

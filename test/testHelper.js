@@ -1,14 +1,7 @@
-var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0;
+var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
+    isRunFromTheProjectRoot = isPhantomJs;
 
-exports.ifNotInPhantomJsIt = function(text, functionHandle) {
-    if (! isPhantomJs) {
-        return it(text, functionHandle);
-    } else {
-        console.log('Warning: "' + text + '" is disabled on this platform');
-    }
-};
-
-exports.fixturesPath = (isPhantomJs ? 'test/' : '' ) + 'fixtures/';
+exports.fixturesPath = (isRunFromTheProjectRoot ? 'test/' : '' ) + 'fixtures/';
 
 exports.readHTMLFixture = function (url, callback) {
     var fixtureUrl = exports.fixturesPath + url,
