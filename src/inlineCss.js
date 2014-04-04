@@ -200,13 +200,6 @@ var substituteRule = function (cssRules, rule, newCssRules) {
     });
 };
 
-var isQuotedString = function (string) {
-    var doubleQuoteRegex = /^"(.*)"$/,
-        singleQuoteRegex = /^'(.*)'$/;
-
-    return doubleQuoteRegex.test(string) || singleQuoteRegex.test(string);
-};
-
 var fulfilledPromise = function (value) {
     var defer = ayepromise.defer();
     defer.resolve(value);
@@ -217,9 +210,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
     var url = rule.href,
         cssHrefRelativeToDoc;
 
-    if (isQuotedString(url)) {
-        url = cssSupport.unquoteString(url);
-    }
+    url = cssSupport.unquoteString(url);
 
     cssHrefRelativeToDoc = inlineUtil.joinUrl(options.baseUrl, url);
 
