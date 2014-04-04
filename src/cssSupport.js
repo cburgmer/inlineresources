@@ -4,7 +4,7 @@ var trimCSSWhitespace = function (url) {
     return url.replace(whitespaceRegex, "$1");
 };
 
-var unquoteString = function (quotedUrl) {
+exports.unquoteString = function (quotedUrl) {
     var doubleQuoteRegex = /^"(.*)"$/,
         singleQuoteRegex = /^'(.*)'$/;
 
@@ -28,5 +28,5 @@ exports.extractCssUrl = function (cssUrl) {
     }
 
     quotedUrl = urlRegex.exec(cssUrl)[1];
-    return unquoteString(trimCSSWhitespace(quotedUrl));
+    return exports.unquoteString(trimCSSWhitespace(quotedUrl));
 };

@@ -4,7 +4,8 @@ var cssom = require('cssom'),
     ayepromise = require('ayepromise'),
     inlineUtil = require('./inlineUtil'),
     cssSupport = require('./cssSupport'),
-    backgroundValueParser = require('./backgroundValueParser');
+    backgroundValueParser = require('./backgroundValueParser'),
+    fontFaceSrcValueParser = require('./fontFaceSrcValueParser');
 
 
 var updateCssPropertyValue = function (rule, property, value) {
@@ -78,48 +79,6 @@ exports.cssRulesToText = function (cssRules) {
     }, '');
 };
 
-var unquoteString = function (quotedUrl) {
-    var doubleQuoteRegex = /^"(.*)"$/,
-        singleQuoteRegex = /^'(.*)'$/;
-
-    if (doubleQuoteRegex.test(quotedUrl)) {
-        return quotedUrl.replace(doubleQuoteRegex, "$1");
-    } else {
-        if (singleQuoteRegex.test(quotedUrl)) {
-            return quotedUrl.replace(singleQuoteRegex, "$1");
-        } else {
-            return quotedUrl;
-        }
-    }
-};
-
-var findFontFaceFormat = function (value) {
-    var fontFaceFormatRegex = /^format\(([^\)]+)\)/,
-        quotedFormat;
-
-    if (!fontFaceFormatRegex.test(value)) {
-        return null;
-    }
-
-    quotedFormat = fontFaceFormatRegex.exec(value)[1];
-    return unquoteString(quotedFormat);
-};
-
-var extractFontFaceSrcUrl = function (reference) {
-    var url, format = null;
-
-    try {
-        url = cssSupport.extractCssUrl(reference[0]);
-        if (reference[1]) {
-            format = findFontFaceFormat(reference[1]);
-        }
-        return {
-            url: url,
-            format: format
-        };
-    } catch (e) {}
-};
-
 var exchangeRule = function (cssRules, rule, newRuleText) {
     var ruleIdx = cssRules.indexOf(rule),
         styleSheet = rule.parentStyleSheet;
@@ -175,70 +134,6 @@ var findExternalFontFaceUrls = function (parsedFontFaceSources) {
     return sourceIndices;
 };
 
-var sliceFontFaceSrcReferences = function (fontFaceSrc) {
-    var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
-        referenceRegexS = "(local\\(" + functionParamRegexS + "\\))" + "|" +
-                          "(url\\(" + functionParamRegexS + "\\))" + "(?:\\s+(format\\(" + functionParamRegexS + "\\)))?",
-        simpleFontFaceSrcRegexS = "^\\s*(" + referenceRegexS + ")" +
-                                  "(?:\\s*,\\s*(" + referenceRegexS + "))*" +
-                                  "\\s*$",
-        referenceRegex = new RegExp(referenceRegexS, "g"),
-        repeatedMatch,
-        fontFaceSrcReferences = [],
-        getReferences = function (match) {
-            var references = [];
-            match.slice(1).forEach(function (elem) {
-                if (elem) {
-                    references.push(elem);
-                }
-            });
-            return references;
-        };
-
-    if (fontFaceSrc.match(new RegExp(simpleFontFaceSrcRegexS))) {
-        repeatedMatch = referenceRegex.exec(fontFaceSrc);
-        while (repeatedMatch) {
-            fontFaceSrcReferences.push(getReferences(repeatedMatch));
-            repeatedMatch = referenceRegex.exec(fontFaceSrc);
-        }
-        return fontFaceSrcReferences;
-    }
-    // we should probably throw an exception here
-    return [];
-};
-
-var parseFontFaceSrcDeclaration = function (fontFaceSourceValue) {
-    var fontReferences = sliceFontFaceSrcReferences(fontFaceSourceValue);
-
-    return fontReferences.map(function (reference) {
-        var fontSrc = extractFontFaceSrcUrl(reference);
-
-        if (fontSrc) {
-            return fontSrc;
-        } else {
-            return {
-                local: reference
-            };
-        }
-    });
-};
-
-var parsedFontFaceSrcDeclarationToText = function (parsedFontFaceSources) {
-    return parsedFontFaceSources.map(function (sourceItem) {
-        var itemValue;
-
-        if (sourceItem.url) {
-            itemValue = 'url("' + sourceItem.url + '")';
-            if (sourceItem.format) {
-                itemValue += ' format("' + sourceItem.format + '")';
-            }
-        } else {
-            itemValue = sourceItem.local;
-        }
-        return itemValue;
-    }).join(', ');
-};
-
 exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
     var backgroundRules = findBackgroundImageRules(cssRules),
         backgroundDeclarations = findBackgroundDeclarations(backgroundRules),
@@ -265,7 +160,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
     });
     findFontFaceRules(cssRules).forEach(function (rule) {
         var fontFaceSrcDeclaration = rule.style.getPropertyValue("src"),
-            parsedFontFaceSources = parseFontFaceSrcDeclaration(fontFaceSrcDeclaration),
+            parsedFontFaceSources = fontFaceSrcValueParser.parse(fontFaceSrcDeclaration),
             externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources);
 
         if (externalFontFaceUrlIndices.length > 0) {
@@ -276,7 +171,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
                 parsedFontFaceSources[fontFaceUrlIndex].url = url;
             });
 
-            changeFontFaceRuleSrc(cssRules, rule, parsedFontFaceSrcDeclarationToText(parsedFontFaceSources));
+            changeFontFaceRuleSrc(cssRules, rule, fontFaceSrcValueParser.serialize(parsedFontFaceSources));
 
             change = true;
         }
@@ -323,7 +218,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
         cssHrefRelativeToDoc;
 
     if (isQuotedString(url)) {
-        url = unquoteString(url);
+        url = cssSupport.unquoteString(url);
     }
 
     cssHrefRelativeToDoc = inlineUtil.joinUrl(options.baseUrl, url);
@@ -436,7 +331,7 @@ var iterateOverRulesAndInlineBackgroundImages = function (cssRules, options) {
 };
 
 var loadAndInlineFontFace = function (srcDeclarationValue, options) {
-    var parsedFontFaceSources = parseFontFaceSrcDeclaration(srcDeclarationValue),
+    var parsedFontFaceSources = fontFaceSrcValueParser.parse(srcDeclarationValue),
         externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources),
         hasChanges = false;
 
@@ -459,7 +354,7 @@ var loadAndInlineFontFace = function (srcDeclarationValue, options) {
             });
     })).then(function (errors) {
         return {
-            srcDeclarationValue: parsedFontFaceSrcDeclarationToText(parsedFontFaceSources),
+            srcDeclarationValue: fontFaceSrcValueParser.serialize(parsedFontFaceSources),
             hasChanges: hasChanges,
             errors: errors
         };
