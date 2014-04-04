@@ -1,5 +1,6 @@
 var ayepromise = require('ayepromise'),
-    inlineUtil = require('../src/inlineUtil');
+    inlineUtil = require('../src/inlineUtil'),
+    testHelper = require('./testHelper');
 
 describe("Inline utilities function", function () {
     describe("clone", function () {

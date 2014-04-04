@@ -2,7 +2,9 @@ var ayepromise = require('ayepromise'),
     cssom = require('cssom'),
     inlineCss = require('../src/inlineCss'),
     inlineUtil = require('../src/inlineUtil'),
-    cssSupport = require('../src/cssSupport');
+    cssSupport = require('../src/cssSupport'),
+    testHelper = require('./testHelper'),
+    ifNotInPhantomJsIt = testHelper.ifNotInPhantomJsIt;
 
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;

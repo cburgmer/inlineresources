@@ -1,6 +1,8 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
-    inlineCss = require('../src/inlineCss');
+    inlineCss = require('../src/inlineCss'),
+    inlineUtil = require('../src/inlineUtil'),
+    testHelper = require('./testHelper');
 
 describe("Import styles", function () {
     var doc, loadCSSImportsForRulesSpy, loadAndInlineCSSResourcesForRulesSpy;

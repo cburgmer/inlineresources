@@ -1,6 +1,7 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
-    inlineUtil = require('../src/inlineUtil');
+    inlineUtil = require('../src/inlineUtil'),
+    testHelper = require('./testHelper');
 
 describe("Image and image input inline", function () {
     var firstImage = "firstImage.png",

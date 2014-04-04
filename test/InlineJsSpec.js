@@ -1,6 +1,7 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
-    inlineUtil = require('../src/inlineUtil');
+    inlineUtil = require('../src/inlineUtil'),
+    testHelper = require('./testHelper');
 
 describe("JS inline", function () {
     var doc, joinUrlSpy, ajaxSpy,

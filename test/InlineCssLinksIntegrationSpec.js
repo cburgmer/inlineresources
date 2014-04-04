@@ -1,6 +1,6 @@
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline');
-    inlineCss = require('../src/inlineCss');
+    inline = require('../src/inline'),
+    inlineCss = require('../src/inlineCss'),
     inlineUtil = require('../src/inlineUtil');
 
 describe("Inline CSS content (integration)", function () {

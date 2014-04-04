@@ -5,13 +5,7 @@ module.exports = function (grunt) {
         jasmine: {
             src: [
                 'build/testSuite.js'
-            ],
-            options: {
-                helpers: [
-                    'test/helpers.js',
-                    'test/gruntpath.js'
-                ]
-            }
+            ]
         },
         browserify: {
             cssom: {
@@ -127,10 +121,6 @@ module.exports = function (grunt) {
                     require: true,
                     exports: true,
 
-                    inlineUtil: true,
-                    inlineCss: true,
-                    inline: true,
-
                     cssom: true,
                     url: true,
                     ayepromise: true
@@ -152,13 +142,6 @@ module.exports = function (grunt) {
                         afterEach: true,
                         expect: true,
                         spyOn: true,
-
-                        ifNotInPhantomJsIt: true,
-                        testHelper: true,
-
-                        inlineUtil: true,
-                        inlineCss: true,
-                        inline: true,
 
                         cssom: true,
                         url: true,

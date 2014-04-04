@@ -2,7 +2,8 @@ var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
     inlineUtil = require('../src/inlineUtil'),
-    cssSupport = require('../src/cssSupport');
+    cssSupport = require('../src/cssSupport'),
+    testHelper = require('./testHelper');
 
 describe("Inline CSS links", function () {
     var doc, extractCssUrlSpy, joinUrlSpy, ajaxSpy,
