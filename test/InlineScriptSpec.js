@@ -1,5 +1,5 @@
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline'),
+    inlineScript = require('../src/inlineScript'),
     util = require('../src/util'),
     testHelper = require('./testHelper');
 
@@ -62,7 +62,7 @@ describe("JS inline", function () {
     });
 
     it("should do nothing if no linked JS is found", function (done) {
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.getElementsByTagName("script").length).toEqual(0);
 
             done();
@@ -72,7 +72,7 @@ describe("JS inline", function () {
     it("should inline linked JS", function (done) {
         doc.head.appendChild(anExternalScript());
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
             expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("var b = 1;");
             expect(doc.head.getElementsByTagName("script")[0].src).toBe('');
@@ -84,7 +84,7 @@ describe("JS inline", function () {
     it("should remove the src attribute from the inlined script", function (done) {
         doc.head.appendChild(anotherExternalScript());
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
             expect(doc.head.getElementsByTagName("script")[0].src).toBe('');
 
@@ -95,7 +95,7 @@ describe("JS inline", function () {
     it("should keep all other script's attributes inlining", function (done) {
         doc.head.appendChild(anotherExternalScript());
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
             expect(doc.head.getElementsByTagName("script")[0].type).toEqual("text/javascript");
             expect(doc.head.getElementsByTagName("script")[0].id).toEqual("myScript");
@@ -108,7 +108,7 @@ describe("JS inline", function () {
         doc.head.appendChild(anExternalScript());
         doc.body.appendChild(anotherExternalScript());
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.getElementsByTagName("script").length).toEqual(2);
             expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("var b = 1;");
             expect(doc.body.getElementsByTagName("script")[0].textContent).toEqual("function something() {}");
@@ -120,7 +120,7 @@ describe("JS inline", function () {
     it("should not touch internal scripts", function (done) {
         doc.head.appendChild(internalScript);
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(ajaxSpy).not.toHaveBeenCalled();
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
             expect(doc.head.getElementsByTagName("script")[0]).toEqual(internalScript);
@@ -136,7 +136,7 @@ describe("JS inline", function () {
         mockAjaxUrl("some_url.js", 'var closingScriptTag = "</script>";');
         doc.head.appendChild(script);
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual('var closingScriptTag = "<\\/script>";');
 
             done();
@@ -148,7 +148,7 @@ describe("JS inline", function () {
 
         doc = testHelper.readDocumentFixture("externalJS.html");
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith("some.js", {baseUrl: doc.baseURI});
             expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
 
@@ -159,7 +159,7 @@ describe("JS inline", function () {
     it("should respect optional baseUrl when loading linked JS", function (done) {
         doc.head.appendChild(anExternalScriptWith('externalScript.js', ''));
 
-        inline.loadAndInlineScript(doc, {baseUrl: "some_base_url/"}).then(function () {
+        inlineScript.inline(doc, {baseUrl: "some_base_url/"}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith('externalScript.js', {baseUrl: "some_base_url/"});
 
             done();
@@ -171,7 +171,7 @@ describe("JS inline", function () {
         expect(doc.baseURI).not.toBeNull();
         expect(doc.baseURI).not.toEqual("about:blank");
 
-        inline.loadAndInlineScript(doc, {baseUrl: "some_base_url/"}).then(function () {
+        inlineScript.inline(doc, {baseUrl: "some_base_url/"}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith("some.js", {baseUrl: "some_base_url/"});
 
             done();
@@ -181,7 +181,7 @@ describe("JS inline", function () {
     it("should circumvent caching if requested", function (done) {
         doc.head.appendChild(anExternalScript());
 
-        inline.loadAndInlineScript(doc, {cache: 'none'}).then(function () {
+        inlineScript.inline(doc, {cache: 'none'}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), {
                 cache: 'none'
             });
@@ -193,7 +193,7 @@ describe("JS inline", function () {
     it("should not circumvent caching by default", function (done) {
         doc.head.appendChild(anExternalScript());
 
-        inline.loadAndInlineScript(doc, {}).then(function () {
+        inlineScript.inline(doc, {}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), {});
 
             done();
@@ -216,7 +216,7 @@ describe("JS inline", function () {
         it("should report an error if a script could not be loaded", function (done) {
             doc.head.appendChild(brokenJsScript);
 
-            inline.loadAndInlineScript(doc, {}).then(function (errors) {
+            inlineScript.inline(doc, {}).then(function (errors) {
                 errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
                 expect(errors).toEqual([{
                     resourceType: "script",
@@ -232,7 +232,7 @@ describe("JS inline", function () {
             doc.head.appendChild(brokenJsScript);
             doc.head.appendChild(anExternalScript());
 
-            inline.loadAndInlineScript(doc, {}).then(function (errors) {
+            inlineScript.inline(doc, {}).then(function (errors) {
                 errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
                 expect(errors).toEqual([{
                     resourceType: "script",
@@ -248,7 +248,7 @@ describe("JS inline", function () {
             doc.head.appendChild(brokenJsScript);
             doc.head.appendChild(anotherBrokenJsScript);
 
-            inline.loadAndInlineScript(doc, {}).then(function (errors) {
+            inlineScript.inline(doc, {}).then(function (errors) {
                 expect(errors).toEqual([jasmine.any(Object), jasmine.any(Object)]);
                 expect(errors[0]).not.toEqual(errors[1]);
 
@@ -259,7 +259,7 @@ describe("JS inline", function () {
         it("should report an empty list for a successful script", function (done) {
             doc.head.appendChild(anExternalScript());
 
-            inline.loadAndInlineScript(doc, {}).then(function (errors) {
+            inlineScript.inline(doc, {}).then(function (errors) {
                 expect(errors).toEqual([]);
 
                 done();
