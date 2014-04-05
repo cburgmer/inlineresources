@@ -2,11 +2,10 @@ var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
     util = require('../src/util'),
-    cssSupport = require('../src/cssSupport'),
     testHelper = require('./testHelper');
 
 describe("Inline CSS links", function () {
-    var doc, extractCssUrlSpy, joinUrlSpy, ajaxSpy,
+    var doc, joinUrlSpy, ajaxSpy,
         adjustPathsOfCssResourcesSpy, loadCSSImportsForRulesSpy, loadAndInlineCSSResourcesForRulesSpy,
         ajaxUrlMocks = {};
 
@@ -63,13 +62,6 @@ describe("Inline CSS links", function () {
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
 
-        extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
-            if (/^url/.test(cssUrl)) {
-                return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
-            } else {
-                throw "error";
-            }
-        });
         joinUrlSpy = spyOn(util, "joinUrl");
         adjustPathsOfCssResourcesSpy = spyOn(inlineCss, 'adjustPathsOfCssResources');
         loadCSSImportsForRulesSpy = spyOn(inlineCss, 'loadCSSImportsForRules').and.returnValue(fulfilled({

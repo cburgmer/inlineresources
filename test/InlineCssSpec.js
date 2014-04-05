@@ -2,8 +2,8 @@ var ayepromise = require('ayepromise'),
     cssom = require('cssom'),
     inlineCss = require('../src/inlineCss'),
     util = require('../src/util'),
-    cssSupport = require('../src/cssSupport'),
-    testHelper = require('./testHelper');
+    testHelper = require('./testHelper'),
+    backgroundValueParser = require('../src/backgroundValueParser');
 
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
@@ -21,7 +21,7 @@ describe("Inline CSS content", function () {
         var extractCssUrlSpy;
 
         beforeEach(function () {
-            extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
+            extractCssUrlSpy = spyOn(backgroundValueParser, "extractCssUrl").and.callFake(function (cssUrl) {
                 if (/^url/.test(cssUrl)) {
                     return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
                 } else {
@@ -515,7 +515,7 @@ describe("Inline CSS content", function () {
         };
 
         beforeEach(function () {
-            extractCssUrlSpy = spyOn(cssSupport, "extractCssUrl").and.callFake(function (cssUrl) {
+            extractCssUrlSpy = spyOn(backgroundValueParser, "extractCssUrl").and.callFake(function (cssUrl) {
                 if (/^url/.test(cssUrl)) {
                     return cssUrl.replace(/^url\("?/, '').replace(/"?\)$/, '');
                 } else {

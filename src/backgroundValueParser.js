@@ -2,6 +2,25 @@
 
 var cssSupport = require('./cssSupport');
 
+var trimCSSWhitespace = function (url) {
+    var whitespaceRegex = /^[\t\r\f\n ]*(.+?)[\t\r\f\n ]*$/;
+
+    return url.replace(whitespaceRegex, "$1");
+};
+
+// TODO exporting this for the sake of unit testing. Should rather test the background value parser explicitly.
+exports.extractCssUrl = function (cssUrl) {
+    var urlRegex = /^url\(([^\)]+)\)/,
+        quotedUrl;
+
+    if (!urlRegex.test(cssUrl)) {
+        throw new Error("Invalid url");
+    }
+
+    quotedUrl = urlRegex.exec(cssUrl)[1];
+    return cssSupport.unquoteString(trimCSSWhitespace(quotedUrl));
+};
+
 var sliceBackgroundDeclaration = function (backgroundDeclarationText) {
     var functionParamRegexS = "\\s*(?:\"[^\"]*\"|'[^']*'|[^\\(]+)\\s*",
         valueRegexS = "(" + "url\\(" + functionParamRegexS + "\\)" + "|" + "[^,\\s]+" + ")",
@@ -42,7 +61,7 @@ var findBackgroundImageUrlInValues = function (values) {
 
     for(i = 0; i < values.length; i++) {
         try {
-            url = cssSupport.extractCssUrl(values[i]);
+            url = exports.extractCssUrl(values[i]);
             return {
                 url: url,
                 idx: i
