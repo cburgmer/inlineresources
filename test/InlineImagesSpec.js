@@ -1,5 +1,5 @@
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline'),
+    inlineImage = require('../src/inlineImage'),
     util = require('../src/util'),
     testHelper = require('./testHelper');
 
@@ -40,7 +40,7 @@ describe("Image and image input inline", function () {
         mockGetDataURIForImageURL(firstImage, firstImageDataURI);
         doc.body.innerHTML = '<img id="image" src="' + firstImage + '" alt="test image"/>';
 
-        inline.loadAndInlineImages(doc, {}).then(function () {
+        inlineImage.inline(doc, {}).then(function () {
             expect(doc.getElementById("image").attributes.src.nodeValue).toEqual(firstImageDataURI);
 
             done();
@@ -51,7 +51,7 @@ describe("Image and image input inline", function () {
         mockGetDataURIForImageURL(firstImage, firstImageDataURI);
         doc.body.innerHTML = '<input type="image" id="input" src="' + firstImage + '" alt="test image"/>';
 
-        inline.loadAndInlineImages(doc, {}).then(function () {
+        inlineImage.inline(doc, {}).then(function () {
             expect(doc.getElementById("input").attributes.src.nodeValue).toEqual(firstImageDataURI);
 
             done();
@@ -66,7 +66,7 @@ describe("Image and image input inline", function () {
             '<img id="image2" src="' + secondImage +'" alt="test image"/>'
         );
 
-        inline.loadAndInlineImages(doc, {}).then(function () {
+        inlineImage.inline(doc, {}).then(function () {
             expect(doc.getElementById("image1").attributes.src.nodeValue).toEqual(firstImageDataURI);
             expect(doc.getElementById("image2").attributes.src.nodeValue).toEqual(secondImageDataURI);
 
@@ -75,13 +75,13 @@ describe("Image and image input inline", function () {
     });
 
     it("should finish if no images found", function (done) {
-        inline.loadAndInlineImages(doc, {}).then(done);
+        inlineImage.inline(doc, {}).then(done);
     });
 
     it("should not touch an already inlined image", function (done) {
         doc.body.innerHTML = '<img id="image" src="data:image/png;base64,soMEfAkebASE64=" alt="test image"/>';
 
-        inline.loadAndInlineImages(doc, {}).then(function () {
+        inlineImage.inline(doc, {}).then(function () {
             expect(doc.getElementById("image").src).toEqual('data:image/png;base64,soMEfAkebASE64=');
 
             done();
@@ -91,7 +91,7 @@ describe("Image and image input inline", function () {
     it("should not touch an image without a src", function (done) {
         doc.body.innerHTML = '<img id="image">';
 
-        inline.loadAndInlineImages(doc, {}).then(function () {
+        inlineImage.inline(doc, {}).then(function () {
             expect(doc.getElementById("image").parentNode.innerHTML).toEqual('<img id="image">');
 
             done();
@@ -103,7 +103,7 @@ describe("Image and image input inline", function () {
 
         doc = testHelper.readDocumentFixture("image.html");
 
-        inline.loadAndInlineImages(doc, {});
+        inlineImage.inline(doc, {});
 
         expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
         expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
@@ -112,7 +112,7 @@ describe("Image and image input inline", function () {
     it("should respect optional baseUrl when loading the image", function () {
         doc = testHelper.readDocumentFixtureWithoutBaseURI("image.html");
 
-        inline.loadAndInlineImages(doc, {baseUrl: "aBaseUrl"});
+        inlineImage.inline(doc, {baseUrl: "aBaseUrl"});
 
         expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual("aBaseUrl");
     });
@@ -125,7 +125,7 @@ describe("Image and image input inline", function () {
         expect(doc.baseURI).not.toEqual("about:blank");
         expect(doc.baseURI).not.toEqual(baseUrl);
 
-        inline.loadAndInlineImages(doc, {baseUrl: baseUrl});
+        inlineImage.inline(doc, {baseUrl: baseUrl});
 
         expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(baseUrl);
     });
@@ -133,7 +133,7 @@ describe("Image and image input inline", function () {
     it("should circumvent caching if requested", function () {
         doc.body.innerHTML = '<img id="image" src="' + firstImage + '" alt="test image"/>';
 
-        inline.loadAndInlineImages(doc, {cache: 'none'});
+        inlineImage.inline(doc, {cache: 'none'});
 
         expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), {cache: 'none'});
     });
@@ -141,7 +141,7 @@ describe("Image and image input inline", function () {
     it("should not circumvent caching by default", function () {
         doc.body.innerHTML = '<img id="image" src="' + firstImage + '" alt="test image"/>';
 
-        inline.loadAndInlineImages(doc, {});
+        inlineImage.inline(doc, {});
 
         expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), {});
     });
@@ -158,7 +158,7 @@ describe("Image and image input inline", function () {
         it("should report an error if an image could not be loaded", function (done) {
             doc.body.innerHTML = '<img src="image_that_doesnt_exist.png" alt="test image"/>';
 
-            inline.loadAndInlineImages(doc, {}).then(function (errors) {
+            inlineImage.inline(doc, {}).then(function (errors) {
                 errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
 
                 expect(errors).toEqual([{
@@ -177,7 +177,7 @@ describe("Image and image input inline", function () {
                 '<img src="' + imageThatDoesExist + '" alt="test image"/>'
             );
 
-            inline.loadAndInlineImages(doc, {}).then(function (errors) {
+            inlineImage.inline(doc, {}).then(function (errors) {
                 errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
 
                 expect(errors).toEqual([{
@@ -196,7 +196,7 @@ describe("Image and image input inline", function () {
                 '<img src="another_image_that_doesnt_exist.png" alt="test image"/>'
             );
 
-            inline.loadAndInlineImages(doc, {}).then(function (errors) {
+            inlineImage.inline(doc, {}).then(function (errors) {
                 expect(errors).toEqual([jasmine.any(Object), jasmine.any(Object)]);
                 expect(errors[0]).not.toEqual(errors[1]);
 
@@ -207,7 +207,7 @@ describe("Image and image input inline", function () {
         it("should report an empty list for a successful image", function (done) {
             doc.body.innerHTML = ('<img src="' + imageThatDoesExist + '" alt="test image"/>');
 
-            inline.loadAndInlineImages(doc, {}).then(function (errors) {
+            inlineImage.inline(doc, {}).then(function (errors) {
                 expect(errors).toEqual([]);
 
                 done();
