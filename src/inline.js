@@ -1,7 +1,8 @@
 "use strict";
 
 var inlineUtil = require('./inlineUtil'),
-    inlineCss = require('./inlineCss');
+    inlineCss = require('./inlineCss'),
+    cssSupport = require('./cssSupport');
 
 
 var getUrlBasePath = function (url) {
@@ -88,7 +89,7 @@ exports.loadAndInlineImages = function (doc, options) {
 /* Style inlining */
 
 var requestExternalsForStylesheet = function (styleContent, alreadyLoadedCssUrls, options) {
-    var cssRules = inlineCss.rulesForCssText(styleContent);
+    var cssRules = cssSupport.rulesForCssText(styleContent);
 
     return inlineCss.loadCSSImportsForRules(cssRules, alreadyLoadedCssUrls, options).then(function (cssImportResult) {
         return inlineCss.loadAndInlineCSSResourcesForRules(cssRules, options).then(function (cssResourcesResult) {
@@ -96,7 +97,7 @@ var requestExternalsForStylesheet = function (styleContent, alreadyLoadedCssUrls
                 hasChanges = cssImportResult.hasChanges || cssResourcesResult.hasChanges;
 
             if (hasChanges) {
-                styleContent = inlineCss.cssRulesToText(cssRules);
+                styleContent = cssSupport.cssRulesToText(cssRules);
             }
 
             return {
@@ -168,7 +169,7 @@ var substituteLinkWithInlineStyle = function (oldLinkNode, styleContent) {
 var requestStylesheetAndInlineResources = function (url, options) {
     return inlineUtil.ajax(url, options)
         .then(function (content) {
-            var cssRules = inlineCss.rulesForCssText(content);
+            var cssRules = cssSupport.rulesForCssText(content);
 
             return {
                 content: content,
@@ -209,7 +210,7 @@ var requestStylesheetAndInlineResources = function (url, options) {
         .then(function (result) {
             var content = result.content;
             if (result.hasChanges) {
-                content = inlineCss.cssRulesToText(result.cssRules);
+                content = cssSupport.cssRulesToText(result.cssRules);
             }
             return {
                 content: content,

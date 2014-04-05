@@ -1,7 +1,6 @@
 "use strict";
 
-var cssom = require('cssom'),
-    ayepromise = require('ayepromise'),
+var ayepromise = require('ayepromise'),
     inlineUtil = require('./inlineUtil'),
     cssSupport = require('./cssSupport'),
     backgroundValueParser = require('./backgroundValueParser'),
@@ -10,33 +9,6 @@ var cssom = require('cssom'),
 
 var updateCssPropertyValue = function (rule, property, value) {
     rule.style.setProperty(property, value, rule.style.getPropertyPriority(property));
-};
-
-var rulesForCssTextFromBrowser = function (styleContent) {
-    var doc = document.implementation.createHTMLDocument(""),
-        styleElement = document.createElement("style"),
-        rules;
-
-    styleElement.textContent = styleContent;
-    // the style will only be parsed once it is added to a document
-    doc.body.appendChild(styleElement);
-    rules = styleElement.sheet.cssRules;
-
-    return Array.prototype.slice.call(rules);
-};
-
-var browserHasBackgroundImageUrlIssue = (function () {
-    // Checks for http://code.google.com/p/chromium/issues/detail?id=161644
-    var rules = rulesForCssTextFromBrowser('a{background:url(i)}');
-    return !rules.length || rules[0].cssText.indexOf('url()') >= 0;
-}());
-
-exports.rulesForCssText = function (styleContent) {
-    if (browserHasBackgroundImageUrlIssue && cssom.parse) {
-        return cssom.parse(styleContent).cssRules;
-    } else {
-        return rulesForCssTextFromBrowser(styleContent);
-    }
 };
 
 var findBackgroundImageRules = function (cssRules) {
@@ -73,43 +45,10 @@ var findFontFaceRules = function (cssRules) {
     });
 };
 
-exports.cssRulesToText = function (cssRules) {
-    return cssRules.reduce(function (cssText, rule) {
-        return cssText + rule.cssText;
-    }, '');
-};
-
-var exchangeRule = function (cssRules, rule, newRuleText) {
-    var ruleIdx = cssRules.indexOf(rule),
-        styleSheet = rule.parentStyleSheet;
-
-    // Generate a new rule
-    styleSheet.insertRule(newRuleText, ruleIdx+1);
-    styleSheet.deleteRule(ruleIdx);
-    // Exchange with the new
-    cssRules[ruleIdx] = styleSheet.cssRules[ruleIdx];
-};
-
 var findCSSImportRules = function (cssRules) {
     return cssRules.filter(function (rule) {
         return rule.type === window.CSSRule.IMPORT_RULE && rule.href;
     });
-};
-
-// Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=443978
-var changeFontFaceRuleSrc = function (cssRules, rule, newSrc) {
-    var newRuleText = '@font-face { font-family: ' + rule.style.getPropertyValue("font-family") + '; ';
-
-    if (rule.style.getPropertyValue("font-style")) {
-        newRuleText += 'font-style: ' + rule.style.getPropertyValue("font-style") + '; ';
-    }
-
-    if (rule.style.getPropertyValue("font-weight")) {
-        newRuleText += 'font-weight: ' + rule.style.getPropertyValue("font-weight") + '; ';
-    }
-
-    newRuleText += 'src: ' + newSrc + '}';
-    exchangeRule(cssRules, rule, newRuleText);
 };
 
 var findExternalBackgroundUrls = function (parsedBackground) {
@@ -177,7 +116,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
                 parsedFontFaceSources[fontFaceUrlIndex].url = url;
             });
 
-            changeFontFaceRuleSrc(cssRules, rule, fontFaceSrcValueParser.serialize(parsedFontFaceSources));
+            cssSupport.changeFontFaceRuleSrc(cssRules, rule, fontFaceSrcValueParser.serialize(parsedFontFaceSources));
 
             change = true;
         }
@@ -186,7 +125,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
         var cssUrl = rule.href,
             url = inlineUtil.joinUrl(baseUrl, cssUrl);
 
-        exchangeRule(cssRules, rule, "@import url(" + url + ");");
+        rule.href = url;
 
         change = true;
     });
@@ -230,7 +169,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
 
     return inlineUtil.ajax(url, options)
         .then(function (cssText) {
-            var externalCssRules = exports.rulesForCssText(cssText);
+            var externalCssRules = cssSupport.rulesForCssText(cssText);
 
             // Recursively follow @import statements
             return exports.loadCSSImportsForRules(externalCssRules, alreadyLoadedCssUrls, options)
@@ -374,7 +313,7 @@ var iterateOverRulesAndInlineFontFace = function (cssRules, options) {
 
         return loadAndInlineFontFace(srcDeclarationValue, options).then(function (result) {
             if (result.hasChanges) {
-                changeFontFaceRuleSrc(cssRules, rule, result.srcDeclarationValue);
+                cssSupport.changeFontFaceRuleSrc(cssRules, rule, result.srcDeclarationValue);
 
                 hasChanges = true;
             }
