@@ -1,4 +1,7 @@
+"use strict";
+
 var cssom = require('cssom');
+
 
 exports.unquoteString = function (quotedUrl) {
     var doubleQuoteRegex = /^"(.*)"$/,

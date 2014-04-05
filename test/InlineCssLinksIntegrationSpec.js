@@ -1,7 +1,10 @@
+"use strict";
+
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
     util = require('../src/util');
+
 
 describe("Inline CSS content (integration)", function () {
     var doc, ajaxSpyUrlMap = {};

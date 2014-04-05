@@ -1,3 +1,5 @@
+"use strict";
+
 var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
     isRunFromTheProjectRoot = isPhantomJs;
 

@@ -1,4 +1,7 @@
+"use strict";
+
 var util = require('./util');
+
 
 var loadLinkedScript = function (script, options) {
     var src = script.attributes.src.nodeValue,

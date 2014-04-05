@@ -1,8 +1,11 @@
+"use strict";
+
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
     util = require('../src/util'),
     testHelper = require('./testHelper');
+
 
 describe("Inline CSS links", function () {
     var doc, joinUrlSpy, ajaxSpy,

@@ -1,4 +1,7 @@
+"use strict";
+
 var util = require('./util');
+
 
 var encodeImageAsDataURI = function (image, options) {
     var url = image.attributes.src ? image.attributes.src.nodeValue : null,

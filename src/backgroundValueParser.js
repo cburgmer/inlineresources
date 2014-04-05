@@ -1,6 +1,8 @@
 // Simple, stupid "background"/"background-image" value parser that just aims at exposing the image URLs
+"use strict";
 
 var cssSupport = require('./cssSupport');
+
 
 var trimCSSWhitespace = function (url) {
     var whitespaceRegex = /^[\t\r\f\n ]*(.+?)[\t\r\f\n ]*$/;

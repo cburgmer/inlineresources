@@ -1,9 +1,12 @@
+"use strict";
+
 var ayepromise = require('ayepromise'),
     cssom = require('cssom'),
     inlineCss = require('../src/inlineCss'),
     util = require('../src/util'),
     testHelper = require('./testHelper'),
     backgroundValueParser = require('../src/backgroundValueParser');
+
 
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;

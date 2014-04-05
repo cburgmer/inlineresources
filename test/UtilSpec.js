@@ -1,6 +1,9 @@
+"use strict";
+
 var ayepromise = require('ayepromise'),
     util = require('../src/util'),
     testHelper = require('./testHelper');
+
 
 describe("Inline utilities function", function () {
     describe("clone", function () {
