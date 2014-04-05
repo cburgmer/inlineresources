@@ -1,7 +1,7 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
-    inlineUtil = require('../src/inlineUtil');
+    util = require('../src/util');
 
 describe("Inline CSS content (integration)", function () {
     var doc, ajaxSpyUrlMap = {};
@@ -9,7 +9,7 @@ describe("Inline CSS content (integration)", function () {
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
 
-        spyOn(inlineUtil, "ajax").and.callFake(function (url, options, success) {
+        spyOn(util, "ajax").and.callFake(function (url, options, success) {
             var defer = ayepromise.defer(),
                 respondWith = ajaxSpyUrlMap[url];
             if (respondWith) {

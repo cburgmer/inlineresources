@@ -1,7 +1,7 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
-    inlineUtil = require('../src/inlineUtil'),
+    util = require('../src/util'),
     cssSupport = require('../src/cssSupport'),
     testHelper = require('./testHelper');
 
@@ -11,7 +11,7 @@ describe("Inline CSS links", function () {
         ajaxUrlMocks = {};
 
     var setupAjaxMock = function () {
-        ajaxSpy = spyOn(inlineUtil, "ajax").and.callFake(function (url, options) {
+        ajaxSpy = spyOn(util, "ajax").and.callFake(function (url, options) {
             var defer = ayepromise.defer();
 
             if (ajaxUrlMocks[url + ' ' + options.baseUrl] !== undefined) {
@@ -70,7 +70,7 @@ describe("Inline CSS links", function () {
                 throw "error";
             }
         });
-        joinUrlSpy = spyOn(inlineUtil, "joinUrl");
+        joinUrlSpy = spyOn(util, "joinUrl");
         adjustPathsOfCssResourcesSpy = spyOn(inlineCss, 'adjustPathsOfCssResources');
         loadCSSImportsForRulesSpy = spyOn(inlineCss, 'loadCSSImportsForRules').and.returnValue(fulfilled({
             hasChanges: false,
@@ -196,7 +196,7 @@ describe("Inline CSS links", function () {
     });
 
     it("should respect the document's baseURI when loading linked CSS", function (done) {
-        var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
         doc = testHelper.readDocumentFixture("externalCSS.html");
 

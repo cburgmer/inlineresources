@@ -1,7 +1,7 @@
 var ayepromise = require('ayepromise'),
     cssom = require('cssom'),
     inlineCss = require('../src/inlineCss'),
-    inlineUtil = require('../src/inlineUtil'),
+    util = require('../src/util'),
     cssSupport = require('../src/cssSupport'),
     testHelper = require('./testHelper');
 
@@ -9,12 +9,12 @@ describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
 
     beforeEach(function () {
-        joinUrlSpy = spyOn(inlineUtil, "joinUrl").and.callFake(function (base, url) {
+        joinUrlSpy = spyOn(util, "joinUrl").and.callFake(function (base, url) {
             return url;
         });
-        ajaxSpy = spyOn(inlineUtil, "ajax");
-        binaryAjaxSpy = spyOn(inlineUtil, "binaryAjax");
-        getDataURIForImageURLSpy = spyOn(inlineUtil, "getDataURIForImageURL");
+        ajaxSpy = spyOn(util, "ajax");
+        binaryAjaxSpy = spyOn(util, "binaryAjax");
+        getDataURIForImageURLSpy = spyOn(util, "getDataURIForImageURL");
     });
 
     describe("adjustPathsOfCssResources", function () {

@@ -1,6 +1,6 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
-    inlineUtil = require('../src/inlineUtil'),
+    util = require('../src/util'),
     testHelper = require('./testHelper');
 
 describe("Image and image input inline", function () {
@@ -12,7 +12,7 @@ describe("Image and image input inline", function () {
         urlMocks = {};
 
     var setupGetDataURIForImageURLMock = function () {
-        return spyOn(inlineUtil, "getDataURIForImageURL").and.callFake(function (url) {
+        return spyOn(util, "getDataURIForImageURL").and.callFake(function (url) {
             var defer = ayepromise.defer();
             if (urlMocks[url] !== undefined) {
                 defer.resolve(urlMocks[url]);
@@ -30,7 +30,7 @@ describe("Image and image input inline", function () {
     };
 
     beforeEach(function () {
-        joinUrlSpy = spyOn(inlineUtil, "joinUrl");
+        joinUrlSpy = spyOn(util, "joinUrl");
         getDataURIForImageURLSpy = setupGetDataURIForImageURLMock();
 
         doc = document.implementation.createHTMLDocument("");
@@ -99,7 +99,7 @@ describe("Image and image input inline", function () {
     });
 
     it("should respect the document's baseURI when loading the image", function () {
-        var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
         doc = testHelper.readDocumentFixture("image.html");
 

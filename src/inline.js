@@ -1,12 +1,12 @@
 "use strict";
 
-var inlineUtil = require('./inlineUtil'),
+var util = require('./util'),
     inlineCss = require('./inlineCss'),
     cssSupport = require('./cssSupport');
 
 
 var getUrlBasePath = function (url) {
-    return inlineUtil.joinUrl(url, '.');
+    return util.joinUrl(url, '.');
 };
 
 var parameterHashFunction = function (params) {
@@ -27,7 +27,7 @@ var parameterHashFunction = function (params) {
 
 var memoizeFunctionOnCaching = function (func, options) {
     if ((options.cache !== false && options.cache !== 'none') && options.cacheBucket) {
-        return inlineUtil.memoize(func, parameterHashFunction, options.cacheBucket);
+        return util.memoize(func, parameterHashFunction, options.cacheBucket);
     } else {
         return func;
     }
@@ -37,14 +37,14 @@ var memoizeFunctionOnCaching = function (func, options) {
 
 var encodeImageAsDataURI = function (image, options) {
     var url = image.attributes.src ? image.attributes.src.nodeValue : null,
-        documentBase = inlineUtil.getDocumentBaseUrl(image.ownerDocument),
-        ajaxOptions = inlineUtil.clone(options);
+        documentBase = util.getDocumentBaseUrl(image.ownerDocument),
+        ajaxOptions = util.clone(options);
 
     if (!ajaxOptions.baseUrl && documentBase) {
         ajaxOptions.baseUrl = documentBase;
     }
 
-    return inlineUtil.getDataURIForImageURL(url, ajaxOptions)
+    return util.getDataURIForImageURL(url, ajaxOptions)
         .then(function (dataURI) {
             return dataURI;
         }, function (e) {
@@ -60,7 +60,7 @@ var filterExternalImages = function (images) {
     return images.filter(function (image) {
         var url = image.attributes.src ? image.attributes.src.nodeValue : null;
 
-        return url !== null && !inlineUtil.isDataUri(url);
+        return url !== null && !util.isDataUri(url);
     });
 };
 
@@ -79,7 +79,7 @@ exports.loadAndInlineImages = function (doc, options) {
         imageInputs = filterInputsForImageType(doc.getElementsByTagName("input")),
         externalImages = filterExternalImages(images.concat(imageInputs));
 
-    return inlineUtil.collectAndReportErrors(externalImages.map(function (image) {
+    return util.collectAndReportErrors(externalImages.map(function (image) {
         return encodeImageAsDataURI(image, options).then(function (dataURI) {
             image.attributes.src.nodeValue = dataURI;
         });
@@ -118,7 +118,7 @@ var loadAndInlineCssForStyle = function (style, options, alreadyLoadedCssUrls) {
             style.childNodes[0].nodeValue = result.content;
         }
 
-        return inlineUtil.cloneArray(result.errors);
+        return util.cloneArray(result.errors);
     });
 };
 
@@ -136,10 +136,10 @@ exports.loadAndInlineStyles = function (doc, options) {
         alreadyLoadedCssUrls = [],
         inlineOptions;
 
-    inlineOptions = inlineUtil.clone(options);
-    inlineOptions.baseUrl = inlineOptions.baseUrl || inlineUtil.getDocumentBaseUrl(doc);
+    inlineOptions = util.clone(options);
+    inlineOptions.baseUrl = inlineOptions.baseUrl || util.getDocumentBaseUrl(doc);
 
-    return inlineUtil.all(styles.map(function (style) {
+    return util.all(styles.map(function (style) {
         return loadAndInlineCssForStyle(style, inlineOptions, alreadyLoadedCssUrls).then(function (errors) {
             allErrors = allErrors.concat(errors);
         });
@@ -167,7 +167,7 @@ var substituteLinkWithInlineStyle = function (oldLinkNode, styleContent) {
 };
 
 var requestStylesheetAndInlineResources = function (url, options) {
-    return inlineUtil.ajax(url, options)
+    return util.ajax(url, options)
         .then(function (content) {
             var cssRules = cssSupport.rulesForCssText(content);
 
@@ -221,8 +221,8 @@ var requestStylesheetAndInlineResources = function (url, options) {
 
 var loadLinkedCSS = function (link, options) {
     var cssHref = link.attributes.href.nodeValue,
-        documentBaseUrl = inlineUtil.getDocumentBaseUrl(link.ownerDocument),
-        ajaxOptions = inlineUtil.clone(options);
+        documentBaseUrl = util.getDocumentBaseUrl(link.ownerDocument),
+        ajaxOptions = util.clone(options);
 
     if (!ajaxOptions.baseUrl && documentBaseUrl) {
         ajaxOptions.baseUrl = documentBaseUrl;
@@ -233,7 +233,7 @@ var loadLinkedCSS = function (link, options) {
     return processStylesheet(cssHref, ajaxOptions).then(function (result) {
         return {
             content: result.content,
-            errors: inlineUtil.cloneArray(result.errors)
+            errors: util.cloneArray(result.errors)
         };
     });
 };
@@ -251,7 +251,7 @@ exports.loadAndInlineCssLinks = function (doc, options) {
     var links = getCssStylesheetLinks(doc),
         errors = [];
 
-    return inlineUtil.all(links.map(function (link) {
+    return util.all(links.map(function (link) {
         return loadLinkedCSS(link, options).then(function(result) {
             substituteLinkWithInlineStyle(link, result.content + "\n");
 
@@ -272,14 +272,14 @@ exports.loadAndInlineCssLinks = function (doc, options) {
 
 var loadLinkedScript = function (script, options) {
     var src = script.attributes.src.nodeValue,
-        documentBase = inlineUtil.getDocumentBaseUrl(script.ownerDocument),
-        ajaxOptions = inlineUtil.clone(options);
+        documentBase = util.getDocumentBaseUrl(script.ownerDocument),
+        ajaxOptions = util.clone(options);
 
     if (!ajaxOptions.baseUrl && documentBase) {
         ajaxOptions.baseUrl = documentBase;
     }
 
-    return inlineUtil.ajax(src, ajaxOptions)
+    return util.ajax(src, ajaxOptions)
         .fail(function (e) {
             throw {
                 resourceType: "script",
@@ -310,7 +310,7 @@ var getScripts = function (doc) {
 exports.loadAndInlineScript = function (doc, options) {
     var scripts = getScripts(doc);
 
-    return inlineUtil.collectAndReportErrors(scripts.map(function (script) {
+    return util.collectAndReportErrors(scripts.map(function (script) {
         return loadLinkedScript(script, options).then(function (jsCode) {
             substituteExternalScriptWithInline(script, jsCode);
         });
@@ -330,7 +330,7 @@ exports.inlineReferences = function (doc, options) {
         inlineFuncs.push(exports.loadAndInlineScript);
     }
 
-    return inlineUtil.all(inlineFuncs.map(function (func) {
+    return util.all(inlineFuncs.map(function (func) {
         return func(doc, options)
             .then(function (errors) {
                 allErrors = allErrors.concat(errors);

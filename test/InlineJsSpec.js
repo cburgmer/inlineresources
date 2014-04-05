@@ -1,6 +1,6 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
-    inlineUtil = require('../src/inlineUtil'),
+    util = require('../src/util'),
     testHelper = require('./testHelper');
 
 describe("JS inline", function () {
@@ -9,7 +9,7 @@ describe("JS inline", function () {
         ajaxUrlMocks = {};
 
     var setupAjaxMock = function () {
-        return spyOn(inlineUtil, "ajax").and.callFake(function (url) {
+        return spyOn(util, "ajax").and.callFake(function (url) {
             var defer = ayepromise.defer();
             if (ajaxUrlMocks[url] !== undefined) {
                 defer.resolve(ajaxUrlMocks[url]);
@@ -50,7 +50,7 @@ describe("JS inline", function () {
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
 
-        joinUrlSpy = spyOn(inlineUtil, "joinUrl");
+        joinUrlSpy = spyOn(util, "joinUrl");
         ajaxSpy = setupAjaxMock();
 
         internalScript = window.document.createElement("script");
@@ -144,7 +144,7 @@ describe("JS inline", function () {
     });
 
     it("should respect the document's baseURI when loading linked JS", function (done) {
-        var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
         doc = testHelper.readDocumentFixture("externalJS.html");
 

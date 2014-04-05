@@ -1,7 +1,7 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    inlineUtil = require('./inlineUtil'),
+    util = require('./util'),
     cssSupport = require('./cssSupport'),
     backgroundValueParser = require('./backgroundValueParser'),
     fontFaceSrcValueParser = require('css-font-face-src');
@@ -55,7 +55,7 @@ var findExternalBackgroundUrls = function (parsedBackground) {
     var matchIndices = [];
 
     parsedBackground.forEach(function (backgroundLayer, i) {
-        if (backgroundLayer.url && !inlineUtil.isDataUri(backgroundLayer.url)) {
+        if (backgroundLayer.url && !util.isDataUri(backgroundLayer.url)) {
             matchIndices.push(i);
         }
     });
@@ -66,7 +66,7 @@ var findExternalBackgroundUrls = function (parsedBackground) {
 var findExternalFontFaceUrls = function (parsedFontFaceSources) {
     var sourceIndices = [];
     parsedFontFaceSources.forEach(function (sourceItem, i) {
-        if (sourceItem.url && !inlineUtil.isDataUri(sourceItem.url)) {
+        if (sourceItem.url && !util.isDataUri(sourceItem.url)) {
             sourceIndices.push(i);
         }
     });
@@ -86,7 +86,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
         if (externalBackgroundIndices.length > 0) {
             externalBackgroundIndices.forEach(function (backgroundLayerIndex) {
                 var relativeUrl = parsedBackground[backgroundLayerIndex].url,
-                    url = inlineUtil.joinUrl(baseUrl, relativeUrl);
+                    url = util.joinUrl(baseUrl, relativeUrl);
                 parsedBackground[backgroundLayerIndex].url = url;
             });
 
@@ -111,7 +111,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
         if (externalFontFaceUrlIndices.length > 0) {
             externalFontFaceUrlIndices.forEach(function (fontFaceUrlIndex) {
                 var relativeUrl = parsedFontFaceSources[fontFaceUrlIndex].url,
-                    url = inlineUtil.joinUrl(baseUrl, relativeUrl);
+                    url = util.joinUrl(baseUrl, relativeUrl);
 
                 parsedFontFaceSources[fontFaceUrlIndex].url = url;
             });
@@ -123,7 +123,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
     });
     findCSSImportRules(cssRules).forEach(function (rule) {
         var cssUrl = rule.href,
-            url = inlineUtil.joinUrl(baseUrl, cssUrl);
+            url = util.joinUrl(baseUrl, cssUrl);
 
         rule.href = url;
 
@@ -157,7 +157,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
 
     url = cssSupport.unquoteString(url);
 
-    cssHrefRelativeToDoc = inlineUtil.joinUrl(options.baseUrl, url);
+    cssHrefRelativeToDoc = util.joinUrl(options.baseUrl, url);
 
     if (alreadyLoadedCssUrls.indexOf(cssHrefRelativeToDoc) >= 0) {
         // Remove URL by adding empty string
@@ -167,7 +167,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
         alreadyLoadedCssUrls.push(cssHrefRelativeToDoc);
     }
 
-    return inlineUtil.ajax(url, options)
+    return util.ajax(url, options)
         .then(function (cssText) {
             var externalCssRules = cssSupport.rulesForCssText(cssText);
 
@@ -194,7 +194,7 @@ exports.loadCSSImportsForRules = function (cssRules, alreadyLoadedCssUrls, optio
         errors = [],
         hasChanges = false;
 
-    return inlineUtil.all(rulesToInline.map(function (rule) {
+    return util.all(rulesToInline.map(function (rule) {
         return loadAndInlineCSSImport(cssRules, rule, alreadyLoadedCssUrls, options).then(function (moreErrors) {
             errors = errors.concat(moreErrors);
 
@@ -217,10 +217,10 @@ var loadAndInlineBackgroundImages = function (backgroundValue, options) {
         externalBackgroundLayerIndices = findExternalBackgroundUrls(parsedBackground),
         hasChanges = false;
 
-    return inlineUtil.collectAndReportErrors(externalBackgroundLayerIndices.map(function (backgroundLayerIndex) {
+    return util.collectAndReportErrors(externalBackgroundLayerIndices.map(function (backgroundLayerIndex) {
         var url = parsedBackground[backgroundLayerIndex].url;
 
-        return inlineUtil.getDataURIForImageURL(url, options)
+        return util.getDataURIForImageURL(url, options)
             .then(function (dataURI) {
                 parsedBackground[backgroundLayerIndex].url = dataURI;
 
@@ -247,7 +247,7 @@ var iterateOverRulesAndInlineBackgroundImages = function (cssRules, options) {
         errors = [],
         cssHasChanges = false;
 
-    return inlineUtil.all(backgroundDeclarations.map(function (declaration) {
+    return util.all(backgroundDeclarations.map(function (declaration) {
         return loadAndInlineBackgroundImages(declaration.value, options)
             .then(function (result) {
                 if (result.hasChanges) {
@@ -277,11 +277,11 @@ var loadAndInlineFontFace = function (srcDeclarationValue, options) {
     }
     externalFontFaceUrlIndices = findExternalFontFaceUrls(parsedFontFaceSources);
 
-    return inlineUtil.collectAndReportErrors(externalFontFaceUrlIndices.map(function (urlIndex) {
+    return util.collectAndReportErrors(externalFontFaceUrlIndices.map(function (urlIndex) {
         var fontSrc = parsedFontFaceSources[urlIndex],
             format = fontSrc.format || "woff";
 
-        return inlineUtil.binaryAjax(fontSrc.url, options)
+        return util.binaryAjax(fontSrc.url, options)
             .then(function (content) {
                 var base64Content = btoa(content);
                 fontSrc.url = 'data:font/' + format + ';base64,' + base64Content;
@@ -308,7 +308,7 @@ var iterateOverRulesAndInlineFontFace = function (cssRules, options) {
         errors = [],
         hasChanges = false;
 
-    return inlineUtil.all(rulesToInline.map(function (rule) {
+    return util.all(rulesToInline.map(function (rule) {
         var srcDeclarationValue = rule.style.getPropertyValue("src");
 
         return loadAndInlineFontFace(srcDeclarationValue, options).then(function (result) {
@@ -332,7 +332,7 @@ exports.loadAndInlineCSSResourcesForRules = function (cssRules, options) {
     var hasChanges = false,
         errors = [];
 
-    return inlineUtil.all([iterateOverRulesAndInlineBackgroundImages, iterateOverRulesAndInlineFontFace].map(function (func) {
+    return util.all([iterateOverRulesAndInlineBackgroundImages, iterateOverRulesAndInlineFontFace].map(function (func) {
         return func(cssRules, options)
             .then(function (result) {
                 hasChanges = hasChanges || result.hasChanges;

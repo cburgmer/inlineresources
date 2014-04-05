@@ -1,7 +1,7 @@
 var ayepromise = require('ayepromise'),
     inline = require('../src/inline'),
     inlineCss = require('../src/inlineCss'),
-    inlineUtil = require('../src/inlineUtil'),
+    util = require('../src/util'),
     testHelper = require('./testHelper');
 
 describe("Import styles", function () {
@@ -24,7 +24,7 @@ describe("Import styles", function () {
             hasChanges: false,
             errors: []
         }));
-        spyOn(inlineUtil, 'clone').and.callFake(function (object) {
+        spyOn(util, 'clone').and.callFake(function (object) {
             return object;
         });
     });
@@ -114,7 +114,7 @@ describe("Import styles", function () {
     });
 
     it("should respect the document's baseURI", function (done) {
-        var getDocumentBaseUrlSpy = spyOn(inlineUtil, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
         doc = testHelper.readDocumentFixture("importCss.html");
 
         inline.loadAndInlineStyles(doc, {}).then(function () {
