@@ -1,4 +1,6 @@
 // Taken from https://github.com/ariya/phantomjs/tree/master/examples
+/* global phantom */
+"use strict";
 
 var page = require('webpage').create(),
     system = require('system'),

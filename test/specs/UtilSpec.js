@@ -1,8 +1,8 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    util = require('../src/util'),
-    testHelper = require('./testHelper');
+    util = require('../../src/util'),
+    testHelper = require('../testHelper');
 
 
 describe("Inline utilities function", function () {

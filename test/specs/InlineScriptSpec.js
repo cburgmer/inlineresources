@@ -1,9 +1,9 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    inlineScript = require('../src/inlineScript'),
-    util = require('../src/util'),
-    testHelper = require('./testHelper');
+    inlineScript = require('../../src/inlineScript'),
+    util = require('../../src/util'),
+    testHelper = require('../testHelper');
 
 
 describe("JS inline", function () {

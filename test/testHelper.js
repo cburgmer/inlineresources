@@ -5,7 +5,7 @@ var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
 
 exports.fixturesPath = (isRunFromTheProjectRoot ? 'test/' : '' ) + 'fixtures/';
 
-exports.readHTMLFixture = function (url, callback) {
+exports.readHTMLFixture = function (url) {
     var fixtureUrl = exports.fixturesPath + url,
         xhr = new window.XMLHttpRequest();
 

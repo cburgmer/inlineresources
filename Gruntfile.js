@@ -32,7 +32,7 @@ module.exports = function (grunt) {
                 }
             },
             testSuite: {
-                src: 'test/*Spec.js',
+                src: 'test/specs/*.js',
                 dest: 'build/testSuite.js'
             },
             browser: {
@@ -101,7 +101,7 @@ module.exports = function (grunt) {
         watch: {
             files: [
                 'src/*.js',
-                'test/*Spec.js'
+                'test/specs/'
             ],
             tasks: ['test']
         },
@@ -152,7 +152,7 @@ module.exports = function (grunt) {
                     }
                 },
                 files: {
-                    src: ['test/*Spec.js']
+                    src: ['test/']
                 }
             }
         },

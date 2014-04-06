@@ -1,7 +1,7 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline');
+    inline = require('../../src/inline');
 
 
 describe("Inline main", function () {

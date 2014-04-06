@@ -1,9 +1,9 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    inlineImage = require('../src/inlineImage'),
-    util = require('../src/util'),
-    testHelper = require('./testHelper');
+    inlineImage = require('../../src/inlineImage'),
+    util = require('../../src/util'),
+    testHelper = require('../testHelper');
 
 
 describe("Image and image input inline", function () {

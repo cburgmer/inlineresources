@@ -1,10 +1,10 @@
 "use strict";
 
 var ayepromise = require('ayepromise'),
-    inline = require('../src/inline'),
-    inlineCss = require('../src/inlineCss'),
-    util = require('../src/util'),
-    testHelper = require('./testHelper');
+    inline = require('../../src/inline'),
+    inlineCss = require('../../src/inlineCss'),
+    util = require('../../src/util'),
+    testHelper = require('../testHelper');
 
 
 describe("Import styles", function () {

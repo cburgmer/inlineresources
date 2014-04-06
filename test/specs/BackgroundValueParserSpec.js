@@ -1,6 +1,6 @@
 "use strict";
 
-var backgroundValueParser = require('../src/backgroundValueParser');
+var backgroundValueParser = require('../../src/backgroundValueParser');
 
 
 describe("Background value parser", function () {
