@@ -125,7 +125,7 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
         var cssUrl = rule.href,
             url = util.joinUrl(baseUrl, cssUrl);
 
-        rule.href = url;
+        cssSupport.exchangeRule(cssRules, rule, "@import url(" + url + ");");
 
         change = true;
     });

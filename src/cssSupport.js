@@ -51,7 +51,7 @@ exports.cssRulesToText = function (cssRules) {
     }, '');
 };
 
-var exchangeRule = function (cssRules, rule, newRuleText) {
+exports.exchangeRule = function (cssRules, rule, newRuleText) {
     var ruleIdx = cssRules.indexOf(rule),
         styleSheet = rule.parentStyleSheet;
 
@@ -75,5 +75,5 @@ exports.changeFontFaceRuleSrc = function (cssRules, rule, newSrc) {
     }
 
     newRuleText += 'src: ' + newSrc + '}';
-    exchangeRule(cssRules, rule, newRuleText);
+    exports.exchangeRule(cssRules, rule, newRuleText);
 };
