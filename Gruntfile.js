@@ -149,7 +149,8 @@ module.exports = function (grunt) {
                         cssom: true,
                         url: true,
                         ayepromise: true
-                    }
+                    },
+                    ignores: ['test/fixtures/']
                 },
                 files: {
                     src: ['test/']
