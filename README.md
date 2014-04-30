@@ -2,7 +2,7 @@ inlineresources
 ===============
 
 <a href="https://www.npmjs.org/package/inlineresources">
-    <img src="https://badge.fury.io/js/inlineresources.svg" 
+    <img src="https://badge.fury.io/js/inlineresources.svg"
          align="right" alt="NPM version" height="18">
 </a>
 
@@ -19,6 +19,7 @@ Yet to be supported:
 
 * Background images in inline style declarations (`<div style="...">`)
 * Media queries defined on link elements (`<link rel="stylesheet" media="..." />`)
+* Media queries defined on import rules (`@import url("...") screen and (orientation:landscape);`)
 * Future responsive img solution (`<img srcset="...">`)
 
 Similar projects for Node.js
