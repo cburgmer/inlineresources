@@ -3,7 +3,7 @@ set -e
 
 # Work around https://github.com/laurentj/slimerjs/issues/172
 FIREFOX_PATH=$SLIMERJSLAUNCHER
-if [ -z $FIREFOX_PATH ]; then
+if [[ -z $FIREFOX_PATH ]]; then
     if which firefox; then
         FIREFOX_PATH=$(which firefox)
     else
