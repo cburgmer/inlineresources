@@ -33,7 +33,10 @@ module.exports = function (grunt) {
             },
             testSuite: {
                 src: 'test/specs/*.js',
-                dest: 'build/testSuite.js'
+                dest: 'build/testSuite.js',
+                bundleOptions: {
+                    debug: true
+                }
             },
             browser: {
                 src: 'src/inline.js',
@@ -101,9 +104,9 @@ module.exports = function (grunt) {
         watch: {
             files: [
                 'src/*.js',
-                'test/specs/'
+                'test/specs/*.js'
             ],
-            tasks: ['test']
+            tasks: ['browserify:testSuite']
         },
         jshint: {
             options: {
