@@ -50,19 +50,3 @@ exports.addStyleToDocument = function (doc, styleContent) {
 
     doc.getElementsByTagName('head')[0].appendChild(styleNode);
 };
-
-var deleteAdditionalFieldsFromErrorUnderPhantomJS = function (error) {
-    var newErrorObject = {},
-        additionalKeys = ['sourceId', 'sourceURL', 'stack', 'stackArray', 'line'];
-
-    Object.keys(error).forEach(function (key) {
-        if (additionalKeys.indexOf(key) === -1) {
-            newErrorObject[key] = error[key];
-        }
-    });
-    return newErrorObject;
-};
-
-exports.deleteAdditionalFieldsFromErrorsUnderPhantomJS = function (errors) {
-    return errors.map(deleteAdditionalFieldsFromErrorUnderPhantomJS);
-};

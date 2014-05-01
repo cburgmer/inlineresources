@@ -447,13 +447,12 @@ describe("Inline CSS content", function () {
                 var rules = parseRules('@import url("does_not_exist.css");');
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(result.hasChanges).toEqual(false);
-                    expect(errors).toEqual([{
+                    expect(result.errors[0]).toEqual(jasmine.objectContaining({
                         resourceType: "stylesheet",
                         url: "THEURL" + "does_not_exist.css",
                         msg: "Unable to load stylesheet " + "THEURL" + "does_not_exist.css"
-                    }]);
+                    }));
 
                     done();
                 });
@@ -464,12 +463,7 @@ describe("Inline CSS content", function () {
                     '@import url("does_not_exist.css");');
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-                    expect(errors).toEqual([{
-                        resourceType: "stylesheet",
-                        url: "THEURL" + "does_not_exist.css",
-                        msg: jasmine.any(String)
-                    }]);
+                    expect(result.errors.length).toBe(1);
 
                     done();
                 });
@@ -491,13 +485,11 @@ describe("Inline CSS content", function () {
                 var rules = parseRules('@import url("existing_with_second_level_nonexisting.css");');
 
                 inlineCss.loadCSSImportsForRules(rules, [], {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-                    expect(errors).toEqual([{
+                    expect(result.errors[0]).toEqual(jasmine.objectContaining({
                             resourceType: "stylesheet",
-                            url: "THEURL" + "nonexisting.css",
-                            msg: jasmine.any(String)
+                            url: "THEURL" + "nonexisting.css"
                         }
-                    ]);
+                    ));
 
                     done();
                 });
@@ -751,14 +743,12 @@ describe("Inline CSS content", function () {
                 var rules = parseRules('span { background-image: url("a_backgroundImage_that_doesnt_exist.png"); }');
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-
                     expect(result.hasChanges).toBe(false);
-                    expect(errors).toEqual([{
+                    expect(result.errors[0]).toEqual(jasmine.objectContaining({
                         resourceType: "backgroundImage",
                         url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png",
                         msg: "Unable to load background-image " + "THEURL" + "a_backgroundImage_that_doesnt_exist.png"
-                    }]);
+                    }));
 
                     done();
                 });
@@ -769,12 +759,7 @@ describe("Inline CSS content", function () {
                     'span { background-image: url("' + aBackgroundImageThatDoesExist + '"); }');
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-                    expect(errors).toEqual([{
-                        resourceType: "backgroundImage",
-                        url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png",
-                        msg: jasmine.any(String)
-                    }]);
+                    expect(result.errors.length).toBe(1);
 
                     done();
                 });
@@ -797,12 +782,11 @@ describe("Inline CSS content", function () {
                 var rules = parseRules('span { background-image: url("' + aBackgroundImageThatDoesExist + '"), url("a_backgroundImage_that_doesnt_exist.png"); }');
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-                    expect(errors).toEqual([{
+                    expect(result.errors.length).toBe(1);
+                    expect(result.errors[0]).toEqual(jasmine.objectContaining({
                         resourceType: "backgroundImage",
-                        url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png",
-                        msg: jasmine.any(String)
-                    }]);
+                        url: "THEURL" + "a_backgroundImage_that_doesnt_exist.png"
+                    }));
 
                     done();
                 });
@@ -1044,13 +1028,12 @@ describe("Inline CSS content", function () {
                 var rules = parseRules('@font-face { font-family: "test font"; src: url("a_font_that_doesnt_exist.woff"); }');
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
                     expect(result.hasChanges).toBe(false);
-                    expect(errors).toEqual([{
+                    expect(result.errors[0]).toEqual(jasmine.objectContaining({
                         resourceType: "fontFace",
                         url: "THEURL" + "a_font_that_doesnt_exist.woff",
                         msg: "Unable to load font-face " + "THEURL" + "a_font_that_doesnt_exist.woff"
-                    }]);
+                    }));
 
                     done();
                 });
@@ -1061,12 +1044,7 @@ describe("Inline CSS content", function () {
                     '@font-face { font-family: "test font2"; src: url("' + aFontReferenceThatDoesExist + '"); }');
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    var errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(result.errors);
-                    expect(errors).toEqual([{
-                        resourceType: "fontFace",
-                        url: "THEURL" + "a_font_that_doesnt_exist.woff",
-                        msg: jasmine.any(String)
-                    }]);
+                    expect(result.errors.length).toBe(1);
 
                     done();
                 });

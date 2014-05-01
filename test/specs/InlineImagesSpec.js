@@ -162,13 +162,11 @@ describe("Image and image input inline", function () {
             doc.body.innerHTML = '<img src="image_that_doesnt_exist.png" alt="test image"/>';
 
             inlineImage.inline(doc, {}).then(function (errors) {
-                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
-
-                expect(errors).toEqual([{
+                expect(errors[0]).toEqual(jasmine.objectContaining({
                     resourceType: "image",
                     url: 'THEURL' + "image_that_doesnt_exist.png",
                     msg: "Unable to load image " + "THEURL" + "image_that_doesnt_exist.png"
-                }]);
+                }));
 
                 done();
             });
@@ -181,13 +179,7 @@ describe("Image and image input inline", function () {
             );
 
             inlineImage.inline(doc, {}).then(function (errors) {
-                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
-
-                expect(errors).toEqual([{
-                    resourceType: "image",
-                    url: 'THEURL' + "image_that_doesnt_exist.png",
-                    msg: jasmine.any(String)
-                }]);
+                expect(errors.length).toBe(1);
 
                 done();
             });

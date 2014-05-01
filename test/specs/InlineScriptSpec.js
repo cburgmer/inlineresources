@@ -220,12 +220,11 @@ describe("JS inline", function () {
             doc.head.appendChild(brokenJsScript);
 
             inlineScript.inline(doc, {}).then(function (errors) {
-                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
-                expect(errors).toEqual([{
+                expect(errors[0]).toEqual(jasmine.objectContaining({
                     resourceType: "script",
                     url: 'THEURL' + "a_document_that_doesnt_exist.js",
                     msg: "Unable to load script " + 'THEURL' + "a_document_that_doesnt_exist.js"
-                }]);
+                }));
 
                 done();
             });
@@ -236,12 +235,7 @@ describe("JS inline", function () {
             doc.head.appendChild(anExternalScript());
 
             inlineScript.inline(doc, {}).then(function (errors) {
-                errors = testHelper.deleteAdditionalFieldsFromErrorsUnderPhantomJS(errors);
-                expect(errors).toEqual([{
-                    resourceType: "script",
-                    url: 'THEURL' + "a_document_that_doesnt_exist.js",
-                    msg: jasmine.any(String)
-                }]);
+                expect(errors.length).toBe(1);
 
                 done();
             });
