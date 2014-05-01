@@ -7,42 +7,55 @@ module.exports = function (grunt) {
         jasmine: {
             src: [
                 'build/testSuite.js'
-            ]
+            ],
+            options: {
+                display: 'short'
+            }
         },
         browserify: {
             cssom: {
                 src: 'node_modules/cssom/lib/index.js',
                 dest: 'build/dependencies/cssom.js',
                 options: {
-                    'standalone': 'cssom'
+                    bundleOptions: {
+                        standalone: 'cssom'
+                    }
                 }
             },
             xmlserializer: {
                 src: 'node_modules/xmlserializer/lib/serializer.js',
                 dest: 'build/dependencies/xmlserializer.js',
                 options: {
-                    'standalone': 'xmlserializer'
+                    bundleOptions: {
+                        standalone: 'xmlserializer'
+                    }
                 }
             },
             url: {
                 src: 'node_modules/url/url.js',
                 dest: 'build/dependencies/url.js',
                 options: {
-                    'standalone': 'url'
+                    bundleOptions: {
+                        standalone: 'url'
+                    }
                 }
             },
             testSuite: {
                 src: 'test/specs/*.js',
                 dest: 'build/testSuite.js',
-                bundleOptions: {
-                    debug: true
+                options: {
+                    bundleOptions: {
+                        debug: true
+                    }
                 }
             },
             browser: {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.js',
                 options: {
-                    standalone: '<%= pkg.name %>',
+                    bundleOptions: {
+                        standalone: '<%= pkg.name %>',
+                    },
                     external: ['cssom', 'ayepromise', 'url']
                 }
             },
@@ -50,7 +63,9 @@ module.exports = function (grunt) {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.allinone.js',
                 options: {
-                    standalone: '<%= pkg.name %>'
+                    bundleOptions: {
+                        standalone: '<%= pkg.name %>'
+                    }
                 }
             }
         },
