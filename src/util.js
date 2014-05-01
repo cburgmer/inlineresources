@@ -28,6 +28,9 @@ exports.cloneArray = function (nodeList) {
 };
 
 exports.joinUrl = function (baseUrl, relUrl) {
+    if (!baseUrl) {
+        return relUrl;
+    }
     return url.resolve(baseUrl, relUrl);
 };
 
