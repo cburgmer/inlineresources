@@ -30,18 +30,20 @@ describe("JS inline", function () {
     };
 
     var anExternalScript = function () {
-        return anExternalScriptWith("url/some.js", "var b = 1;");
+        return anExternalScriptWith("var b = 1;", "url/some.js");
     };
 
     var anotherExternalScript = function () {
-        var script = anExternalScriptWith("url/someOther.js", "function something() {}");
+        var script = anExternalScriptWith("function something() {}", "url/someOther.js");
         script.type = "text/javascript";
         script.id = "myScript";
         return script;
     };
 
-    var anExternalScriptWith = function (url, content) {
+    var anExternalScriptWith = function (content, url) {
         var externalScript = window.document.createElement("script");
+
+        url = url || 'some/url.js';
 
         externalScript.src = url;
 
@@ -133,14 +135,20 @@ describe("JS inline", function () {
     });
 
     it("should correctly quote closing HTML tags in the script", function (done) {
-        var script = window.document.createElement("script");
-        script.src = "some_url.js";
-
-        mockAjaxUrl("some_url.js", 'var closingScriptTag = "</script>";');
-        doc.head.appendChild(script);
+        doc.head.appendChild(anExternalScriptWith('var closingScriptTag = "</script>";'));
 
         inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual('var closingScriptTag = "<\\/script>";');
+
+            done();
+        });
+    });
+
+    xit("should not quote a regex", function (done) {
+        doc.head.appendChild(anExternalScriptWith("/</.test('<');"));
+
+        inlineScript.inline(doc, {}).then(function () {
+            expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("/</.test('<');");
 
             done();
         });
@@ -160,7 +168,7 @@ describe("JS inline", function () {
     });
 
     it("should respect optional baseUrl when loading linked JS", function (done) {
-        doc.head.appendChild(anExternalScriptWith('externalScript.js', ''));
+        doc.head.appendChild(anExternalScriptWith('', 'externalScript.js'));
 
         inlineScript.inline(doc, {baseUrl: "some_base_url/"}).then(function () {
             expect(ajaxSpy).toHaveBeenCalledWith('externalScript.js', {baseUrl: "some_base_url/"});
