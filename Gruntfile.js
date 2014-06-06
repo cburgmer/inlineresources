@@ -109,6 +109,7 @@ module.exports = function (grunt) {
                         '/* Integrated dependencies:\n' +
                         ' * url (MIT License),\n' +
                         ' * CSSOM.js (MIT License),\n' +
+                        ' * css-font-face-src (BSD License),\n' +
                         ' * ayepromise (BSD License & WTFPL) */\n'
                 },
                 files: {

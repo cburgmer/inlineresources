@@ -43,6 +43,8 @@ For linting, tests and a browser build install Node.js and run
 
     $ ./go
 
+Check `./dist/` for the browserified builds.
+
 [![Build Status](https://travis-ci.org/cburgmer/inlineresources.svg?branch=master)](https://travis-ci.org/cburgmer/inlineresources)
 
 Where is it used?
