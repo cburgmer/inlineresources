@@ -46,7 +46,8 @@
     "grunt-browserify": "~2.0.7",
     "jasmine-core": "~2.0.0",
     "grunt-umd": "~1.7.3",
-    "xmlserializer": "~0.3.0"
+    "xmlserializer": "~0.3.0",
+    "slimerjs": "0.9.1-2"
   },
   "scripts": {
     "test": "bash go --verbose"

@@ -39,7 +39,7 @@ Similar projects for Node.js
 Development
 -----------
 
-For linting, tests and minification install Node.js and Firefox (in the version as specified in `.travis.yml`) and run
+For linting, tests and a browser build install Node.js and run
 
     $ ./go
 
