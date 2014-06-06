@@ -13,30 +13,12 @@ module.exports = function (grunt) {
             }
         },
         browserify: {
-            cssom: {
-                src: 'node_modules/cssom/lib/index.js',
-                dest: 'build/dependencies/cssom.js',
-                options: {
-                    bundleOptions: {
-                        standalone: 'cssom'
-                    }
-                }
-            },
             xmlserializer: {
                 src: 'node_modules/xmlserializer/lib/serializer.js',
                 dest: 'build/dependencies/xmlserializer.js',
                 options: {
                     bundleOptions: {
                         standalone: 'xmlserializer'
-                    }
-                }
-            },
-            url: {
-                src: 'node_modules/url/url.js',
-                dest: 'build/dependencies/url.js',
-                options: {
-                    bundleOptions: {
-                        standalone: 'url'
                     }
                 }
             },
@@ -200,9 +182,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-umd');
 
-    grunt.registerTask('deps', [
-        'browserify:cssom',
-        'browserify:url',
+    grunt.registerTask('testDeps', [
         'browserify:xmlserializer'
     ]);
 
@@ -222,7 +202,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'clean:dist',
-        'deps',
+        'testDeps',
         'test',
         'build'
     ]);
