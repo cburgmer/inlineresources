@@ -1,6 +1,6 @@
 {
   "name": "inlineresources",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Inlines style sheets, images, fonts and scripts in HTML documents. Works in the browser.",
   "keywords": [
     "inline",
