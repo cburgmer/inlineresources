@@ -12,7 +12,7 @@ deploy:
   provider: npm
   email: christoph.burgmer@gmail.com
   api_key:
-    secure: CrI/JbhMreN61esr3vvf1c3O+CHVbNPAR5VXWebBC6ANGwZXQH6LZ5EH97NF4CZ+sJc12AmAKm29bFOf5rwIvP++VDoxA5mOvtx0xxOwlMHdKFwfglfLxztQpUAlqMz5Nci9u9kO5d3eBPgaeUzz0ye6tsX+en9aOfBKBljl85o=
+    secure: IPVkJs/nISHANkPJqRPn6JmMkYFtN+K31oBCTFRL0//c1lUDVDThhaAAdDnj2EJStGhrb96Lwue39N/wf6zn0YjhQT5F406TdWxUtQ+ERAvsn3OaTxnzw/ffOmnUN1iHu4tdVqLiLfqd9vcOShIRzZ2mzE7lare29TOaZjYKAQI=
   on:
     tags: true
     repo: cburgmer/inlineresources
