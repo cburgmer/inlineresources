@@ -5,6 +5,9 @@ env:
   - DISPLAY=:99.0
 before_script:
   - "sh -e /etc/init.d/xvfb start"
+after_failure:
+  - "echo 'Uploading result of integration test to clbin.com'"
+  - "cat build/tests/github.xhtml | curl -F 'clbin=<-' https://clbin.com"
 deploy:
   provider: npm
   email: christoph.burgmer@gmail.com
