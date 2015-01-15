@@ -4,15 +4,15 @@ node_js:
 env:
   - DISPLAY=:99.0
 before_script:
-  - "sh -e /etc/init.d/xvfb start"
+  - sh -e /etc/init.d/xvfb start
 after_failure:
-  - "echo 'Uploading result of integration test to clbin.com'"
-  - "cat build/tests/github.xhtml | curl -F 'clbin=<-' https://clbin.com"
+  - echo 'Uploading result of integration test to clbin.com'
+  - cat build/tests/github.xhtml | curl -F 'clbin=<-' https://clbin.com
 deploy:
   provider: npm
   email: christoph.burgmer@gmail.com
   api_key:
-    secure: HOwe6SvF5zFW40Bgv13pf7HPEOfo/BO2usIjirTZdBXS+sjZW/QvEjjn0+L0fdcZMBG20bcqWtW4j1tIYyenYsPXK8DsISxV9Oztz9KEIFxh2KaQ/qT41wRTKeB3NYlRnKCbd6bgR3dhc3NYDkweHJQpz/wdN6U5o/AV8wSTreM=
+    secure: S5+jClyW9k9Npqhn5vt/KMUOj0dFnEma/C6rDqMo4Z9gI3jhfCEJyCWcAyXWARR9cA9OzcR/U8+lBav7jivPJR4Ois3TyNx0CcKAP7zCy9lIoUypuKA8XbYA4HUiXTLesV2D/Qr2F7fUDph1duTr6QJKnRtFSHZGjMkhyRjGjjI=
   on:
     tags: true
     repo: cburgmer/inlineresources
