@@ -16,3 +16,5 @@ deploy:
   on:
     tags: true
     repo: cburgmer/inlineresources
+    # Change when this is fixed: https://github.com/travis-ci/travis-ci/issues/1675
+    all_branches: true
