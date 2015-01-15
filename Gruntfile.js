@@ -17,7 +17,7 @@ module.exports = function (grunt) {
                 src: 'node_modules/xmlserializer/lib/serializer.js',
                 dest: 'build/dependencies/xmlserializer.js',
                 options: {
-                    bundleOptions: {
+                    browserifyOptions: {
                         standalone: 'xmlserializer'
                     }
                 }
@@ -26,7 +26,7 @@ module.exports = function (grunt) {
                 src: 'test/specs/*.js',
                 dest: 'build/testSuite.js',
                 options: {
-                    bundleOptions: {
+                    browserifyOptions: {
                         debug: true
                     }
                 }
@@ -35,7 +35,7 @@ module.exports = function (grunt) {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.js',
                 options: {
-                    bundleOptions: {
+                    browserifyOptions: {
                         standalone: '<%= pkg.name %>',
                     },
                     external: ['cssom', 'ayepromise', 'url']
@@ -45,7 +45,7 @@ module.exports = function (grunt) {
                 src: 'src/inline.js',
                 dest: 'build/<%= pkg.name %>.allinone.js',
                 options: {
-                    bundleOptions: {
+                    browserifyOptions: {
                         standalone: '<%= pkg.name %>'
                     }
                 }
