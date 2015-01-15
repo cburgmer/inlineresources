@@ -99,7 +99,7 @@ describe("Background value parser", function () {
         });
     });
 
-    describe('back and force conversion', function () {
+    describe('back and forth conversion', function () {
         it("should handle a url", function () {
             var cssValue = backgroundValueParser.serialize(backgroundValueParser.parse('url(path/file.png)'));
             expect(cssValue).toEqual('url("path/file.png")');

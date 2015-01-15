@@ -13,6 +13,3 @@ deploy:
   on:
     tags: true
     repo: cburgmer/inlineresources
-branches:
-  only:
-    - master
