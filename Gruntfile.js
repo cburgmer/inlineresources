@@ -52,7 +52,7 @@ module.exports = function (grunt) {
             }
         },
         clean: {
-            dist: ['build/*.js', 'build/dependencies/'],
+            dist: ['build/*.js', 'build/dependencies/', 'dist/'],
             all: ['build']
         },
         concat: {
@@ -69,18 +69,6 @@ module.exports = function (grunt) {
             }
         },
         uglify: {
-            dist: {
-                options: {
-                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                        '* <%= pkg.homepage %>\n' +
-                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                        ' Licensed <%= pkg.license %> */\n'
-                },
-                files: {
-                    'dist/<%= pkg.name %>.min.js': ['dist/<%= pkg.name %>.js']
-                }
-            },
             allinone: {
                 options: {
                     banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
