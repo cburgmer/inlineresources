@@ -4,7 +4,7 @@ var util = require('./util');
 
 
 var encodeImageAsDataURI = function (image, options) {
-    var url = image.attributes.src ? image.attributes.src.nodeValue : null,
+    var url = image.attributes.src ? image.attributes.src.value : null,
         documentBase = util.getDocumentBaseUrl(image.ownerDocument),
         ajaxOptions = util.clone(options);
 
@@ -26,7 +26,7 @@ var encodeImageAsDataURI = function (image, options) {
 
 var filterExternalImages = function (images) {
     return images.filter(function (image) {
-        var url = image.attributes.src ? image.attributes.src.nodeValue : null;
+        var url = image.attributes.src ? image.attributes.src.value : null;
 
         return url !== null && !util.isDataUri(url);
     });
@@ -49,7 +49,7 @@ exports.inline = function (doc, options) {
 
     return util.collectAndReportErrors(externalImages.map(function (image) {
         return encodeImageAsDataURI(image, options).then(function (dataURI) {
-            image.attributes.src.nodeValue = dataURI;
+            image.attributes.src.value = dataURI;
         });
     }));
 };

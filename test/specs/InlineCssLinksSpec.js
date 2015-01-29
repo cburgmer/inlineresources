@@ -50,8 +50,8 @@ describe("Inline CSS links", function () {
         cssLink.type = "text/css";
 
         mockAjaxUrl(cssLink.href, content);
-        // href will return absolute path, attributes.href.nodeValue relative one in Chrome
-        mockAjaxUrl(cssLink.attributes.href.nodeValue, content);
+        // href will return absolute path, attributes.href.value relative one in Chrome
+        mockAjaxUrl(cssLink.attributes.href.value, content);
 
         return cssLink;
     };
@@ -121,8 +121,8 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(noTypeCssLink);
 
         mockAjaxUrl(noTypeCssLink.href, "p { font-size: 14px; }");
-        // href will return absolute path, attributes.href.nodeValue relative one in Chrome
-        mockAjaxUrl(noTypeCssLink.attributes.href.nodeValue, "p { font-size: 14px; }");
+        // href will return absolute path, attributes.href.value relative one in Chrome
+        mockAjaxUrl(noTypeCssLink.attributes.href.value, "p { font-size: 14px; }");
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("style").length).toEqual(1);
@@ -272,7 +272,7 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(cssLink);
 
         inline.loadAndInlineCssLinks(doc, {cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.nodeValue, {
+            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, {
                 cache: 'none'
             });
 
@@ -288,7 +288,7 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(cssLink);
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.nodeValue, {});
+            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, {});
 
             expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache).not.toBe(false);
             expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].cache).not.toBe(false);

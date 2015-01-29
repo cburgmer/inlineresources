@@ -44,7 +44,7 @@ describe("Image and image input inline", function () {
         doc.body.innerHTML = '<img id="image" src="' + firstImage + '" alt="test image"/>';
 
         inlineImage.inline(doc, {}).then(function () {
-            expect(doc.getElementById("image").attributes.src.nodeValue).toEqual(firstImageDataURI);
+            expect(doc.getElementById("image").attributes.src.value).toEqual(firstImageDataURI);
 
             done();
         });
@@ -55,7 +55,7 @@ describe("Image and image input inline", function () {
         doc.body.innerHTML = '<input type="image" id="input" src="' + firstImage + '" alt="test image"/>';
 
         inlineImage.inline(doc, {}).then(function () {
-            expect(doc.getElementById("input").attributes.src.nodeValue).toEqual(firstImageDataURI);
+            expect(doc.getElementById("input").attributes.src.value).toEqual(firstImageDataURI);
 
             done();
         });
@@ -70,8 +70,8 @@ describe("Image and image input inline", function () {
         );
 
         inlineImage.inline(doc, {}).then(function () {
-            expect(doc.getElementById("image1").attributes.src.nodeValue).toEqual(firstImageDataURI);
-            expect(doc.getElementById("image2").attributes.src.nodeValue).toEqual(secondImageDataURI);
+            expect(doc.getElementById("image1").attributes.src.value).toEqual(firstImageDataURI);
+            expect(doc.getElementById("image2").attributes.src.value).toEqual(secondImageDataURI);
 
             done();
         });

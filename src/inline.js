@@ -75,7 +75,7 @@ var getCssStyleElements = function (doc) {
     var styles = doc.getElementsByTagName("style");
 
     return Array.prototype.filter.call(styles, function (style) {
-        return !style.attributes.type || style.attributes.type.nodeValue === "text/css";
+        return !style.attributes.type || style.attributes.type.value === "text/css";
     });
 };
 
@@ -169,7 +169,7 @@ var requestStylesheetAndInlineResources = function (url, options) {
 };
 
 var loadLinkedCSS = function (link, options) {
-    var cssHref = link.attributes.href.nodeValue,
+    var cssHref = link.attributes.href.value,
         documentBaseUrl = util.getDocumentBaseUrl(link.ownerDocument),
         ajaxOptions = util.clone(options);
 
@@ -191,8 +191,8 @@ var getCssStylesheetLinks = function (doc) {
     var links = doc.getElementsByTagName("link");
 
     return Array.prototype.filter.call(links, function (link) {
-        return link.attributes.rel && link.attributes.rel.nodeValue === "stylesheet" &&
-            (!link.attributes.type || link.attributes.type.nodeValue === "text/css");
+        return link.attributes.rel && link.attributes.rel.value === "stylesheet" &&
+            (!link.attributes.type || link.attributes.type.value === "text/css");
     });
 };
 
