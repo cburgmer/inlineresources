@@ -4,14 +4,6 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        jasmine: {
-            src: [
-                'build/testSuite.js'
-            ],
-            options: {
-                display: 'short'
-            }
-        },
         karma: {
             options: {
                 files: [
@@ -187,7 +179,6 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-regex-check');
@@ -209,7 +200,7 @@ module.exports = function (grunt) {
     grunt.registerTask('test', [
         'browserify:testSuite',
         'jshint',
-        'jasmine',
+        'karma:ci',
         'regex-check'
     ]);
 
