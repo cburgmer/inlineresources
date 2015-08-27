@@ -70,7 +70,7 @@ describe("Import styles", function () {
 
         inline.loadAndInlineStyles(doc, {}).then(function () {
             expect(loadCSSImportsForRulesSpy).toHaveBeenCalled();
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[0][0].cssText).toMatch(/@import url\("?that.css"?\)\s*;/);
+            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[0][0].cssText).toMatch(/@import url\([ "]?that.css[ "]?\)\s*;/);
 
             done();
         });

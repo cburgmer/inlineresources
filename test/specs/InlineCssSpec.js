@@ -653,7 +653,7 @@ describe("Inline CSS content", function () {
                 mockGetDataURIForImageURL('anImage.png', "data:image/png;base64,someDataUri");
 
                 inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function () {
-                    expect(rules[0].style.getPropertyValue('background-position')).toMatch(/0(px)? (center|50%), (right|100%) (center|50%)/);
+                    expect(rules[0].style.getPropertyValue('background-position')).toMatch(/0(px)?( (center|50%))?, (right|100%)( (center|50%))?/);
 
                     done();
                 });
