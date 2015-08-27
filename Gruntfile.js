@@ -12,6 +12,32 @@ module.exports = function (grunt) {
                 display: 'short'
             }
         },
+        karma: {
+            options: {
+                files: [
+                    'build/testSuite.js',
+                    {pattern: 'test/fixtures/**', included: false}
+                ],
+                frameworks: ['jasmine'],
+                reporters: 'dots'
+            },
+            ci: {
+                proxies: {
+                    '/test/fixtures/': 'http://localhost:9998/base/test/fixtures/'
+                },
+                port: 9998,
+                singleRun: true,
+                browsers: ['PhantomJS']
+            },
+            local: {
+                proxies: {
+                    '/fixtures/': 'http://localhost:9999/base/test/fixtures/'
+                },
+                port: 9999,
+                background: true,
+                singleRun: false
+            }
+        },
         browserify: {
             xmlserializer: {
                 src: 'node_modules/xmlserializer/lib/serializer.js',
@@ -92,7 +118,7 @@ module.exports = function (grunt) {
                 'src/*.js',
                 'test/specs/*.js'
             ],
-            tasks: ['browserify:testSuite']
+            tasks: ['browserify:testSuite', 'karma:local:run']
         },
         jshint: {
             options: {
@@ -156,8 +182,8 @@ module.exports = function (grunt) {
             ],
             options: {
                 pattern : /FIXME/g
-            },
-        },
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -169,9 +195,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-umd');
+    grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask('testDeps', [
         'browserify:xmlserializer'
+    ]);
+
+    grunt.registerTask('testWatch', [
+        'karma:local:start',
+        'watch'
     ]);
 
     grunt.registerTask('test', [

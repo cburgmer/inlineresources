@@ -45,6 +45,8 @@ For linting, tests and a browser build install Node.js and run
 
 Check `./dist/` for the browserified builds.
 
+To test against several browsers while editing, run `grunt testWatch` and point those browsers to `http://localhost:9999/`.
+
 [![Build Status](https://travis-ci.org/cburgmer/inlineresources.svg?branch=master)](https://travis-ci.org/cburgmer/inlineresources)
 
 Where is it used?
