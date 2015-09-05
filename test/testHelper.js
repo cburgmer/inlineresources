@@ -5,6 +5,15 @@ var ayepromise = require('ayepromise');
 var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
     isRunFromTheProjectRoot = isPhantomJs;
 
+exports.ifNotInPhantomIt = function(text, functionHandle) {
+    if (! isPhantomJs) {
+        return it(text, functionHandle);
+    } else {
+        console.log('Warning: "' + text + '" is disabled on this platform');
+        return xit(text, functionHandle);
+    }
+};
+
 exports.isChrome = navigator.userAgent.indexOf("Chrom") >= 0;
 exports.ifNotInChromeIt = function(text, functionHandle) {
     if (! exports.isChrome) {

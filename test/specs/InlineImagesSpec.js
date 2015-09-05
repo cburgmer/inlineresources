@@ -101,7 +101,7 @@ describe("Image and image input inline", function () {
         });
     });
 
-    it("should respect the document's baseURI when loading the image", function (done) {
+    testHelper.ifNotInPhantomIt("should respect the document's baseURI when loading the image", function (done) {
         var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
         testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {
@@ -114,7 +114,7 @@ describe("Image and image input inline", function () {
         });
     });
 
-    it("should respect optional baseUrl when loading the image", function (done) {
+    testHelper.ifNotInPhantomIt("should respect optional baseUrl when loading the image", function (done) {
         testHelper.loadHTMLDocumentFixtureWithoutBaseURI("image.html").then(function (doc) {
             inlineImage.inline(doc, {baseUrl: "aBaseUrl"});
 
@@ -123,7 +123,7 @@ describe("Image and image input inline", function () {
         });
     });
 
-    it("should favour explicit baseUrl over document.baseURI when loading the image", function (done) {
+    testHelper.ifNotInPhantomIt("should favour explicit baseUrl over document.baseURI when loading the image", function (done) {
         var baseUrl = "aBaseUrl";
 
         testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {

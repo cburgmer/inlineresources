@@ -35,15 +35,17 @@ describe("Inline utilities function", function () {
             return str.substr(-matchStr.length) === matchStr;
         };
 
-        it("should return a document's base url", function () {
+        testHelper.ifNotInPhantomIt("should return a document's base url", function (done) {
             var fixturePath = testHelper.fixturesPath + "image.html",
-                doc = testHelper.readDocumentFixture("image.html"),
                 url, nonQueryPart;
+            testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {
+                url = util.getDocumentBaseUrl(doc);
+                nonQueryPart = url.split('?')[0];
 
-            url = util.getDocumentBaseUrl(doc);
-            nonQueryPart = url.split('?')[0];
+                expect(endsWith(nonQueryPart, fixturePath)).toBeTruthy();
 
-            expect(endsWith(nonQueryPart, fixturePath)).toBeTruthy();
+                done();
+            });
         });
 
         it("should return null if document has no base url", function () {

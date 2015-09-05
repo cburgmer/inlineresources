@@ -190,7 +190,7 @@ describe("Inline CSS links", function () {
         });
     });
 
-    it("should respect the document's baseURI when loading linked CSS", function (done) {
+    testHelper.ifNotInPhantomIt("should respect the document's baseURI when loading linked CSS", function (done) {
         var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
         testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {
@@ -211,7 +211,7 @@ describe("Inline CSS links", function () {
         });
     });
 
-    it("should respect optional baseUrl when loading linked CSS", function (done) {
+    testHelper.ifNotInPhantomIt("should respect optional baseUrl when loading linked CSS", function (done) {
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
         testHelper.loadHTMLDocumentFixtureWithoutBaseURI("externalCSS.html").then(function (doc) {
@@ -226,7 +226,7 @@ describe("Inline CSS links", function () {
         });
     });
 
-    it("should favour explicit baseUrl over document.baseURI when loading linked CSS", function (done) {
+    testHelper.ifNotInPhantomIt("should favour explicit baseUrl over document.baseURI when loading linked CSS", function (done) {
         var baseUrl = testHelper.fixturesPath;
 
         testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {

@@ -7,7 +7,7 @@ var ayepromise = require('ayepromise'),
     testHelper = require('../testHelper');
 
 
-describe("Import styles", function () {
+describe("Inline styles", function () {
     var doc, loadCSSImportsForRulesSpy, loadAndInlineCSSResourcesForRulesSpy;
 
     var fulfilled = function (value) {
@@ -205,7 +205,7 @@ describe("Import styles", function () {
         });
     });
 
-    it("should not use cache inlined content if the documents' URLs don't match", function (done) {
+    testHelper.ifNotInPhantomIt("should not use cache inlined content if the documents' URLs don't match", function (done) {
         var cacheBucket = {};
 
         loadAndInlineCSSResourcesForRulesSpy.and.returnValue(fulfilled({
