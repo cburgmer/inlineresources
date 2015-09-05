@@ -1,5 +1,7 @@
 "use strict";
 
+var ayepromise = require('ayepromise');
+
 var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
     isRunFromTheProjectRoot = isPhantomJs;
 
@@ -15,13 +17,22 @@ exports.ifNotInChromeIt = function(text, functionHandle) {
 
 exports.fixturesPath = (isRunFromTheProjectRoot ? 'test/' : '' ) + 'fixtures/';
 
-exports.readHTMLFixture = function (url) {
-    var fixtureUrl = exports.fixturesPath + url,
-        xhr = new window.XMLHttpRequest();
 
-    xhr.open('GET', fixtureUrl, false);
-    xhr.send(null);
-    return xhr.response;
+exports.loadHTMLDocumentFixture = function (url) {
+    var fixtureUrl = exports.fixturesPath + url,
+        xhr = new window.XMLHttpRequest(),
+        defer = ayepromise.defer();
+
+    xhr.onload = function() {
+        defer.resolve(xhr.responseXML);
+    };
+
+    xhr.open("GET", fixtureUrl);
+    xhr.responseType = "document";
+    // Force html https://bugzilla.mozilla.org/show_bug.cgi?id=942138
+    xhr.overrideMimeType("text/html");
+    xhr.send();
+    return defer.promise;
 };
 
 exports.readDocumentFixture = function (url) {
@@ -34,12 +45,12 @@ exports.readDocumentFixture = function (url) {
     return xhr.responseXML;
 };
 
-exports.readDocumentFixtureWithoutBaseURI = function (url) {
-    var html = exports.readHTMLFixture(url),
-        doc = document.implementation.createHTMLDocument("");
-
-    doc.documentElement.innerHTML = html;
-    return doc;
+exports.loadHTMLDocumentFixtureWithoutBaseURI = function (url) {
+    return exports.loadHTMLDocumentFixture(url).then(function (doc) {
+        var baseURILessDoc = document.implementation.createHTMLDocument("");
+        baseURILessDoc.documentElement.innerHTML = doc.documentElement.innerHTML;
+        return baseURILessDoc;
+    });
 };
 
 exports.addStyleToDocument = function (doc, styleContent) {

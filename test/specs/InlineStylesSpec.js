@@ -224,14 +224,15 @@ describe("Import styles", function () {
             loadAndInlineCSSResourcesForRulesSpy.calls.reset();
 
             // second call
-            doc = testHelper.readDocumentFixture("image.html"); // use a document with different baseUrl
-            testHelper.addStyleToDocument(doc, 'background-image { url(anImage.png); }');
+            testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) { // use a document with different baseUrl
+                testHelper.addStyleToDocument(doc, 'background-image { url(anImage.png); }');
 
-            inline.loadAndInlineStyles(doc, {cacheBucket: cacheBucket}).then(function () {
-                expect(loadCSSImportsForRulesSpy).toHaveBeenCalled();
-                expect(loadAndInlineCSSResourcesForRulesSpy).toHaveBeenCalled();
+                inline.loadAndInlineStyles(doc, {cacheBucket: cacheBucket}).then(function () {
+                    expect(loadCSSImportsForRulesSpy).toHaveBeenCalled();
+                    expect(loadAndInlineCSSResourcesForRulesSpy).toHaveBeenCalled();
 
-                done();
+                    done();
+                });
             });
         });
     });

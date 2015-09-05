@@ -193,56 +193,57 @@ describe("Inline CSS links", function () {
     it("should respect the document's baseURI when loading linked CSS", function (done) {
         var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
-        doc = testHelper.readDocumentFixture("externalCSS.html");
+        testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {
+            mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        mockAjaxUrl("some.css", "p { font-size: 14px; }");
+            inline.loadAndInlineCssLinks(doc, {}).then(function () {
+                expect(doc.getElementsByTagName("style").length).toEqual(1);
+                expect(doc.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
+                expect(doc.getElementsByTagName("link").length).toEqual(0);
 
-        inline.loadAndInlineCssLinks(doc, {}).then(function () {
-            expect(doc.getElementsByTagName("style").length).toEqual(1);
-            expect(doc.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
-            expect(doc.getElementsByTagName("link").length).toEqual(0);
+                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
+                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(doc.baseURI);
+                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
+                expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
 
-            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(doc.baseURI);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
-            expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
-
-            done();
+                done();
+            });
         });
     });
 
     it("should respect optional baseUrl when loading linked CSS", function (done) {
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        doc = testHelper.readDocumentFixtureWithoutBaseURI("externalCSS.html");
+        testHelper.loadHTMLDocumentFixtureWithoutBaseURI("externalCSS.html").then(function (doc) {
+            inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
+                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-        inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
-            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
+                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
-
-            done();
+                done();
+            });
         });
     });
 
     it("should favour explicit baseUrl over document.baseURI when loading linked CSS", function (done) {
         var baseUrl = testHelper.fixturesPath;
 
-        doc = testHelper.readDocumentFixture("externalCSS.html");
-        expect(doc.baseURI).not.toBeNull();
-        expect(doc.baseURI).not.toEqual("about:blank");
-        expect(doc.baseURI).not.toEqual(baseUrl);
+        testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {
+            expect(doc.baseURI).not.toBeNull();
+            expect(doc.baseURI).not.toEqual("about:blank");
+            expect(doc.baseURI).not.toEqual(baseUrl);
 
-        mockAjaxUrl("some.css", "p { font-size: 14px; }");
+            mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
-            expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+            inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
+                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
+                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
 
-            done();
+                done();
+            });
         });
     });
 

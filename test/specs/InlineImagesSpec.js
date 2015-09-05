@@ -101,36 +101,42 @@ describe("Image and image input inline", function () {
         });
     });
 
-    it("should respect the document's baseURI when loading the image", function () {
+    it("should respect the document's baseURI when loading the image", function (done) {
         var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
 
-        doc = testHelper.readDocumentFixture("image.html");
+        testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {
+            inlineImage.inline(doc, {});
 
-        inlineImage.inline(doc, {});
+            expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
+            expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
 
-        expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
-        expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
+            done();
+        });
     });
 
-    it("should respect optional baseUrl when loading the image", function () {
-        doc = testHelper.readDocumentFixtureWithoutBaseURI("image.html");
+    it("should respect optional baseUrl when loading the image", function (done) {
+        testHelper.loadHTMLDocumentFixtureWithoutBaseURI("image.html").then(function (doc) {
+            inlineImage.inline(doc, {baseUrl: "aBaseUrl"});
 
-        inlineImage.inline(doc, {baseUrl: "aBaseUrl"});
-
-        expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual("aBaseUrl");
+            expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual("aBaseUrl");
+            done();
+        });
     });
 
-    it("should favour explicit baseUrl over document.baseURI when loading the image", function () {
+    it("should favour explicit baseUrl over document.baseURI when loading the image", function (done) {
         var baseUrl = "aBaseUrl";
 
-        doc = testHelper.readDocumentFixture("image.html");
-        expect(doc.baseURI).not.toBeNull();
-        expect(doc.baseURI).not.toEqual("about:blank");
-        expect(doc.baseURI).not.toEqual(baseUrl);
+        testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {
+            expect(doc.baseURI).not.toBeNull();
+            expect(doc.baseURI).not.toEqual("about:blank");
+            expect(doc.baseURI).not.toEqual(baseUrl);
 
-        inlineImage.inline(doc, {baseUrl: baseUrl});
+            inlineImage.inline(doc, {baseUrl: baseUrl});
 
-        expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(baseUrl);
+            expect(getDataURIForImageURLSpy.calls.mostRecent().args[1].baseUrl).toEqual(baseUrl);
+
+            done();
+        });
     });
 
     it("should circumvent caching if requested", function () {
