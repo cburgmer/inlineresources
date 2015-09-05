@@ -15,17 +15,17 @@ module.exports = function (grunt) {
             },
             ci: {
                 proxies: {
-                    '/test/fixtures/': 'http://localhost:9998/base/test/fixtures/'
+                    '/test/fixtures/': 'http://localhost:9988/base/test/fixtures/'
                 },
-                port: 9998,
+                port: 9988,
                 singleRun: true,
                 browsers: ['PhantomJS']
             },
             local: {
                 proxies: {
-                    '/fixtures/': 'http://localhost:9999/base/test/fixtures/'
+                    '/fixtures/': 'http://localhost:9989/base/test/fixtures/'
                 },
-                port: 9999,
+                port: 9989,
                 background: true,
                 singleRun: false
             }
