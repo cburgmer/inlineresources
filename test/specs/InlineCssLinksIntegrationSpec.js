@@ -40,7 +40,7 @@ describe("Inline CSS content (integration)", function () {
     // https://github.com/cburgmer/rasterizeHTML.js/issues/42
     it("should correctly inline a font as second rule with CSSOM fallback", function (done) {
         mockAjaxWithSuccess({
-            url: "some.html",
+            url: "some.css",
             respondWith: 'p { font-size: 14px; } @font-face { font-family: "test font"; src: url("fake.woff"); }'
         });
         mockAjaxWithSuccess({
@@ -48,7 +48,7 @@ describe("Inline CSS content (integration)", function () {
             respondWith: "this is not a font"
         });
 
-        appendStylesheetLink(doc, "some.html");
+        appendStylesheetLink(doc, "some.css");
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("style")[0].textContent).toMatch(

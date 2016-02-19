@@ -37,8 +37,14 @@ var browserHasBackgroundImageUrlIssue = (function () {
     return !rules.length || rules[0].cssText.indexOf('url()') >= 0;
 }());
 
+var browserHasFontFaceUrlIssue = (function () {
+    // Checks for https://bugs.chromium.org/p/chromium/issues/detail?id=588129
+    var rules = rulesForCssTextFromBrowser('@font-face { font-family: "f"; src: url("f"); }');
+    return !rules.length || /url\(['"]*\)/.test(rules[0].cssText);
+}());
+
 exports.rulesForCssText = function (styleContent) {
-    if (browserHasBackgroundImageUrlIssue && cssom.parse) {
+    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue) && cssom.parse) {
         return cssom.parse(styleContent).cssRules;
     } else {
         return rulesForCssTextFromBrowser(styleContent);
