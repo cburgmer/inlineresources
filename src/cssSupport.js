@@ -58,14 +58,13 @@ exports.cssRulesToText = function (cssRules) {
 };
 
 exports.exchangeRule = function (cssRules, rule, newRuleText) {
-    var ruleIdx = cssRules.indexOf(rule),
-        styleSheet = rule.parentStyleSheet;
+    var ruleIdx = cssRules.indexOf(rule);
 
-    // Generate a new rule
-    styleSheet.insertRule(newRuleText, ruleIdx+1);
-    styleSheet.deleteRule(ruleIdx);
-    // Exchange with the new
-    cssRules[ruleIdx] = styleSheet.cssRules[ruleIdx];
+    // We create a new document and stylesheet to parse the rule,
+    // instead of relying on rule.parentStyleSheet, because
+    // rule.parentStyleSheet may be null
+    // (https://github.com/cburgmer/inlineresources/issues/3)
+    cssRules[ruleIdx] = exports.rulesForCssText(newRuleText)[0];
 };
 
 // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=443978
