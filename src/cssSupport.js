@@ -1,6 +1,11 @@
 "use strict";
 
-var cssom = require('cssom');
+var cssom;
+
+try {
+  cssom = require('cssom');
+} catch (e) {
+}
 
 
 exports.unquoteString = function (quotedUrl) {
@@ -44,7 +49,7 @@ var browserHasFontFaceUrlIssue = (function () {
 }());
 
 exports.rulesForCssText = function (styleContent) {
-    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue) && cssom.parse) {
+    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue) && cssom && cssom.parse) {
         return cssom.parse(styleContent).cssRules;
     } else {
         return rulesForCssTextFromBrowser(styleContent);
