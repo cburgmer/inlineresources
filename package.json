@@ -28,7 +28,6 @@
     "url": "git://github.com/cburgmer/inlineresources.git"
   },
   "dependencies": {
-    "cssom": "~0.3.0",
     "url": "~0.11.0",
     "ayepromise": "~1.1.0",
     "css-font-face-src": "~0.2.2"
@@ -52,6 +51,9 @@
     "phantomjs": "^1.9.18",
     "slimerjs": "0.9.2",
     "xmlserializer": "~0.3.0"
+  },
+  "optionalDependencies": {
+    "cssom": "~0.3.0"
   },
   "scripts": {
     "test": "bash go --verbose"
