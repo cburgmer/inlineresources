@@ -67,6 +67,16 @@ module.exports = function (grunt) {
                         standalone: '<%= pkg.name %>'
                     }
                 }
+            },
+            allinoneNoCssom: {
+                src: 'src/inline.js',
+                dest: 'build/<%= pkg.name %>.allinone.nocssom.js',
+                options: {
+                    browserifyOptions: {
+                        standalone: '<%= pkg.name %>'
+                    },
+                    exclude: ['cssom']
+                }
             }
         },
         clean: {
@@ -102,6 +112,22 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
+                }
+            },
+            allinoneNoCssom: {
+                options: {
+                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                        '* <%= pkg.homepage %>\n' +
+                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+                        ' Licensed <%= pkg.license %> */\n' +
+                        '/* Integrated dependencies:\n' +
+                        ' * url (MIT License),\n' +
+                        ' * css-font-face-src (BSD License),\n' +
+                        ' * ayepromise (BSD License & WTFPL) */\n'
+                },
+                files: {
+                    'dist/<%= pkg.name %>.allinone.nocssom.js': ['build/<%= pkg.name %>.allinone.nocssom.js']
                 }
             }
         },
@@ -219,6 +245,7 @@ module.exports = function (grunt) {
         'browserify:browser',
         'concat:dist',
         'browserify:allinone',
+        'browserify:allinoneNoCssom',
         'uglify'
     ]);
 
