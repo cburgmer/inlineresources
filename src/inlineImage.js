@@ -4,8 +4,14 @@ var util = require('./util');
 
 
 var encodeImageAsDataURI = function (image, options) {
-    var url = image.attributes.src ? image.attributes.src.value : null,
-        documentBase = util.getDocumentBaseUrl(image.ownerDocument),
+    var url = null;
+    if(!!image.attributes.src){
+        url = image.attributes.src.value;
+    }
+    else if(!!image.attributes.href){
+        url = image.attributes.href.value;
+    }
+    var documentBase = util.getDocumentBaseUrl(image.ownerDocument),
         ajaxOptions = util.clone(options);
 
     if (!ajaxOptions.baseUrl && documentBase) {
@@ -26,7 +32,13 @@ var encodeImageAsDataURI = function (image, options) {
 
 var filterExternalImages = function (images) {
     return images.filter(function (image) {
-        var url = image.attributes.src ? image.attributes.src.value : null;
+        var url = null;
+        if(!!image.attributes.src){
+            url = image.attributes.src.value;
+        }
+        else if(!!image.attributes.href){
+            url = image.attributes.href.value;
+        }
 
         return url !== null && !util.isDataUri(url);
     });
@@ -44,12 +56,21 @@ var toArray = function (arrayLike) {
 
 exports.inline = function (doc, options) {
     var images = toArray(doc.getElementsByTagName("img")),
-        imageInputs = filterInputsForImageType(doc.getElementsByTagName("input")),
-        externalImages = filterExternalImages(images.concat(imageInputs));
+        svgImages = toArray(doc.getElementsByTagName("image")),
+        imageInputs = filterInputsForImageType(doc.getElementsByTagName("input"));
+
+    images = images.concat(svgImages);
+    images = images.concat(imageInputs);
+    var externalImages = filterExternalImages(images);
 
     return util.collectAndReportErrors(externalImages.map(function (image) {
         return encodeImageAsDataURI(image, options).then(function (dataURI) {
-            image.attributes.src.value = dataURI;
+            if(!!image.attributes.src){
+                image.attributes.src.value = dataURI;
+            }
+            else if(!!image.attributes.href){
+                image.attributes.href.value = dataURI;
+            }
         });
     }));
 };
