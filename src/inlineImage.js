@@ -5,11 +5,14 @@ var util = require('./util');
 
 var encodeImageAsDataURI = function (image, options) {
     var url = null;
-    if(!!image.attributes.src){
-        url = image.attributes.src.value;
+    if(image.hasAttribute('src')){
+        url = image.getAttribute('src');
     }
-    else if(!!image.attributes.href){
-        url = image.attributes.href.value;
+    else if(image.hasAttributeNS('http://www.w3.org/1999/xlink','href')){
+        url = image.getAttributeNS('http://www.w3.org/1999/xlink','href');
+    }
+    else if(image.hasAttribute('href')){
+        url = image.getAttribute('href');
     }
     var documentBase = util.getDocumentBaseUrl(image.ownerDocument),
         ajaxOptions = util.clone(options);
@@ -33,11 +36,14 @@ var encodeImageAsDataURI = function (image, options) {
 var filterExternalImages = function (images) {
     return images.filter(function (image) {
         var url = null;
-        if(!!image.attributes.src){
-            url = image.attributes.src.value;
+        if(image.hasAttribute('src')){
+            url = image.getAttribute('src');
         }
-        else if(!!image.attributes.href){
-            url = image.attributes.href.value;
+        else if(image.hasAttributeNS('http://www.w3.org/1999/xlink','href')){
+            url = image.getAttributeNS('http://www.w3.org/1999/xlink','href');
+        }
+        else if(image.hasAttribute('href')){
+            url = image.getAttribute('href');
         }
 
         return url !== null && !util.isDataUri(url);
@@ -65,11 +71,14 @@ exports.inline = function (doc, options) {
 
     return util.collectAndReportErrors(externalImages.map(function (image) {
         return encodeImageAsDataURI(image, options).then(function (dataURI) {
-            if(!!image.attributes.src){
-                image.attributes.src.value = dataURI;
+            if(image.hasAttribute('src')){
+                image.setAttribute('src', dataURI);
             }
-            else if(!!image.attributes.href){
-                image.attributes.href.value = dataURI;
+            else if(image.hasAttributeNS('http://www.w3.org/1999/xlink','href')){
+                image.setAttributeNS('http://www.w3.org/1999/xlink','href', dataURI);
+            }
+            else if(image.hasAttribute('href')){
+                url = image.setAttribute('href', dataURI);
             }
         });
     }));
