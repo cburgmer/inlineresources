@@ -71,14 +71,14 @@ exports.inline = function (doc, options) {
 
     return util.collectAndReportErrors(externalImages.map(function (image) {
         return encodeImageAsDataURI(image, options).then(function (dataURI) {
-            if(image.hasAttribute('src')){
-                image.setAttribute('src', dataURI);
+            if(!!image.attributes.src){
+                image.attributes.src.value = dataURI;
             }
-            else if(image.hasAttributeNS('http://www.w3.org/1999/xlink','href')){
-                image.setAttributeNS('http://www.w3.org/1999/xlink','href', dataURI);
+            else if(!!image.attributes['xlink:href']){
+                image.attributes['xlink:href'].value = dataURI;
             }
-            else if(image.hasAttribute('href')){
-                url = image.setAttribute('href', dataURI);
+            else if(!!image.attributes.href){
+                image.attributes.href.value = dataURI;
             }
         });
     }));
