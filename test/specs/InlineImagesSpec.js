@@ -155,6 +155,36 @@ describe("Image and image input inline", function () {
         expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), {});
     });
 
+    it("should load an external svg image without xlink ns", function (done) {
+        mockGetDataURIForImageURL(firstImage, firstImageDataURI);
+        doc.body.innerHTML = (
+            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="100" viewBox="0 0 100 100">'+
+            	'<image id="image" width="100" height="100" href="' + firstImage + '"></image>'+
+            '</svg>'
+        );
+
+        inlineImage.inline(doc, {}).then(function () {
+            expect(doc.getElementById("image").getAttribute('href')).toEqual(firstImageDataURI);
+
+            done();
+        });
+    });
+
+    it("should load an external svg image with xlink ns", function (done) {
+        mockGetDataURIForImageURL(secondImage, secondImageDataURI);
+        doc.body.innerHTML = (
+            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns:xlink="http://www.w3.org/1999/xlink">'+
+            	'<image id="image2" width="100" height="100" xlink:href="' + secondImage + '"></image>'+
+            '</svg>'
+        );
+
+        inlineImage.inline(doc, {}).then(function () {
+            expect(doc.getElementById("image2").getAttributeNS('http://www.w3.org/1999/xlink','href')).toEqual(secondImageDataURI);
+
+            done();
+        });
+    });
+
     describe("on errors", function () {
         var imageThatDoesExist = "image_that_does_exist.png";
 
