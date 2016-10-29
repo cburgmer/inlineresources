@@ -12,9 +12,8 @@ deploy:
   provider: npm
   email: christoph.burgmer@gmail.com
   api_key:
-    secure: IPVkJs/nISHANkPJqRPn6JmMkYFtN+K31oBCTFRL0//c1lUDVDThhaAAdDnj2EJStGhrb96Lwue39N/wf6zn0YjhQT5F406TdWxUtQ+ERAvsn3OaTxnzw/ffOmnUN1iHu4tdVqLiLfqd9vcOShIRzZ2mzE7lare29TOaZjYKAQI=
+    secure: Fh6GXU/d4fcBLvdjyQLexgRIqoqj8aaevYBAf7xca6dvS5tDZmmzo3VD7c18Ebe30tpb8l3yDaifoblLf0t6IVaTm2e0OCIIx9h9MO+IFF2g/kHK4AxgWJqNFJZYxIrvy8qZSKpVOL66Wh0swWAXrsyzycYznWc7VF1Kr/Y+nQc=
   on:
     tags: true
     repo: cburgmer/inlineresources
-    # Change when this is fixed: https://github.com/travis-ci/travis-ci/issues/1675
     all_branches: true
