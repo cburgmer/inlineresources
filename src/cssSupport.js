@@ -48,8 +48,15 @@ var browserHasFontFaceUrlIssue = (function () {
     return !rules.length || /url\(['"]*\)/.test(rules[0].cssText);
 }());
 
+var browserHasBackgroundImageUrlSetIssue = (function () {
+    // Checks for https://bugs.chromium.org/p/chromium/issues/detail?id=660663
+    var rules = rulesForCssTextFromBrowser('a{background:url(old)}');
+    rules[0].style.setProperty('background', 'url(new)', '');
+    return rules[0].style.getPropertyValue('background').indexOf('old') >= 0;
+}());
+
 exports.rulesForCssText = function (styleContent) {
-    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue) && cssom && cssom.parse) {
+    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue || browserHasBackgroundImageUrlSetIssue) && cssom && cssom.parse) {
         return cssom.parse(styleContent).cssRules;
     } else {
         return rulesForCssTextFromBrowser(styleContent);
