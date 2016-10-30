@@ -58,7 +58,7 @@ module.exports = function (grunt) {
                     browserifyOptions: {
                         standalone: '<%= pkg.name %>',
                     },
-                    external: ['cssom', 'ayepromise', 'url']
+                    external: ['cssom', 'url']
                 }
             },
             allinone: {
@@ -109,8 +109,7 @@ module.exports = function (grunt) {
                         '/* Integrated dependencies:\n' +
                         ' * url (MIT License),\n' +
                         ' * CSSOM.js (MIT License),\n' +
-                        ' * css-font-face-src (BSD License),\n' +
-                        ' * ayepromise (BSD License & WTFPL) */\n'
+                        ' * css-font-face-src (BSD License) */\n'
                 },
                 files: {
                     'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
@@ -125,8 +124,7 @@ module.exports = function (grunt) {
                         ' Licensed <%= pkg.license %> */\n' +
                         '/* Integrated dependencies:\n' +
                         ' * url (MIT License),\n' +
-                        ' * css-font-face-src (BSD License),\n' +
-                        ' * ayepromise (BSD License & WTFPL) */\n'
+                        ' * css-font-face-src (BSD License) */\n'
                 },
                 files: {
                     'dist/<%= pkg.name %>.allinone.nocssom.js': ['build/<%= pkg.name %>.allinone.nocssom.js']
@@ -172,8 +170,7 @@ module.exports = function (grunt) {
                     exports: true,
 
                     cssom: true,
-                    url: true,
-                    ayepromise: true
+                    url: true
                 },
                 exported: ['inline', 'inlineCss', 'inlineUtil']
             },
@@ -184,6 +181,7 @@ module.exports = function (grunt) {
             with_overrides: {
                 options: {
                     globals: {
+                        Promise: true,
                         jasmine: true,
                         describe: true,
                         it: true,
@@ -194,8 +192,7 @@ module.exports = function (grunt) {
                         spyOn: true,
 
                         cssom: true,
-                        url: true,
-                        ayepromise: true
+                        url: true
                     },
                     ignores: ['test/fixtures/']
                 },

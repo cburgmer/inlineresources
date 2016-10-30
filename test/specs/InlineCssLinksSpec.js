@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inline = require('../../src/inline'),
+var inline = require('../../src/inline'),
     inlineCss = require('../../src/inlineCss'),
     util = require('../../src/util'),
     testHelper = require('../testHelper');
@@ -14,19 +13,16 @@ describe("Inline CSS links", function () {
 
     var setupAjaxMock = function () {
         ajaxSpy = spyOn(util, "ajax").and.callFake(function (url, options) {
-            var defer = ayepromise.defer();
-
             if (ajaxUrlMocks[url + ' ' + options.baseUrl] !== undefined) {
-                defer.resolve(ajaxUrlMocks[url + ' ' + options.baseUrl]);
+                return Promise.resolve(ajaxUrlMocks[url + ' ' + options.baseUrl]);
             // try matching without base url
             } else if (ajaxUrlMocks[url] !== undefined) {
-                defer.resolve(ajaxUrlMocks[url]);
+                return Promise.resolve(ajaxUrlMocks[url]);
             } else {
-                defer.reject({
+                return Promise.reject({
                     url: 'THEURL' + url
                 });
             }
-            return defer.promise;
         });
     };
 
@@ -57,9 +53,7 @@ describe("Inline CSS links", function () {
     };
 
     var fulfilled = function (value) {
-        var defer = ayepromise.defer();
-        defer.resolve(value);
-        return defer.promise;
+        return Promise.resolve(value);
     };
 
     beforeEach(function () {

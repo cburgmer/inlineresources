@@ -1,7 +1,6 @@
 "use strict";
 
-var url = require('url'),
-    ayepromise = require('ayepromise');
+var url = require('url');
 
 
 exports.getDocumentBaseUrl = function (doc) {
@@ -42,7 +41,7 @@ exports.collectAndReportErrors = function (promises) {
     var errors = [];
 
     return Promise.all(promises.map(function (promise) {
-        return promise.fail(function (e) {
+        return promise.catch(function (e) {
             errors.push(e);
         });
     })).then(function () {
@@ -64,39 +63,38 @@ var getUncachableURL = function (url, cache) {
 };
 
 exports.ajax = function (url, options) {
-    var ajaxRequest = new window.XMLHttpRequest(),
-        defer = ayepromise.defer(),
-        joinedUrl = exports.joinUrl(options.baseUrl, url),
-        augmentedUrl;
+    return new Promise(function (resolve, reject) {
+        var ajaxRequest = new window.XMLHttpRequest(),
+            joinedUrl = exports.joinUrl(options.baseUrl, url),
+            augmentedUrl;
 
-    var doReject = function () {
-        defer.reject({
-            msg: 'Unable to load url',
-            url: joinedUrl
-        });
-    };
+        var doReject = function () {
+            reject({
+                msg: 'Unable to load url',
+                url: joinedUrl
+            });
+        };
 
-    augmentedUrl = getUncachableURL(joinedUrl, options.cache);
+        augmentedUrl = getUncachableURL(joinedUrl, options.cache);
 
-    ajaxRequest.addEventListener("load", function () {
-        if (ajaxRequest.status === 200 || ajaxRequest.status === 0) {
-            defer.resolve(ajaxRequest.response);
-        } else {
+        ajaxRequest.addEventListener("load", function () {
+            if (ajaxRequest.status === 200 || ajaxRequest.status === 0) {
+                resolve(ajaxRequest.response);
+            } else {
+                doReject();
+            }
+        }, false);
+
+        ajaxRequest.addEventListener("error", doReject, false);
+
+        try {
+            ajaxRequest.open('GET', augmentedUrl, true);
+            ajaxRequest.overrideMimeType(options.mimeType);
+            ajaxRequest.send(null);
+        } catch (e) {
             doReject();
         }
-    }, false);
-
-    ajaxRequest.addEventListener("error", doReject, false);
-
-    try {
-        ajaxRequest.open('GET', augmentedUrl, true);
-        ajaxRequest.overrideMimeType(options.mimeType);
-        ajaxRequest.send(null);
-    } catch (e) {
-        doReject();
-    }
-
-    return defer.promise;
+    });
 };
 
 exports.binaryAjax = function (url, options) {

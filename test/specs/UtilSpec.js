@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    util = require('../../src/util'),
+var util = require('../../src/util'),
     testHelper = require('../testHelper');
 
 
@@ -127,14 +126,14 @@ describe("Inline utilities function", function () {
 
         it("should fail correctly", function (done) {
             util.ajax("non_existing_url.html", {})
-                .fail(done);
+                .catch(done);
         });
 
         it("should include msg and url in error", function (done) {
             var url = 'non_existing_url.html';
 
             util.ajax(url, {})
-                .fail(function (e) {
+                .catch(function (e) {
                     expect(e.msg).toEqual('Unable to load url');
                     expect(e.url).toEqual(url);
 
@@ -219,7 +218,7 @@ describe("Inline utilities function", function () {
 
                 ajaxRequest.open.and.throwError(new Error('a'));
                 util.ajax(url, {baseUrl: baseUrl})
-                    .fail(function (e) {
+                    .catch(function (e) {
                         expect(util.joinUrl).toHaveBeenCalledWith(baseUrl, url);
 
                         expect(e.msg).toEqual('Unable to load url');
@@ -237,14 +236,10 @@ describe("Inline utilities function", function () {
             return spyOn(util, "ajax").and.returnValue(promise);
         };
         var rejectedPromise = function (e) {
-            var defer = ayepromise.defer();
-            defer.reject(e);
-            return defer.promise;
+            return Promise.reject(e);
         };
         var resolvedPromise = function () {
-            var defer = ayepromise.defer();
-            defer.resolve();
-            return defer.promise;
+            return Promise.resolve();
         };
 
         beforeEach(function () {
@@ -265,7 +260,7 @@ describe("Inline utilities function", function () {
         it("should handle an error", function (done) {
             mockAjaxWith(rejectedPromise());
             util.binaryAjax("url", {})
-                .fail(done);
+                .catch(done);
         });
 
         it("should hand through the error object", function (done) {
@@ -273,7 +268,7 @@ describe("Inline utilities function", function () {
 
             mockAjaxWith(rejectedPromise(e));
             util.binaryAjax("url", {})
-                .fail(function (error) {
+                .catch(function (error) {
                     expect(error).toBe(e);
                     done();
                 });
@@ -306,11 +301,11 @@ describe("Inline utilities function", function () {
 
         var mockBinaryAjax = function (targetUrl, content) {
             binaryAjaxSpy.and.callFake(function (url) {
-                var defer = ayepromise.defer();
-                if (url === targetUrl) {
-                    defer.resolve(content);
-                }
-                return defer.promise;
+                return new Promise(function (resolve) {
+                    if (url === targetUrl) {
+                        resolve(content);
+                    }
+                });
             });
         };
 
@@ -358,26 +353,22 @@ describe("Inline utilities function", function () {
 
         it("should return an error if the image could not be located due to a REST error", function (done) {
             binaryAjaxSpy.and.callFake(function () {
-                var defer = ayepromise.defer();
-                defer.reject();
-                return defer.promise;
+                return Promise.reject();
             });
 
             util.getDataURIForImageURL("image_does_not_exist.png", {})
-                .fail(done);
+                .catch(done);
         });
 
         it("should hand through the error object", function (done) {
             var e = new Error('not good');
 
             binaryAjaxSpy.and.callFake(function () {
-                var defer = ayepromise.defer();
-                defer.reject(e);
-                return defer.promise;
+                return Promise.reject(e);
             });
 
             util.getDataURIForImageURL("image_does_not_exist.png", {})
-                .fail(function (error) {
+                .catch(function (error) {
                     expect(error).toBe(e);
                     done();
                 });

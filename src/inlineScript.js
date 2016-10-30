@@ -13,7 +13,7 @@ var loadLinkedScript = function (script, options) {
     }
 
     return util.ajax(src, ajaxOptions)
-        .fail(function (e) {
+        .catch(function (e) {
             throw {
                 resourceType: "script",
                 url: e.url,

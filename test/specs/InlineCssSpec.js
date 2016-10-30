@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inlineCss = require('../../src/inlineCss'),
+var inlineCss = require('../../src/inlineCss'),
     util = require('../../src/util'),
     testHelper = require('../testHelper'),
     backgroundValueParser = require('../../src/backgroundValueParser'),
@@ -208,15 +207,13 @@ describe("Inline CSS content", function () {
 
         var setupAjaxMock = function () {
             ajaxSpy.and.callFake(function (url) {
-                var defer = ayepromise.defer();
                 if (ajaxUrlMocks[url] !== undefined) {
-                    defer.resolve(ajaxUrlMocks[url]);
+                    return Promise.resolve(ajaxUrlMocks[url]);
                 } else {
-                    defer.reject({
+                    return Promise.reject({
                         url: 'THEURL' + url
                     });
                 }
-                return defer.promise;
             });
         };
 
@@ -513,15 +510,13 @@ describe("Inline CSS content", function () {
 
         var setupGetDataURIForImageURLMock = function () {
             getDataURIForImageURLSpy.and.callFake(function (url) {
-                var defer = ayepromise.defer();
                 if (urlMocks[url] !== undefined) {
-                    defer.resolve(urlMocks[url]);
+                    return Promise.resolve(urlMocks[url]);
                 } else {
-                    defer.reject({
+                    return Promise.reject({
                         url: 'THEURL' + url
                     });
                 }
-                return defer.promise;
             });
         };
 
@@ -821,13 +816,11 @@ describe("Inline CSS content", function () {
 
             var setupAjaxMock = function () {
                 binaryAjaxSpy.and.callFake(function (url) {
-                    var defer = ayepromise.defer();
                     if (ajaxUrlMocks[url] !== undefined) {
-                        defer.resolve(ajaxUrlMocks[url]);
+                        return Promise.resolve(ajaxUrlMocks[url]);
                     } else {
-                        defer.reject();
+                        return Promise.reject();
                     }
-                    return defer.promise;
                 });
             };
 
@@ -1011,15 +1004,13 @@ describe("Inline CSS content", function () {
 
             beforeEach(function () {
                 binaryAjaxSpy.and.callFake(function (url) {
-                    var defer = ayepromise.defer();
                     if (url === aFontReferenceThatDoesExist) {
-                        defer.resolve();
+                        return Promise.resolve();
                     } else {
-                        defer.reject({
+                        return Promise.reject({
                             url: 'THEURL' + url
                         });
                     }
-                    return defer.promise;
                 });
                 joinUrlSpy.and.callThrough();
             });

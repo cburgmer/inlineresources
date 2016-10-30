@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inline = require('../../src/inline'),
+var inline = require('../../src/inline'),
     inlineCss = require('../../src/inlineCss'),
     util = require('../../src/util'),
     testHelper = require('../testHelper');
@@ -11,9 +10,7 @@ describe("Inline styles", function () {
     var doc, loadCSSImportsForRulesSpy, loadAndInlineCSSResourcesForRulesSpy;
 
     var fulfilled = function (value) {
-        var defer = ayepromise.defer();
-        defer.resolve(value);
-        return defer.promise;
+        return Promise.resolve(value);
     };
 
     beforeEach(function () {

@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inline = require('../../src/inline');
+var inline = require('../../src/inline');
 
 
 describe("Inline main", function () {
@@ -12,9 +11,7 @@ describe("Inline main", function () {
     };
 
     var withErrors = function (errors) {
-        var defer = ayepromise.defer();
-        defer.resolve(errors);
-        return defer.promise;
+        return Promise.resolve(errors);
     };
 
     beforeEach(function () {

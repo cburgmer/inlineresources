@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inline = require('../../src/inline'),
+var inline = require('../../src/inline'),
     inlineCss = require('../../src/inlineCss'),
     util = require('../../src/util');
 
@@ -12,15 +11,11 @@ describe("Inline CSS content (integration)", function () {
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
 
-        spyOn(util, "ajax").and.callFake(function (url, options, success) {
-            var defer = ayepromise.defer(),
-                respondWith = ajaxSpyUrlMap[url];
+        spyOn(util, "ajax").and.callFake(function (url) {
+            var respondWith = ajaxSpyUrlMap[url];
             if (respondWith) {
-                defer.resolve(respondWith);
+                return Promise.resolve(respondWith);
             }
-            // TODO pp
-            defer.promise.then(success);
-            return defer.promise;
         });
     });
 

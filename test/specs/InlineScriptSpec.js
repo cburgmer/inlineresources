@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inlineScript = require('../../src/inlineScript'),
+var inlineScript = require('../../src/inlineScript'),
     util = require('../../src/util'),
     testHelper = require('../testHelper');
 
@@ -13,15 +12,13 @@ describe("JS inline", function () {
 
     var setupAjaxMock = function () {
         return spyOn(util, "ajax").and.callFake(function (url) {
-            var defer = ayepromise.defer();
             if (ajaxUrlMocks[url] !== undefined) {
-                defer.resolve(ajaxUrlMocks[url]);
+                return Promise.resolve(ajaxUrlMocks[url]);
             } else {
-                defer.reject({
+                return Promise.reject({
                     url: 'THEURL' + url
                 });
             }
-            return defer.promise;
         });
     };
 

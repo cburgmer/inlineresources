@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "url": "~0.11.0",
-    "ayepromise": "~1.1.0",
     "css-font-face-src": "~0.2.2"
   },
   "devDependencies": {

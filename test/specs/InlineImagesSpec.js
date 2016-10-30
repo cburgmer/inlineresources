@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    inlineImage = require('../../src/inlineImage'),
+var inlineImage = require('../../src/inlineImage'),
     util = require('../../src/util'),
     testHelper = require('../testHelper');
 
@@ -16,15 +15,13 @@ describe("Image and image input inline", function () {
 
     var setupGetDataURIForImageURLMock = function () {
         return spyOn(util, "getDataURIForImageURL").and.callFake(function (url) {
-            var defer = ayepromise.defer();
             if (urlMocks[url] !== undefined) {
-                defer.resolve(urlMocks[url]);
+                return Promise.resolve(urlMocks[url]);
             } else {
-                defer.reject({
+                return Promise.reject({
                     url: 'THEURL' + url
                 });
             }
-            return defer.promise;
         });
     };
 

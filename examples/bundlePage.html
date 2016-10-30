@@ -3,7 +3,6 @@
 <head>
     <title>Helper page for bundlePage.js</title>
     <script type="text/javascript" src="../build/dependencies/xmlserializer.js"></script>
-    <script type="text/javascript" src="../node_modules/ayepromise/ayepromise.js"></script>
     <script type="text/javascript" src="../dist/inlineresources.allinone.js"></script>
     <script>
         var sendMessage = function (cmd, content) {
@@ -14,33 +13,32 @@
         };
 
         var loadDocument = function (url) {
-            var ajaxRequest = new window.XMLHttpRequest(),
-                defer = ayepromise.defer(),
-                doReject = function () {
-                    defer.reject({message: "Unable to load page"});
-                };
+            return new Promise(function (resolve, reject) {
+                var ajaxRequest = new window.XMLHttpRequest(),
+                    doReject = function () {
+                        reject({message: "Unable to load page"});
+                    };
 
-            ajaxRequest.addEventListener("load", function () {
-                if (ajaxRequest.status === 200 || ajaxRequest.status === 0) {
-                    defer.resolve(ajaxRequest.responseXML);
-                } else {
+                ajaxRequest.addEventListener("load", function () {
+                    if (ajaxRequest.status === 200 || ajaxRequest.status === 0) {
+                        resolve(ajaxRequest.responseXML);
+                    } else {
+                        doReject();
+                    }
+                }, false);
+
+                ajaxRequest.addEventListener("error", function () {
+                    doReject();
+                }, false);
+
+                try {
+                    ajaxRequest.open('GET', url, true);
+                    ajaxRequest.responseType = "document";
+                    ajaxRequest.send(null);
+                } catch (err) {
                     doReject();
                 }
-            }, false);
-
-            ajaxRequest.addEventListener("error", function () {
-                doReject();
-            }, false);
-
-            try {
-                ajaxRequest.open('GET', url, true);
-                ajaxRequest.responseType = "document";
-                ajaxRequest.send(null);
-            } catch (err) {
-                doReject();
-            }
-
-            return defer.promise;
+            });
         };
 
         window.bundlePage = function (url) {

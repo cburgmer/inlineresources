@@ -1,7 +1,5 @@
 "use strict";
 
-var ayepromise = require('ayepromise');
-
 var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
     isRunFromTheProjectRoot = isPhantomJs;
 
@@ -28,20 +26,20 @@ exports.fixturesPath = (isRunFromTheProjectRoot ? 'test/' : '' ) + 'fixtures/';
 
 
 exports.loadHTMLDocumentFixture = function (url) {
-    var fixtureUrl = exports.fixturesPath + url,
-        xhr = new window.XMLHttpRequest(),
-        defer = ayepromise.defer();
+    return new Promise(function (resolve) {
+        var fixtureUrl = exports.fixturesPath + url,
+            xhr = new window.XMLHttpRequest();
 
-    xhr.onload = function() {
-        defer.resolve(xhr.responseXML);
-    };
+        xhr.onload = function() {
+            resolve(xhr.responseXML);
+        };
 
-    xhr.open("GET", fixtureUrl);
-    xhr.responseType = "document";
-    // Force html https://bugzilla.mozilla.org/show_bug.cgi?id=942138
-    xhr.overrideMimeType("text/html");
-    xhr.send();
-    return defer.promise;
+        xhr.open("GET", fixtureUrl);
+        xhr.responseType = "document";
+        // Force html https://bugzilla.mozilla.org/show_bug.cgi?id=942138
+        xhr.overrideMimeType("text/html");
+        xhr.send();
+    });
 };
 
 exports.readDocumentFixture = function (url) {
