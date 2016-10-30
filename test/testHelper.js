@@ -12,10 +12,6 @@ var testDisabledOnCondition = function (condition, text, functionHandle) {
     return spec;
 };
 
-exports.ifNotInPhantomIt = function(text, functionHandle) {
-    testDisabledOnCondition(isPhantomJs, text, functionHandle);
-};
-
 exports.isChrome = navigator.userAgent.indexOf("Chrom") >= 0;
 exports.ifNotInChromeIt = function(text, functionHandle) {
     testDisabledOnCondition(exports.isChrome, text, functionHandle);

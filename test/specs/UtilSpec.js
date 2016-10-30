@@ -34,7 +34,7 @@ describe("Inline utilities function", function () {
             return str.substr(-matchStr.length) === matchStr;
         };
 
-        testHelper.ifNotInPhantomIt("should return a document's base url", function (done) {
+        it("should return a document's base url", function (done) {
             var fixturePath = testHelper.fixturesPath + "image.html",
                 url, nonQueryPart;
             testHelper.loadHTMLDocumentFixture("image.html").then(function (doc) {

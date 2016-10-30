@@ -202,7 +202,7 @@ describe("Inline styles", function () {
         });
     });
 
-    testHelper.ifNotInPhantomIt("should not use cache inlined content if the documents' URLs don't match", function (done) {
+    it("should not use cache inlined content if the documents' URLs don't match", function (done) {
         var cacheBucket = {};
 
         loadAndInlineCSSResourcesForRulesSpy.and.returnValue(fulfilled({
