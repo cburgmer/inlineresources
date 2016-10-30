@@ -1,7 +1,6 @@
 "use strict";
 
-var ayepromise = require('ayepromise'),
-    util = require('./util'),
+var util = require('./util'),
     cssSupport = require('./cssSupport'),
     backgroundValueParser = require('./backgroundValueParser'),
     fontFaceSrcValueParser = require('css-font-face-src');
@@ -145,12 +144,6 @@ var substituteRule = function (cssRules, rule, newCssRules) {
     });
 };
 
-var fulfilledPromise = function (value) {
-    var defer = ayepromise.defer();
-    defer.resolve(value);
-    return defer.promise;
-};
-
 var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, options) {
     var url = rule.href,
         cssHrefRelativeToDoc;
@@ -162,7 +155,7 @@ var loadAndInlineCSSImport = function (cssRules, rule, alreadyLoadedCssUrls, opt
     if (alreadyLoadedCssUrls.indexOf(cssHrefRelativeToDoc) >= 0) {
         // Remove URL by adding empty string
         substituteRule(cssRules, rule, []);
-        return fulfilledPromise([]);
+        return Promise.resolve([]);
     } else {
         alreadyLoadedCssUrls.push(cssHrefRelativeToDoc);
     }

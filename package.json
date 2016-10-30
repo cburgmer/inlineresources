@@ -33,6 +33,7 @@
     "css-font-face-src": "~0.2.2"
   },
   "devDependencies": {
+    "babel-polyfill": "^6.16.0",
     "grunt": "~0.4.1",
     "grunt-browserify": "~4.0.1",
     "grunt-cli": "~0.1",

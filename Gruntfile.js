@@ -7,6 +7,8 @@ module.exports = function (grunt) {
         karma: {
             options: {
                 files: [
+                    // http://stackoverflow.com/questions/29391111/karma-phantomjs-and-es6-promises
+                    'node_modules/babel-polyfill/dist/polyfill.js',
                     'build/testSuite.js',
                     {pattern: 'test/fixtures/**', included: false}
                 ],
@@ -165,6 +167,7 @@ module.exports = function (grunt) {
                 node: true,
                 strict: true,
                 globals: {
+                    Promise: true,
                     require: true,
                     exports: true,
 
