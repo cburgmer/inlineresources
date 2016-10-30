@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Helper page for bundlePage.js</title>
+    <script type="text/javascript" src="../node_modules/babel-polyfill/dist/polyfill.js"></script>
     <script type="text/javascript" src="../build/dependencies/xmlserializer.js"></script>
     <script type="text/javascript" src="../dist/inlineresources.allinone.js"></script>
     <script>
@@ -66,5 +67,6 @@
     <pre>phantomjs examples/bundlePage.js test/fixtures/image.html</pre>
     or
     <pre>slimerjs examples/bundlePage.js test/fixtures/image.html</pre>
+    <p>Make sure you have run `npm test` beforehand</p>
 </body>
 </html>
