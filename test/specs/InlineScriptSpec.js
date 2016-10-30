@@ -26,17 +26,6 @@ describe("JS inline", function () {
         ajaxUrlMocks[url] = content;
     };
 
-    var anExternalScript = function () {
-        return anExternalScriptWith("var b = 1;", "url/some.js");
-    };
-
-    var anotherExternalScript = function () {
-        var script = anExternalScriptWith("function something() {}", "url/someOther.js");
-        script.type = "text/javascript";
-        script.id = "myScript";
-        return script;
-    };
-
     var anExternalScriptWith = function (content, url) {
         var externalScript = window.document.createElement("script");
 
@@ -47,6 +36,17 @@ describe("JS inline", function () {
         mockAjaxUrl(url, content);
 
         return externalScript;
+    };
+
+    var anExternalScript = function () {
+        return anExternalScriptWith("var b = 1;", "url/some.js");
+    };
+
+    var anotherExternalScript = function () {
+        var script = anExternalScriptWith("function something() {}", "url/someOther.js");
+        script.type = "text/javascript";
+        script.id = "myScript";
+        return script;
     };
 
     beforeEach(function () {

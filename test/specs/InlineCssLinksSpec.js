@@ -35,10 +35,6 @@ describe("Inline CSS links", function () {
         ajaxUrlMocks[urlKey] = content;
     };
 
-    var aCssLink = function () {
-        return aCssLinkWith("url/some.css", "p { font-size: 14px; }");
-    };
-
     var aCssLinkWith = function (url, content) {
         var cssLink = window.document.createElement("link");
         cssLink.href = url;
@@ -50,6 +46,10 @@ describe("Inline CSS links", function () {
         mockAjaxUrl(cssLink.attributes.href.value, content);
 
         return cssLink;
+    };
+
+    var aCssLink = function () {
+        return aCssLinkWith("url/some.css", "p { font-size: 14px; }");
     };
 
     var fulfilled = function (value) {

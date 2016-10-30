@@ -6,12 +6,12 @@ var inline = require('../../src/inline');
 describe("Inline main", function () {
     var loadAndInlineImages, loadAndInlineCssLinks, loadAndInlineStyles, loadAndInlineScript;
 
-    var withoutErrors = function () {
-        return withErrors([]);
-    };
-
     var withErrors = function (errors) {
         return Promise.resolve(errors);
+    };
+
+    var withoutErrors = function () {
+        return withErrors([]);
     };
 
     beforeEach(function () {
