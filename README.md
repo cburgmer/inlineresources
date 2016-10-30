@@ -41,7 +41,7 @@ Development
 
 For linting, tests and a browser build install Node.js and run
 
-    $ ./go
+    $ npm install && npm test
 
 Check `./dist/` for the browserified builds.
 

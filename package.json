@@ -56,6 +56,6 @@
     "cssom": "~0.3.0"
   },
   "scripts": {
-    "test": "bash go --verbose"
+    "test": "grunt && ./test/inlineIntegration/runInlineTests.sh"
   }
 }
