@@ -9,6 +9,7 @@ module.exports = function (grunt) {
                 files: [
                     // http://stackoverflow.com/questions/29391111/karma-phantomjs-and-es6-promises
                     'node_modules/babel-polyfill/dist/polyfill.js',
+                    'build/dependencies/dependencies.js',
                     'build/testSuite.js',
                     {pattern: 'test/fixtures/**', included: false}
                 ],
@@ -34,12 +35,17 @@ module.exports = function (grunt) {
         },
         browserify: {
             xmlserializer: {
-                src: 'node_modules/xmlserializer/lib/serializer.js',
+                src: [],
                 dest: 'build/dependencies/xmlserializer.js',
                 options: {
-                    browserifyOptions: {
-                        standalone: 'xmlserializer'
-                    }
+                    require: ['xmlserializer']
+                }
+            },
+            dependencies: {
+                src: [],
+                dest: 'build/dependencies/dependencies.js',
+                options: {
+                    require: ['url', 'css-font-face-src', 'cssom']
                 }
             },
             testSuite: {
@@ -48,7 +54,8 @@ module.exports = function (grunt) {
                 options: {
                     browserifyOptions: {
                         debug: true
-                    }
+                    },
+                    external: ['cssom', 'url', 'css-font-face-src']
                 }
             },
             browser: {
@@ -58,26 +65,7 @@ module.exports = function (grunt) {
                     browserifyOptions: {
                         standalone: '<%= pkg.name %>',
                     },
-                    external: ['cssom', 'url']
-                }
-            },
-            allinone: {
-                src: 'src/inline.js',
-                dest: 'build/<%= pkg.name %>.allinone.js',
-                options: {
-                    browserifyOptions: {
-                        standalone: '<%= pkg.name %>'
-                    }
-                }
-            },
-            allinoneNoCssom: {
-                src: 'src/inline.js',
-                dest: 'build/<%= pkg.name %>.allinone.nocssom.js',
-                options: {
-                    browserifyOptions: {
-                        standalone: '<%= pkg.name %>'
-                    },
-                    exclude: ['cssom']
+                    external: ['cssom', 'url', 'css-font-face-src']
                 }
             }
         },
@@ -96,39 +84,6 @@ module.exports = function (grunt) {
                 },
                 src: ['build/<%= pkg.name %>.js'],
                 dest: 'dist/<%= pkg.name %>.js'
-            }
-        },
-        uglify: {
-            allinone: {
-                options: {
-                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                        '* <%= pkg.homepage %>\n' +
-                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                        ' Licensed <%= pkg.license %> */\n' +
-                        '/* Integrated dependencies:\n' +
-                        ' * url (MIT License),\n' +
-                        ' * CSSOM.js (MIT License),\n' +
-                        ' * css-font-face-src (BSD License) */\n'
-                },
-                files: {
-                    'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
-                }
-            },
-            allinoneNoCssom: {
-                options: {
-                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                        '* <%= pkg.homepage %>\n' +
-                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                        ' Licensed <%= pkg.license %> */\n' +
-                        '/* Integrated dependencies:\n' +
-                        ' * url (MIT License),\n' +
-                        ' * css-font-face-src (BSD License) */\n'
-                },
-                files: {
-                    'dist/<%= pkg.name %>.allinone.nocssom.js': ['build/<%= pkg.name %>.allinone.nocssom.js']
-                }
             }
         },
         watch: {
@@ -226,7 +181,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask('testDeps', [
-        'browserify:xmlserializer'
+        'browserify:xmlserializer',
+        'browserify:dependencies'
     ]);
 
     grunt.registerTask('testWatch', [
@@ -243,10 +199,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'browserify:browser',
-        'concat:dist',
-        'browserify:allinone',
-        'browserify:allinoneNoCssom',
-        'uglify'
+        'concat:dist'
     ]);
 
     grunt.registerTask('default', [

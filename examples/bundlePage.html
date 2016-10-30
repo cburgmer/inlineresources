@@ -4,8 +4,10 @@
     <title>Helper page for bundlePage.js</title>
     <script type="text/javascript" src="../node_modules/babel-polyfill/dist/polyfill.js"></script>
     <script type="text/javascript" src="../build/dependencies/xmlserializer.js"></script>
-    <script type="text/javascript" src="../dist/inlineresources.allinone.js"></script>
+    <script type="text/javascript" src="../build/dependencies/dependencies.js"></script>
+    <script type="text/javascript" src="../dist/inlineresources.js"></script>
     <script>
+        var xmlserializer = require('xmlserializer');
         var sendMessage = function (cmd, content) {
             console.log(JSON.stringify({
                 cmd: cmd,

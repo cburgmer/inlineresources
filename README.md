@@ -10,6 +10,15 @@ Inlines style sheets, images, fonts and scripts in HTML documents. Works in the 
 
 See the [API](https://github.com/cburgmer/inlineresources/wiki/API).
 
+Install
+-------
+
+    $ npm install inlineresources
+
+and require through browserify or webpack.
+
+Alternatively use a standalone bundle via e.g. https://wzrd.in/standalone/inlineresources@latest.
+
 Limitations
 -----------
 
