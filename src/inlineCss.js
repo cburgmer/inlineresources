@@ -187,7 +187,7 @@ exports.loadCSSImportsForRules = function (cssRules, alreadyLoadedCssUrls, optio
         errors = [],
         hasChanges = false;
 
-    return util.all(rulesToInline.map(function (rule) {
+    return Promise.all(rulesToInline.map(function (rule) {
         return loadAndInlineCSSImport(cssRules, rule, alreadyLoadedCssUrls, options).then(function (moreErrors) {
             errors = errors.concat(moreErrors);
 
@@ -240,7 +240,7 @@ var iterateOverRulesAndInlineBackgroundImages = function (cssRules, options) {
         errors = [],
         cssHasChanges = false;
 
-    return util.all(backgroundDeclarations.map(function (declaration) {
+    return Promise.all(backgroundDeclarations.map(function (declaration) {
         return loadAndInlineBackgroundImages(declaration.value, options)
             .then(function (result) {
                 if (result.hasChanges) {
@@ -301,7 +301,7 @@ var iterateOverRulesAndInlineFontFace = function (cssRules, options) {
         errors = [],
         hasChanges = false;
 
-    return util.all(rulesToInline.map(function (rule) {
+    return Promise.all(rulesToInline.map(function (rule) {
         var srcDeclarationValue = rule.style.getPropertyValue("src");
 
         return loadAndInlineFontFace(srcDeclarationValue, options).then(function (result) {
@@ -325,7 +325,7 @@ exports.loadAndInlineCSSResourcesForRules = function (cssRules, options) {
     var hasChanges = false,
         errors = [];
 
-    return util.all([iterateOverRulesAndInlineBackgroundImages, iterateOverRulesAndInlineFontFace].map(function (func) {
+    return Promise.all([iterateOverRulesAndInlineBackgroundImages, iterateOverRulesAndInlineFontFace].map(function (func) {
         return func(cssRules, options)
             .then(function (result) {
                 hasChanges = hasChanges || result.hasChanges;

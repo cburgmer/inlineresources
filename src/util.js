@@ -38,35 +38,10 @@ exports.isDataUri = function (url) {
     return (/^data:/).test(url);
 };
 
-exports.all = function (promises) {
-    var defer = ayepromise.defer(),
-        pendingPromiseCount = promises.length,
-        resolvedValues = [];
-
-    if (promises.length === 0) {
-        defer.resolve([]);
-        return defer.promise;
-    }
-
-    promises.forEach(function (promise, idx) {
-        promise.then(function (value) {
-            pendingPromiseCount -= 1;
-            resolvedValues[idx] = value;
-
-            if (pendingPromiseCount === 0) {
-                defer.resolve(resolvedValues);
-            }
-        }, function (e) {
-            defer.reject(e);
-        });
-    });
-    return defer.promise;
-};
-
 exports.collectAndReportErrors = function (promises) {
     var errors = [];
 
-    return exports.all(promises.map(function (promise) {
+    return Promise.all(promises.map(function (promise) {
         return promise.fail(function (e) {
             errors.push(e);
         });

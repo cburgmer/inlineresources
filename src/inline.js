@@ -88,7 +88,7 @@ exports.loadAndInlineStyles = function (doc, options) {
     inlineOptions = util.clone(options);
     inlineOptions.baseUrl = inlineOptions.baseUrl || util.getDocumentBaseUrl(doc);
 
-    return util.all(styles.map(function (style) {
+    return Promise.all(styles.map(function (style) {
         return loadAndInlineCssForStyle(style, inlineOptions, alreadyLoadedCssUrls).then(function (errors) {
             allErrors = allErrors.concat(errors);
         });
@@ -200,7 +200,7 @@ exports.loadAndInlineCssLinks = function (doc, options) {
     var links = getCssStylesheetLinks(doc),
         errors = [];
 
-    return util.all(links.map(function (link) {
+    return Promise.all(links.map(function (link) {
         return loadLinkedCSS(link, options).then(function(result) {
             substituteLinkWithInlineStyle(link, result.content + "\n");
 
@@ -233,7 +233,7 @@ exports.inlineReferences = function (doc, options) {
         inlineFuncs.push(exports.loadAndInlineScript);
     }
 
-    return util.all(inlineFuncs.map(function (func) {
+    return Promise.all(inlineFuncs.map(function (func) {
         return func(doc, options)
             .then(function (errors) {
                 allErrors = allErrors.concat(errors);
