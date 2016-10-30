@@ -239,7 +239,7 @@ describe("Inline utilities function", function () {
             return Promise.reject(e);
         };
         var resolvedPromise = function () {
-            return Promise.resolve();
+            return Promise.resolve('');
         };
 
         beforeEach(function () {
