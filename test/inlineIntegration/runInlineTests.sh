@@ -25,7 +25,7 @@ testFile() {
     local fileTargetSha="test/inlineIntegration/checksums/${testReference}_sha.txt"
 
     echo "Generating inlined version of ${sourceFile}"
-    slimerjs examples/bundlePage.js "$sourceFile" > "$inlinedFilePath"
+    phantomjs examples/bundlePage.js "$sourceFile" > "$inlinedFilePath"
 
     echo "Comparing checksum of file with target"
     checksum=$(shasum "$inlinedFilePath" | cut -d' ' -f1)
@@ -48,7 +48,7 @@ takeScreenshot() {
 
     echo "Taking a screenshot, writing to ${screenshotPath}"
     echo "file://$(pwd)/$inlinedFilePath"
-    slimerjs test/inlineIntegration/rasterize.js "file://$(pwd)/$inlinedFilePath" "$screenshotPath"
+    phantomjs test/inlineIntegration/rasterize.js "file://$(pwd)/$inlinedFilePath" "$screenshotPath"
     exitOnFail
 }
 
