@@ -9,14 +9,10 @@
 # derived checksum. A mismatch can indicate both an intentional or unwanted
 # change in the inlining algorithm.
 
-failedTests=0
+set -e
+set -o pipefail
 
-exitOnFail() {
-    if [[ "$?" -ne 0 ]]; then
-        echo "Internal error"
-        exit 1
-    fi
-}
+failedTests=0
 
 testFile() {
     local sourceFile="$1"
@@ -29,11 +25,10 @@ testFile() {
 
     echo "Comparing checksum of file with target"
     checksum=$(shasum "$inlinedFilePath" | cut -d' ' -f1)
-    echo "$checksum" | diff - "$fileTargetSha" > /dev/null
-    if [[ "$?" -ne 0 ]]; then
+    if ! echo "$checksum" | diff - "$fileTargetSha" > /dev/null; then
         local expected=$(cat "$fileTargetSha")
         echo "Expected ${expected} but got ${checksum}"
-        let "failedTests++"
+        failedTests=$(expr ${failedTests} + 1)
         echo "FAIL"
     else
         echo "SUCCESS"
@@ -49,7 +44,6 @@ takeScreenshot() {
     echo "Taking a screenshot, writing to ${screenshotPath}"
     echo "file://$(pwd)/$inlinedFilePath"
     phantomjs test/inlineIntegration/rasterize.js "file://$(pwd)/$inlinedFilePath" "$screenshotPath"
-    exitOnFail
 }
 
 downloadPageData() {
@@ -60,9 +54,7 @@ downloadPageData() {
     if [[ ! -d "${targetDirectory}/${testReference}" ]]; then
         echo "Downloading full page from ${pageDataUrl}"
         wget --directory-prefix="$targetDirectory" "$pageDataUrl"
-        exitOnFail
         tar -xjf "${targetDirectory}/${testReference}.tar.bz"
-        exitOnFail
     fi
 }
 
