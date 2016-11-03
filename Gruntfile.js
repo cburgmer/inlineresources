@@ -9,7 +9,6 @@ module.exports = function (grunt) {
                 files: [
                     // http://stackoverflow.com/questions/29391111/karma-phantomjs-and-es6-promises
                     'node_modules/babel-polyfill/dist/polyfill.js',
-                    'build/dependencies/dependencies.js',
                     'build/testSuite.js',
                     {pattern: 'test/fixtures/**', included: false}
                 ],
@@ -38,14 +37,40 @@ module.exports = function (grunt) {
                 src: [],
                 dest: 'build/dependencies/xmlserializer.js',
                 options: {
-                    require: ['xmlserializer']
+                    require: ['xmlserializer'],
+                    browserifyOptions: {
+                        standalone: 'xmlserializer'
+                    }
                 }
             },
-            dependencies: {
+            url: {
                 src: [],
-                dest: 'build/dependencies/dependencies.js',
+                dest: 'build/dependencies/url.js',
                 options: {
-                    require: ['url', 'css-font-face-src', 'cssom']
+                    require: ['url'],
+                    browserifyOptions: {
+                        standalone: 'url'
+                    }
+                }
+            },
+            cssFontFaceSrc: {
+                src: [],
+                dest: 'build/dependencies/css-font-face-src.js',
+                options: {
+                    require: ['css-font-face-src'],
+                    browserifyOptions: {
+                        standalone: 'cssFontFaceSrc'
+                    }
+                }
+            },
+            cssom: {
+                src: [],
+                dest: 'build/dependencies/cssom.js',
+                options: {
+                    require: ['cssom'],
+                    browserifyOptions: {
+                        standalone: 'cssom'
+                    }
                 }
             },
             testSuite: {
@@ -54,8 +79,7 @@ module.exports = function (grunt) {
                 options: {
                     browserifyOptions: {
                         debug: true
-                    },
-                    external: ['cssom', 'url', 'css-font-face-src']
+                    }
                 }
             },
             browser: {
@@ -76,11 +100,31 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 options: {
-                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                        ' Licensed <%= pkg.license %> */\n'
+                        ' Licensed <%= pkg.license %> */\n' +
+                        ["// UMD header",
+                         "(function (root, factory) {",
+                         "    if (typeof define === 'function' && define.amd) {",
+                         "        define(['url', 'css-font-face-src', 'cssom'], function (a0,b1,c2) {",
+                         "            return (root['<%= pkg.name %>'] = factory(a0,b1,c2));",
+                         "        });",
+                         "    } else if (typeof require === 'object') {",
+                         "        var cssom;",
+                         "        try { cssom = require('cssom'); } catch (e) {}",
+                         "        module.exports = factory(require('url'), require('css-font-face-src'), cssom);",
+                         "    } else {",
+                         "        root['<%= pkg.name %>'] = factory(url,cssFontFaceSrc,window.cssom);",
+                         "    }",
+                         "}(this, function (url, cssFontFaceSrc, cssom) {",
+                         "    var modules = {url: url, 'css-font-face-src': cssFontFaceSrc, cssom: cssom};",
+                         "    var require = function (name) { if (modules[name]) { return modules[name]; } else { throw new Error('Module not found: ' + name); }; };",
+                         "    // cheat browserify module to leave the function reference for us",
+                         "    var module = {}, exports={};\n"].join('\n'),
+                    footer: ["    return module.exports;",
+                             "}));\n"].join('\n')
                 },
                 src: ['build/<%= pkg.name %>.js'],
                 dest: 'dist/<%= pkg.name %>.js'
@@ -191,7 +235,9 @@ module.exports = function (grunt) {
 
     grunt.registerTask('testDeps', [
         'browserify:xmlserializer',
-        'browserify:dependencies'
+        'browserify:url',
+        'browserify:cssFontFaceSrc',
+        'browserify:cssom'
     ]);
 
     grunt.registerTask('testWatch', [
