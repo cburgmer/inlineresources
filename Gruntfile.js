@@ -57,16 +57,6 @@ module.exports = function (grunt) {
                     }
                 }
             },
-            cssFontFaceSrc: {
-                src: [],
-                dest: 'build/dependencies/css-font-face-src.js',
-                options: {
-                    require: ['css-font-face-src'],
-                    browserifyOptions: {
-                        standalone: 'cssFontFaceSrc'
-                    }
-                }
-            },
             cssom: {
                 src: [],
                 dest: 'build/dependencies/cssom.js',
@@ -235,7 +225,6 @@ module.exports = function (grunt) {
     grunt.registerTask('testDeps', [
         'browserify:xmlserializer',
         'browserify:url',
-        'browserify:cssFontFaceSrc',
         'browserify:cssom'
     ]);
 
