@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "babel-polyfill": "^6.16.0",
+    "derequire": "^2.0.3",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "^1.2.0",
@@ -41,6 +42,7 @@
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
+    "grunt-exec": "^1.0.1",
     "grunt-karma": "^2.0.0",
     "grunt-regex-check": "~0.1.5",
     "grunt-umd": "^2.3.6",

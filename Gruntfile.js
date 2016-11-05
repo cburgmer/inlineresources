@@ -32,6 +32,10 @@ module.exports = function (grunt) {
                 singleRun: false
             }
         },
+        exec: {
+            // work around https://github.com/substack/node-browserify/pull/1151
+            bundle: './node_modules/.bin/browserify --standalone <%= pkg.name %> --external url --external css-font-face-src --external cssom src/inline.js | ./node_modules/.bin/derequire > build/<%= pkg.name %>.bundled.js'
+        },
         browserify: {
             xmlserializer: {
                 src: [],
@@ -81,16 +85,6 @@ module.exports = function (grunt) {
                         debug: true
                     }
                 }
-            },
-            browser: {
-                src: 'src/inline.js',
-                dest: 'build/<%= pkg.name %>.js',
-                options: {
-                    browserifyOptions: {
-                        standalone: '<%= pkg.name %>',
-                    },
-                    external: ['cssom', 'url', 'css-font-face-src']
-                }
             }
         },
         clean: {
@@ -100,6 +94,7 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 options: {
+                    // Work around https://github.com/substack/node-browserify/issues/670
                     banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
@@ -111,10 +106,11 @@ module.exports = function (grunt) {
                          "        define(['url', 'css-font-face-src', 'cssom'], function (a0,b1,c2) {",
                          "            return (root['<%= pkg.name %>'] = factory(a0,b1,c2));",
                          "        });",
-                         "    } else if (typeof require === 'object') {",
+                         "    } else if (typeof exports === 'object') { // browserify context",
                          "        var cssom;",
                          "        try { cssom = require('cssom'); } catch (e) {}",
-                         "        module.exports = factory(require('url'), require('css-font-face-src'), cssom);",
+                         "        var f = factory(require('url'), require('css-font-face-src'), cssom);",
+                         "        for(var prop in f) exports[prop] = f[prop];",
                          "    } else {",
                          "        root['<%= pkg.name %>'] = factory(url,cssFontFaceSrc,window.cssom);",
                          "    }",
@@ -122,11 +118,13 @@ module.exports = function (grunt) {
                          "    var modules = {url: url, 'css-font-face-src': cssFontFaceSrc, cssom: cssom};",
                          "    var require = function (name) { if (modules[name]) { return modules[name]; } else { throw new Error('Module not found: ' + name); }; };",
                          "    // cheat browserify module to leave the function reference for us",
-                         "    var module = {}, exports={};\n"].join('\n'),
-                    footer: ["    return module.exports;",
+                         "    var module = {}, exports={};",
+                         "    // from here on it's browserify all the way\n"].join('\n'),
+                    footer: ["\n    // back to us",
+                             "    return module.exports;",
                              "}));\n"].join('\n')
                 },
-                src: ['build/<%= pkg.name %>.js'],
+                src: ['build/<%= pkg.name %>.bundled.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
@@ -232,6 +230,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-umd');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('testDeps', [
         'browserify:xmlserializer',
@@ -258,7 +257,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('build', [
-        'browserify:browser',
+        'exec:bundle',
         'concat:dist'
     ]);
 
