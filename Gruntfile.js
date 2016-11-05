@@ -37,16 +37,6 @@ module.exports = function (grunt) {
             bundle: './node_modules/.bin/browserify --standalone <%= pkg.name %> --external url --external css-font-face-src --external cssom src/inline.js | ./node_modules/.bin/derequire > build/<%= pkg.name %>.bundled.js'
         },
         browserify: {
-            xmlserializer: {
-                src: [],
-                dest: 'build/dependencies/xmlserializer.js',
-                options: {
-                    require: ['xmlserializer'],
-                    browserifyOptions: {
-                        standalone: 'xmlserializer'
-                    }
-                }
-            },
             url: {
                 src: [],
                 dest: 'build/dependencies/url.js',
@@ -223,7 +213,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('testDeps', [
-        'browserify:xmlserializer',
         'browserify:url',
         'browserify:cssom'
     ]);
