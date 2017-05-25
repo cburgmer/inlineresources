@@ -50,6 +50,16 @@ describe("Background value parser", function () {
             expect(url).toEqual("data:image/png;base64,soMEfAkebASE64=");
         });
 
+        it("should handle a data URI with closing bracket when quoted with double quotes", function () {
+            var url = backgroundValueParser.extractCssUrl('url("data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20height%3D%2210%22%20width%3D%2210%22%20style%3D%22transform%3A%20rotate(45deg)%3B%20fill%3A%20%2300f%22%2F%3E%3C%2Fsvg%3E")');
+            expect(url).toEqual('data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20height%3D%2210%22%20width%3D%2210%22%20style%3D%22transform%3A%20rotate(45deg)%3B%20fill%3A%20%2300f%22%2F%3E%3C%2Fsvg%3E');
+        });
+
+        it("should handle a data URI with closing bracket when quoted with single quotes", function () {
+            var url = backgroundValueParser.extractCssUrl("url('data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20height%3D%2210%22%20width%3D%2210%22%20style%3D%22transform%3A%20rotate(45deg)%3B%20fill%3A%20%2300f%22%2F%3E%3C%2Fsvg%3E')");
+            expect(url).toEqual('data:image/svg+xml,%3Csvg%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20height%3D%2210%22%20width%3D%2210%22%20style%3D%22transform%3A%20rotate(45deg)%3B%20fill%3A%20%2300f%22%2F%3E%3C%2Fsvg%3E');
+        });
+
         it("should throw an exception on invalid CSS URL", function () {
             expect(function () {
                 backgroundValueParser.extractCssUrl('invalid_stuff');

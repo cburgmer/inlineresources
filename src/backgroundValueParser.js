@@ -12,7 +12,7 @@ var trimCSSWhitespace = function (url) {
 
 // TODO exporting this for the sake of unit testing. Should rather test the background value parser explicitly.
 exports.extractCssUrl = function (cssUrl) {
-    var urlRegex = /^url\(([^\)]+)\)/,
+    var urlRegex = /^url\(("[^"]+"|'[^']+'|[^\)]+)\)/,
         quotedUrl;
 
     if (!urlRegex.test(cssUrl)) {
