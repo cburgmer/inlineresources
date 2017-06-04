@@ -10,24 +10,13 @@ var inlineCss = require('../../src/inlineCss'),
 describe("Inline CSS content", function () {
     var joinUrlSpy, ajaxSpy, binaryAjaxSpy, getDataURIForImageURLSpy;
 
-    var parseRulesNatively = function (text) {
+    var parseRules = function (text) {
         var doc = document.implementation.createHTMLDocument(""),
             style = doc.createElement('style');
 
         style.textContent = text;
         doc.documentElement.appendChild(style);
         return Array.prototype.slice.call(style.sheet.cssRules);
-    };
-
-    var parseRules = function (text) {
-        var cssom = require('cssom');
-
-        // TODO tests should rather be duplicated testing against one backend each
-        if (testHelper.isChrome) {
-            return cssom.parse(text).cssRules;
-        } else {
-            return parseRulesNatively(text);
-        }
     };
 
     beforeEach(function () {

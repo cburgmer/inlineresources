@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         },
         exec: {
             // work around https://github.com/substack/node-browserify/pull/1151
-            bundle: './node_modules/.bin/browserify --standalone <%= pkg.name %> --external url --external css-font-face-src --external cssom src/inline.js | ./node_modules/.bin/derequire > build/<%= pkg.name %>.bundled.js'
+            bundle: './node_modules/.bin/browserify --standalone <%= pkg.name %> --external url --external css-font-face-src src/inline.js | ./node_modules/.bin/derequire > build/<%= pkg.name %>.bundled.js'
         },
         browserify: {
             url: {
@@ -44,16 +44,6 @@ module.exports = function (grunt) {
                     require: ['url'],
                     browserifyOptions: {
                         standalone: 'url'
-                    }
-                }
-            },
-            cssom: {
-                src: [],
-                dest: 'build/dependencies/cssom.js',
-                options: {
-                    require: ['cssom'],
-                    browserifyOptions: {
-                        standalone: 'cssom'
                     }
                 }
             },
@@ -74,16 +64,6 @@ module.exports = function (grunt) {
                         standalone: '<%= pkg.name %>'
                     }
                 }
-            },
-            allinoneNoCssom: {
-                src: 'src/inline.js',
-                dest: 'build/<%= pkg.name %>.allinone.nocssom.js',
-                options: {
-                    browserifyOptions: {
-                        standalone: '<%= pkg.name %>'
-                    },
-                    exclude: ['cssom']
-                }
             }
         },
         clean: {
@@ -102,19 +82,17 @@ module.exports = function (grunt) {
                         ["// UMD header",
                          "(function (root, factory) {",
                          "    if (typeof define === 'function' && define.amd) {",
-                         "        define(['url', 'css-font-face-src', 'cssom'], function (a0,b1,c2) {",
-                         "            return (root['<%= pkg.name %>'] = factory(a0,b1,c2));",
+                         "        define(['url', 'css-font-face-src'], function (a0,b1) {",
+                         "            return (root['<%= pkg.name %>'] = factory(a0,b1));",
                          "        });",
                          "    } else if (typeof exports === 'object') { // browserify context",
-                         "        var cssom;",
-                         "        try { cssom = require('cssom'); } catch (e) {}",
-                         "        var f = factory(require('url'), require('css-font-face-src'), cssom);",
+                         "        var f = factory(require('url'), require('css-font-face-src'));",
                          "        for(var prop in f) exports[prop] = f[prop];",
                          "    } else {",
-                         "        root['<%= pkg.name %>'] = factory(url,cssFontFaceSrc,window.cssom);",
+                         "        root['<%= pkg.name %>'] = factory(url,cssFontFaceSrc);",
                          "    }",
-                         "}(this, function (url, cssFontFaceSrc, cssom) {",
-                         "    var modules = {url: url, 'css-font-face-src': cssFontFaceSrc, cssom: cssom};",
+                         "}(this, function (url, cssFontFaceSrc) {",
+                         "    var modules = {url: url, 'css-font-face-src': cssFontFaceSrc};",
                          "    var require = function (name) { if (modules[name]) { return modules[name]; } else { throw new Error('Module not found: ' + name); }; };",
                          "    // cheat browserify module to leave the function reference for us",
                          "    var module = {}, exports={};",
@@ -137,26 +115,10 @@ module.exports = function (grunt) {
                         ' Licensed <%= pkg.license %> */\n' +
                         '/* Integrated dependencies:\n' +
                         ' * url (MIT License),\n' +
-                        ' * CSSOM.js (MIT License),\n' +
                         ' * css-font-face-src (BSD License) */\n'
                 },
                 files: {
                     'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
-                }
-            },
-            allinoneNoCssom: {
-                options: {
-                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                        '* <%= pkg.homepage %>\n' +
-                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                        ' Licensed <%= pkg.license %> */\n' +
-                        '/* Integrated dependencies:\n' +
-                        ' * url (MIT License),\n' +
-                        ' * css-font-face-src (BSD License) */\n'
-                },
-                files: {
-                    'dist/<%= pkg.name %>.allinone.nocssom.js': ['build/<%= pkg.name %>.allinone.nocssom.js']
                 }
             }
         },
@@ -207,7 +169,6 @@ module.exports = function (grunt) {
                     require: true,
                     exports: true,
 
-                    cssom: true,
                     url: true
                 },
                 exported: ['inline', 'inlineCss', 'inlineUtil']
@@ -229,7 +190,6 @@ module.exports = function (grunt) {
                         expect: true,
                         spyOn: true,
 
-                        cssom: true,
                         url: true
                     },
                     ignores: ['test/fixtures/']
@@ -265,8 +225,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('testDeps', [
-        'browserify:url',
-        'browserify:cssom'
+        'browserify:url'
     ]);
 
     grunt.registerTask('testWatch', [
@@ -290,7 +249,6 @@ module.exports = function (grunt) {
         'exec:bundle',
         'concat:dist',
         'browserify:allinone',
-        'browserify:allinoneNoCssom',
         'uglify'
     ]);
 
