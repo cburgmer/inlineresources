@@ -2,9 +2,7 @@
 
 var inlineCss = require('../../src/inlineCss'),
     util = require('../../src/util'),
-    testHelper = require('../testHelper'),
-    backgroundValueParser = require('../../src/backgroundValueParser'),
-    ifNotInChromeIt = testHelper.ifNotInChromeIt;
+    backgroundValueParser = require('../../src/backgroundValueParser');
 
 
 describe("Inline CSS content", function () {
@@ -170,24 +168,6 @@ describe("Inline CSS content", function () {
 
             expect(rules[0].cssText).toMatch(/\! ?important/);
         });
-
-        xit("should inline both backgroundImage and background when in the same rule to catch CSSOM.js way of handling the shorthand form", function () {
-            var rules = parseRules('span { background: url("../green.png"); background-image: url("../blue.png"); }');
-
-            joinUrlSpy.and.callFake(function (base, url) {
-                if (url === "../green.png" && base === "below/some.css") {
-                    return "green.png";
-                } else if (url === "../blue.png" && base === "below/some.css") {
-                    return "blue.png";
-                }
-            });
-
-            inlineCss.adjustPathsOfCssResources("below/some.css", rules);
-
-            expect(rules[0].style.getPropertyValue('background')).toEqual('url("green.png")');
-            expect(rules[0].style.getPropertyValue('background-image')).toEqual('url("blue.png")');
-        });
-
     });
 
     describe("loadCSSImportsForRules", function () {
@@ -555,8 +535,7 @@ describe("Inline CSS content", function () {
                 });
             });
 
-            // cssom is much more forgiving that the browsers
-            ifNotInChromeIt("should ignore an invalid value together with a valid url", function (done) {
+            it("should ignore an invalid value together with a valid url", function (done) {
                 var rules = parseRules('span { background-image: "invalid url", url("valid/url.png"); }');
 
                 extractCssUrlSpy.and.callFake(function (value) {
@@ -679,26 +658,6 @@ describe("Inline CSS content", function () {
                     expect(result.hasChanges).toBe(true);
 
                     expect(rules[0].cssText).toMatch(/\! ?important/);
-
-                    done();
-                });
-            });
-
-            xit("should inline both backgroundImage and background when in the same rule to catch CSSOM.js way of handling the shorthand form", function (done) {
-                var anImage = "anImage.png",
-                    anImagesDataUri = "data:image/png;base64,someDataUri",
-                    anotherImage = "anotherImage.png",
-                    anotherImagesDataUri = "data:image/png;base64,otherDataUri",
-                    rules = parseRules('span { background: url("' + anotherImage + '"); background-image: url("' + anImage + '"); }');
-
-                mockGetDataURIForImageURL(anImage, anImagesDataUri);
-                mockGetDataURIForImageURL(anotherImage, anotherImagesDataUri);
-
-                inlineCss.loadAndInlineCSSResourcesForRules(rules, {}).then(function (result) {
-                    expect(result.hasChanges).toBe(true);
-
-                    expect(rules[0].style.getPropertyValue('background')).toEqual('url("' + anotherImagesDataUri + '")');
-                    expect(rules[0].style.getPropertyValue('background-image')).toEqual('url("' + anImagesDataUri + '")');
 
                     done();
                 });
