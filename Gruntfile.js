@@ -65,6 +65,25 @@ module.exports = function (grunt) {
                         debug: true
                     }
                 }
+            },
+            allinone: {
+                src: 'src/inline.js',
+                dest: 'build/<%= pkg.name %>.allinone.js',
+                options: {
+                    browserifyOptions: {
+                        standalone: '<%= pkg.name %>'
+                    }
+                }
+            },
+            allinoneNoCssom: {
+                src: 'src/inline.js',
+                dest: 'build/<%= pkg.name %>.allinone.nocssom.js',
+                options: {
+                    browserifyOptions: {
+                        standalone: '<%= pkg.name %>'
+                    },
+                    exclude: ['cssom']
+                }
             }
         },
         clean: {
@@ -106,6 +125,39 @@ module.exports = function (grunt) {
                 },
                 src: ['build/<%= pkg.name %>.bundled.js'],
                 dest: 'dist/<%= pkg.name %>.js'
+            }
+        },
+        uglify: {
+            allinone: {
+                options: {
+                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                        '* <%= pkg.homepage %>\n' +
+                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+                        ' Licensed <%= pkg.license %> */\n' +
+                        '/* Integrated dependencies:\n' +
+                        ' * url (MIT License),\n' +
+                        ' * CSSOM.js (MIT License),\n' +
+                        ' * css-font-face-src (BSD License) */\n'
+                },
+                files: {
+                    'dist/<%= pkg.name %>.allinone.js': ['build/<%= pkg.name %>.allinone.js']
+                }
+            },
+            allinoneNoCssom: {
+                options: {
+                    banner:'/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                        '* <%= pkg.homepage %>\n' +
+                        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+                        ' Licensed <%= pkg.license %> */\n' +
+                        '/* Integrated dependencies:\n' +
+                        ' * url (MIT License),\n' +
+                        ' * css-font-face-src (BSD License) */\n'
+                },
+                files: {
+                    'dist/<%= pkg.name %>.allinone.nocssom.js': ['build/<%= pkg.name %>.allinone.nocssom.js']
+                }
             }
         },
         watch: {
@@ -236,7 +288,10 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'exec:bundle',
-        'concat:dist'
+        'concat:dist',
+        'browserify:allinone',
+        'browserify:allinoneNoCssom',
+        'uglify'
     ]);
 
     grunt.registerTask('default', [
