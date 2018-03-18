@@ -7,8 +7,6 @@ module.exports = function (grunt) {
         karma: {
             options: {
                 files: [
-                    // http://stackoverflow.com/questions/29391111/karma-phantomjs-and-es6-promises
-                    'node_modules/babel-polyfill/dist/polyfill.js',
                     'build/testSuite.js',
                     {pattern: 'test/fixtures/**', included: false}
                 ],
@@ -17,11 +15,11 @@ module.exports = function (grunt) {
             },
             ci: {
                 proxies: {
-                    '/test/fixtures/': 'http://localhost:9988/base/test/fixtures/'
+                    '/fixtures/': 'http://localhost:9988/base/test/fixtures/'
                 },
                 port: 9988,
                 singleRun: true,
-                browsers: ['PhantomJS']
+                browsers: ['ChromeHeadless']
             },
             local: {
                 proxies: {
