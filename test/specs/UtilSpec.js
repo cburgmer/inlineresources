@@ -46,15 +46,6 @@ describe("Inline utilities function", function () {
                 done();
             });
         });
-
-        it("should return null if document has no base url", function () {
-            var doc = document.implementation.createHTMLDocument(""),
-                url;
-
-            url = util.getDocumentBaseUrl(doc);
-
-            expect(url).toBe(null);
-        });
     });
 
     describe("joinUrl", function () {

@@ -267,9 +267,9 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(cssLink);
 
         inline.loadAndInlineCssLinks(doc, {cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, {
+            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, jasmine.objectContaining({
                 cache: 'none'
-            });
+            }));
 
             expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache).toEqual('none');
             expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].cache).toEqual('none');
@@ -283,7 +283,10 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(cssLink);
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, {});
+            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, jasmine.any(Object));
+            expect(ajaxSpy).not.toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
+                cache: 'none'
+            }));
 
             expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache).not.toBe(false);
             expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].cache).not.toBe(false);

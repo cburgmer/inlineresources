@@ -190,9 +190,9 @@ describe("JS inline", function () {
         doc.head.appendChild(anExternalScript());
 
         inlineScript.inline(doc, {cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), {
+            expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
                 cache: 'none'
-            });
+            }));
 
             done();
         });
@@ -202,7 +202,10 @@ describe("JS inline", function () {
         doc.head.appendChild(anExternalScript());
 
         inlineScript.inline(doc, {}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), {});
+            expect(ajaxSpy).toHaveBeenCalled();
+            expect(ajaxSpy).not.toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
+                cache: 'none'
+            }));
 
             done();
         });

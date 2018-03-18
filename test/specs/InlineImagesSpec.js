@@ -141,7 +141,7 @@ describe("Image and image input inline", function () {
 
         inlineImage.inline(doc, {cache: 'none'});
 
-        expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), {cache: 'none'});
+        expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({cache: 'none'}));
     });
 
     it("should not circumvent caching by default", function () {
@@ -149,7 +149,10 @@ describe("Image and image input inline", function () {
 
         inlineImage.inline(doc, {});
 
-        expect(getDataURIForImageURLSpy).toHaveBeenCalledWith(jasmine.any(String), {});
+        expect(getDataURIForImageURLSpy).toHaveBeenCalled();
+        expect(getDataURIForImageURLSpy).not.toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
+            cache: 'none'
+        }));
     });
 
     it("should load an external svg image without xlink ns", function (done) {
