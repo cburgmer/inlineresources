@@ -41,9 +41,8 @@ takeScreenshot() {
     local dateSuffix=$(date +%y%m%d_%H%M%S)
     local screenshotPath="build/tests/${testReference}_${dateSuffix}.png"
 
-    echo "Taking a screenshot, writing to ${screenshotPath}"
-    echo "file://$(pwd)/$inlinedFilePath"
-    phantomjs test/inlineIntegration/rasterize.js "file://$(pwd)/$inlinedFilePath" "$screenshotPath"
+    echo "Taking a screenshot of ${inlinedFilePath}, writing to ${screenshotPath}"
+    ./test/inlineIntegration/rasterize.js "$inlinedFilePath" "$screenshotPath"
 }
 
 downloadPageData() {

@@ -1,36 +1,46 @@
-// Taken from https://github.com/ariya/phantomjs/tree/master/examples
-/* global phantom */
-"use strict";
+#!/usr/bin/env node
+/* jshint ignore:start */
+const path = require('path'),
+      puppeteer = require('puppeteer');
 
-var page = require('webpage').create(),
-    system = require('system'),
-    address, output, size;
+const fileUrl = (relPath) => {
+    return 'file://' + path.resolve(process.cwd(), relPath);
+};
 
-if (system.args.length < 3 || system.args.length > 5) {
-    console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [zoom]');
-    console.log('  paper (pdf output) examples: "5in*7.5in", "10cm*20cm", "A4", "Letter"');
-    phantom.exit(1);
-} else {
-    address = system.args[1];
-    output = system.args[2];
-    page.viewportSize = { width: 1024, height: 768 };
-    if (system.args.length > 3 && system.args[2].substr(-4) === ".pdf") {
-        size = system.args[3].split('*');
-        page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '0px' }
-                                           : { format: system.args[3], orientation: 'portrait', margin: '1cm' };
+const takeScreenshot = async (url, targetPath) => {
+    const browser = await puppeteer.launch({args: ['--allow-file-access-from-files']}),
+          page = await browser.newPage(),
+          pageUrl = fileUrl(url);
+
+    await page.goto(pageUrl);
+    await page.reload(); // Work around parse error `error on line 36 at column 187413: Char 0x0 out of allowed range`
+    await page.reload();
+    await page.reload();
+
+    await page.screenshot({path: targetPath, fullPage: true});
+    browser.close();
+};
+
+const main = async () => {
+    if (process.argv.length !== 4) {
+        console.log('Usage: ' + path.basename(process.argv[1]) + ' URL TARGET_PATH');
+        console.log("Takes a screenshot of a given URL");
+        process.exit(1);
     }
-    if (system.args.length > 4) {
-        page.zoomFactor = system.args[4];
+
+    const url = process.argv[2],
+          target = process.argv[3];
+
+    await takeScreenshot(url, target);
+};
+
+(async () => {
+    try {
+        await main();
+        process.exit(0);
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
     }
-    page.open(address, function (status) {
-        if (status !== 'success') {
-            console.log('Unable to load the address!');
-            phantom.exit();
-        } else {
-            window.setTimeout(function () {
-                page.render(output);
-                phantom.exit();
-            }, 200);
-        }
-    });
-}
+})();
+/* jshint ignore:end */
