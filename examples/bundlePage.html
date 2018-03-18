@@ -8,13 +8,6 @@
     <script type="text/javascript" src="../node_modules/css-font-face-src/dist/css-font-face-src.js"></script>
     <script type="text/javascript" src="../dist/inlineresources.js"></script>
     <script>
-        var sendMessage = function (cmd, content) {
-            console.log(JSON.stringify({
-                cmd: cmd,
-                content: content
-            }));
-        };
-
         var loadDocument = function (url) {
             return new Promise(function (resolve, reject) {
                 var ajaxRequest = new window.XMLHttpRequest(),
@@ -45,19 +38,14 @@
         };
 
         window.bundlePage = function (url) {
-            loadDocument(url).then(function (doc) {
-                inlineresources.inlineReferences(doc, {}).then(function (errors) {
-                    var xhtml;
-
+            return loadDocument(url).then(function (doc) {
+                return inlineresources.inlineReferences(doc, {}).then(function (errors) {
                     errors.forEach(function (error) {
-                        sendMessage('log', error.msg);
+                        console.log(error.msg);
                     });
 
-                    xhtml = xmlserializer.serializeToString(doc);
-                    sendMessage('done', xhtml);
+                    return xmlserializer.serializeToString(doc);
                 });
-            }, function () {
-                sendMessage('log', "error loading file '" + url + "'");
             });
 
         };
@@ -66,9 +54,7 @@
 <body>
     <h1>Helper page for bundlePage.js</h1>
     <p>Example usage:</p>
-    <pre>phantomjs examples/bundlePage.js test/fixtures/image.html</pre>
-    or
-    <pre>slimerjs examples/bundlePage.js test/fixtures/image.html</pre>
+    <pre>node ./examples/bundlePage.js test/fixtures/image.html</pre>
     <p>Make sure you have run `npm test` beforehand</p>
 </body>
 </html>

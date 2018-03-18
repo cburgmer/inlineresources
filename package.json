@@ -51,7 +51,8 @@
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.2",
     "phantomjs": "^2.1.7",
-    "xmlserializer": "^0.6.0"
+    "xmlserializer": "^0.6.0",
+    "puppeteer": "^1.2.0"
   },
   "scripts": {
     "test": "grunt && ./test/inlineIntegration/runInlineTests.sh"

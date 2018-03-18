@@ -21,7 +21,7 @@ testFile() {
     local fileTargetSha="test/inlineIntegration/checksums/${testReference}_sha.txt"
 
     echo "Generating inlined version of ${sourceFile}"
-    phantomjs examples/bundlePage.js "$sourceFile" > "$inlinedFilePath"
+    ./examples/bundlePage.js "$sourceFile" > "$inlinedFilePath"
 
     echo "Comparing checksum of file with target"
     checksum=$(shasum "$inlinedFilePath" | cut -d' ' -f1)
