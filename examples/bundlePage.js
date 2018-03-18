@@ -3,6 +3,7 @@
 const http = require('http'),
       url = require('url'),
       fs = require('fs'),
+      path = require('path'),
       puppeteer = require('puppeteer');
 
 const port = 8000;
@@ -43,13 +44,6 @@ const startWebserver = function () {
     }).listen(port);
 };
 
-const getBaseName = function (path) {
-    if (path.lastIndexOf('/') >= 0) {
-        return path.substr(path.lastIndexOf('/') + 1);
-    }
-    return path;
-};
-
 const getFileUrl = function (address) {
     return address.indexOf("://") === -1 ? "http://localhost:" + port + "/" + address : address;
 };
@@ -80,7 +74,7 @@ const bundlePage = async (url) => {
 
 const main = async () => {
     if (process.argv.length !== 3) {
-        console.log('Usage: ' + getBaseName(process.argv[1]) + ' PAGE_TO_INLINE');
+        console.log('Usage: ' + path.basename(process.argv[1]) + ' PAGE_TO_INLINE');
         console.log("Inlines resources of a given page into one big XHTML document");
         process.exit(1);
     }
