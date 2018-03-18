@@ -53,6 +53,9 @@
     "xmlserializer": "^0.6.0",
     "puppeteer": "^1.2.0"
   },
+  "optionalDependencies": {
+    "cssom": "~0.3.0"
+  },
   "scripts": {
     "test": "grunt && ./test/inlineIntegration/runInlineTests.sh"
   }

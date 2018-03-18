@@ -1,5 +1,13 @@
 "use strict";
 
+var cssom;
+
+try {
+  cssom = require('cssom');
+} catch (e) {
+}
+
+
 exports.unquoteString = function (quotedUrl) {
     var doubleQuoteRegex = /^"(.*)"$/,
         singleQuoteRegex = /^'(.*)'$/;
@@ -15,7 +23,7 @@ exports.unquoteString = function (quotedUrl) {
     }
 };
 
-exports.rulesForCssText = function (styleContent) {
+var rulesForCssTextFromBrowser = function (styleContent) {
     var doc = document.implementation.createHTMLDocument(""),
         styleElement = document.createElement("style"),
         rules;
@@ -26,6 +34,33 @@ exports.rulesForCssText = function (styleContent) {
     rules = styleElement.sheet.cssRules;
 
     return Array.prototype.slice.call(rules);
+};
+
+var browserHasBackgroundImageUrlIssue = (function () {
+    // Checks for http://code.google.com/p/chromium/issues/detail?id=161644
+    var rules = rulesForCssTextFromBrowser('a{background:url(i)}');
+    return !rules.length || rules[0].cssText.indexOf('url()') >= 0;
+}());
+
+var browserHasFontFaceUrlIssue = (function () {
+    // Checks for https://bugs.chromium.org/p/chromium/issues/detail?id=588129
+    var rules = rulesForCssTextFromBrowser('@font-face { font-family: "f"; src: url("f"); }');
+    return !rules.length || /url\(['"]*\)/.test(rules[0].cssText);
+}());
+
+var browserHasBackgroundImageUrlSetIssue = (function () {
+    // Checks for https://bugs.chromium.org/p/chromium/issues/detail?id=660663
+    var rules = rulesForCssTextFromBrowser('a{background:url(old)}');
+    rules[0].style.setProperty('background', 'url(new)', '');
+    return rules[0].style.getPropertyValue('background').indexOf('old') >= 0;
+}());
+
+exports.rulesForCssText = function (styleContent) {
+    if ((browserHasBackgroundImageUrlIssue || browserHasFontFaceUrlIssue || browserHasBackgroundImageUrlSetIssue) && cssom && cssom.parse) {
+        return cssom.parse(styleContent).cssRules;
+    } else {
+        return rulesForCssTextFromBrowser(styleContent);
+    }
 };
 
 exports.cssRulesToText = function (cssRules) {
