@@ -49,7 +49,7 @@
     "karma": "^3.1.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.0.2",
-    "puppeteer": "^1.2.0",
+    "puppeteer": "^4.0.1",
     "xmlserializer": "^0.6.0"
   },
   "scripts": {
