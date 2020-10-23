@@ -61,6 +61,11 @@ exports.changeFontFaceRuleSrc = function (cssRules, rule, newSrc) {
       "font-weight: " + rule.style.getPropertyValue("font-weight") + "; ";
   }
 
+  if (rule.style.getPropertyValue("unicode-range")) {
+    newRuleText +=
+      "unicode-range: " + rule.style.getPropertyValue("unicode-range") + "; ";
+  }
+
   newRuleText += "src: " + newSrc + "}";
   exports.exchangeRule(cssRules, rule, newRuleText);
 };
