@@ -15,7 +15,7 @@ module.exports = function (grunt) {
             },
             ci: {
                 proxies: {
-                    '/fixtures/': 'http://localhost:9988/base/test/fixtures/'
+                    '/fixtures/': 'http://127.0.0.1:9988/base/test/fixtures/'
                 },
                 port: 9988,
                 singleRun: true,
@@ -23,7 +23,7 @@ module.exports = function (grunt) {
             },
             local: {
                 proxies: {
-                    '/fixtures/': 'http://localhost:9989/base/test/fixtures/'
+                    '/fixtures/': 'http://127.0.0.1:9989/base/test/fixtures/'
                 },
                 port: 9989,
                 background: true,
