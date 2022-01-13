@@ -6,26 +6,25 @@ var isPhantomJs = navigator.userAgent.indexOf("PhantomJS") >= 0,
 var testDisabledOnCondition = function (condition, text, functionHandle) {
     var spec = it(text, functionHandle);
     if (condition) {
-        spec.pend('disabled on this platform');
+        spec.pend("disabled on this platform");
         console.info('"' + text + '" is disabled on this platform');
     }
     return spec;
 };
 
 exports.isChrome = navigator.userAgent.indexOf("Chrom") >= 0;
-exports.ifNotInChromeIt = function(text, functionHandle) {
+exports.ifNotInChromeIt = function (text, functionHandle) {
     testDisabledOnCondition(exports.isChrome, text, functionHandle);
 };
 
-exports.fixturesPath = (isRunFromTheProjectRoot ? 'test/' : '' ) + 'fixtures/';
-
+exports.fixturesPath = (isRunFromTheProjectRoot ? "test/" : "") + "fixtures/";
 
 exports.loadHTMLDocumentFixture = function (url) {
     return new Promise(function (resolve) {
         var fixtureUrl = exports.fixturesPath + url,
             xhr = new window.XMLHttpRequest();
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             resolve(xhr.responseXML);
         };
 
@@ -41,8 +40,8 @@ exports.readDocumentFixture = function (url) {
     var fixtureUrl = exports.fixturesPath + url,
         xhr = new window.XMLHttpRequest();
 
-    xhr.open('GET', fixtureUrl, false);
-    xhr.overrideMimeType('text/xml');
+    xhr.open("GET", fixtureUrl, false);
+    xhr.overrideMimeType("text/xml");
     xhr.send(null);
     return xhr.responseXML;
 };
@@ -50,7 +49,8 @@ exports.readDocumentFixture = function (url) {
 exports.loadHTMLDocumentFixtureWithoutBaseURI = function (url) {
     return exports.loadHTMLDocumentFixture(url).then(function (doc) {
         var baseURILessDoc = document.implementation.createHTMLDocument("");
-        baseURILessDoc.documentElement.innerHTML = doc.documentElement.innerHTML;
+        baseURILessDoc.documentElement.innerHTML =
+            doc.documentElement.innerHTML;
         return baseURILessDoc;
     });
 };
@@ -61,5 +61,5 @@ exports.addStyleToDocument = function (doc, styleContent) {
     styleNode.type = "text/css";
     styleNode.appendChild(doc.createTextNode(styleContent));
 
-    doc.getElementsByTagName('head')[0].appendChild(styleNode);
+    doc.getElementsByTagName("head")[0].appendChild(styleNode);
 };

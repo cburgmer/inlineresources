@@ -1,10 +1,12 @@
 "use strict";
 
-var inline = require('../../src/inline');
-
+var inline = require("../../src/inline");
 
 describe("Inline main", function () {
-    var loadAndInlineImages, loadAndInlineCssLinks, loadAndInlineStyles, loadAndInlineScript;
+    var loadAndInlineImages,
+        loadAndInlineCssLinks,
+        loadAndInlineStyles,
+        loadAndInlineScript;
 
     var withErrors = function (errors) {
         return Promise.resolve(errors);
@@ -49,14 +51,28 @@ describe("Inline main", function () {
         loadAndInlineStyles.and.returnValue(withoutErrors());
         loadAndInlineScript.and.returnValue(withoutErrors());
 
-        inline.inlineReferences(doc, {baseUrl: "a_baseUrl", cache: 'none'}).then(function () {
-            expect(loadAndInlineImages).toHaveBeenCalledWith(doc, {baseUrl: "a_baseUrl", cache: 'none'});
-            expect(loadAndInlineCssLinks).toHaveBeenCalledWith(doc, {baseUrl: "a_baseUrl", cache: 'none'});
-            expect(loadAndInlineStyles).toHaveBeenCalledWith(doc, {baseUrl: "a_baseUrl", cache: 'none'});
-            expect(loadAndInlineScript).toHaveBeenCalledWith(doc, {baseUrl: "a_baseUrl", cache: 'none'});
+        inline
+            .inlineReferences(doc, { baseUrl: "a_baseUrl", cache: "none" })
+            .then(function () {
+                expect(loadAndInlineImages).toHaveBeenCalledWith(doc, {
+                    baseUrl: "a_baseUrl",
+                    cache: "none",
+                });
+                expect(loadAndInlineCssLinks).toHaveBeenCalledWith(doc, {
+                    baseUrl: "a_baseUrl",
+                    cache: "none",
+                });
+                expect(loadAndInlineStyles).toHaveBeenCalledWith(doc, {
+                    baseUrl: "a_baseUrl",
+                    cache: "none",
+                });
+                expect(loadAndInlineScript).toHaveBeenCalledWith(doc, {
+                    baseUrl: "a_baseUrl",
+                    cache: "none",
+                });
 
-            done();
-        });
+                done();
+            });
     });
 
     it("should pass through an error from inlining", function (done) {
@@ -83,7 +99,12 @@ describe("Inline main", function () {
         loadAndInlineScript.and.returnValue(withErrors(["error from script"]));
 
         inline.inlineReferences(doc, {}).then(function (errors) {
-            expect(errors).toEqual(["the error", "more error", "another error", "error from script"]);
+            expect(errors).toEqual([
+                "the error",
+                "more error",
+                "another error",
+                "error from script",
+            ]);
 
             done();
         });
@@ -96,10 +117,12 @@ describe("Inline main", function () {
         loadAndInlineCssLinks.and.returnValue(withoutErrors());
         loadAndInlineStyles.and.returnValue(withoutErrors());
 
-        inline.inlineReferences(doc, {inlineScripts: false}).then(function () {
-            expect(loadAndInlineScript).not.toHaveBeenCalled();
+        inline
+            .inlineReferences(doc, { inlineScripts: false })
+            .then(function () {
+                expect(loadAndInlineScript).not.toHaveBeenCalled();
 
-            done();
-        });
+                done();
+            });
     });
 });

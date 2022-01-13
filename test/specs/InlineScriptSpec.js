@@ -1,12 +1,13 @@
 "use strict";
 
-var inlineScript = require('../../src/inlineScript'),
-    util = require('../../src/util'),
-    testHelper = require('../testHelper');
-
+var inlineScript = require("../../src/inlineScript"),
+    util = require("../../src/util"),
+    testHelper = require("../testHelper");
 
 describe("JS inline", function () {
-    var doc, joinUrlSpy, ajaxSpy,
+    var doc,
+        joinUrlSpy,
+        ajaxSpy,
         internalScript,
         ajaxUrlMocks = {};
 
@@ -16,7 +17,7 @@ describe("JS inline", function () {
                 return Promise.resolve(ajaxUrlMocks[url]);
             } else {
                 return Promise.reject({
-                    url: 'THEURL' + url
+                    url: "THEURL" + url,
                 });
             }
         });
@@ -29,7 +30,7 @@ describe("JS inline", function () {
     var anExternalScriptWith = function (content, url) {
         var externalScript = window.document.createElement("script");
 
-        url = url || 'some/url.js';
+        url = url || "some/url.js";
 
         externalScript.src = url;
 
@@ -43,7 +44,10 @@ describe("JS inline", function () {
     };
 
     var anotherExternalScript = function () {
-        var script = anExternalScriptWith("function something() {}", "url/someOther.js");
+        var script = anExternalScriptWith(
+            "function something() {}",
+            "url/someOther.js"
+        );
         script.type = "text/javascript";
         script.id = "myScript";
         return script;
@@ -76,8 +80,10 @@ describe("JS inline", function () {
 
         inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("var b = 1;");
-            expect(doc.head.getElementsByTagName("script")[0].src).toBe('');
+            expect(
+                doc.head.getElementsByTagName("script")[0].textContent
+            ).toEqual("var b = 1;");
+            expect(doc.head.getElementsByTagName("script")[0].src).toBe("");
 
             done();
         });
@@ -88,7 +94,7 @@ describe("JS inline", function () {
 
         inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("script")[0].src).toBe('');
+            expect(doc.head.getElementsByTagName("script")[0].src).toBe("");
 
             done();
         });
@@ -99,8 +105,12 @@ describe("JS inline", function () {
 
         inlineScript.inline(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("script")[0].type).toEqual("text/javascript");
-            expect(doc.head.getElementsByTagName("script")[0].id).toEqual("myScript");
+            expect(doc.head.getElementsByTagName("script")[0].type).toEqual(
+                "text/javascript"
+            );
+            expect(doc.head.getElementsByTagName("script")[0].id).toEqual(
+                "myScript"
+            );
 
             done();
         });
@@ -112,8 +122,12 @@ describe("JS inline", function () {
 
         inlineScript.inline(doc, {}).then(function () {
             expect(doc.getElementsByTagName("script").length).toEqual(2);
-            expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("var b = 1;");
-            expect(doc.body.getElementsByTagName("script")[0].textContent).toEqual("function something() {}");
+            expect(
+                doc.head.getElementsByTagName("script")[0].textContent
+            ).toEqual("var b = 1;");
+            expect(
+                doc.body.getElementsByTagName("script")[0].textContent
+            ).toEqual("function something() {}");
 
             done();
         });
@@ -125,17 +139,23 @@ describe("JS inline", function () {
         inlineScript.inline(doc, {}).then(function () {
             expect(ajaxSpy).not.toHaveBeenCalled();
             expect(doc.head.getElementsByTagName("script").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("script")[0]).toEqual(internalScript);
+            expect(doc.head.getElementsByTagName("script")[0]).toEqual(
+                internalScript
+            );
 
             done();
         });
     });
 
     it("should correctly quote closing HTML tags in the script", function (done) {
-        doc.head.appendChild(anExternalScriptWith('var closingScriptTag = "</script>";'));
+        doc.head.appendChild(
+            anExternalScriptWith('var closingScriptTag = "</script>";')
+        );
 
         inlineScript.inline(doc, {}).then(function () {
-            expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual('var closingScriptTag = "<\\/script>";');
+            expect(
+                doc.head.getElementsByTagName("script")[0].textContent
+            ).toEqual('var closingScriptTag = "<\\/script>";');
 
             done();
         });
@@ -145,19 +165,26 @@ describe("JS inline", function () {
         doc.head.appendChild(anExternalScriptWith("/</.test('<');"));
 
         inlineScript.inline(doc, {}).then(function () {
-            expect(doc.head.getElementsByTagName("script")[0].textContent).toEqual("/</.test('<');");
+            expect(
+                doc.head.getElementsByTagName("script")[0].textContent
+            ).toEqual("/</.test('<');");
 
             done();
         });
     });
 
     it("should respect the document's baseURI when loading linked JS", function (done) {
-        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(
+            util,
+            "getDocumentBaseUrl"
+        ).and.callThrough();
 
         doc = testHelper.readDocumentFixture("externalJS.html");
 
         inlineScript.inline(doc, {}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith("some.js", {baseUrl: doc.baseURI});
+            expect(ajaxSpy).toHaveBeenCalledWith("some.js", {
+                baseUrl: doc.baseURI,
+            });
             expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
 
             done();
@@ -165,13 +192,17 @@ describe("JS inline", function () {
     });
 
     it("should respect optional baseUrl when loading linked JS", function (done) {
-        doc.head.appendChild(anExternalScriptWith('', 'externalScript.js'));
+        doc.head.appendChild(anExternalScriptWith("", "externalScript.js"));
 
-        inlineScript.inline(doc, {baseUrl: "some_base_url/"}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith('externalScript.js', {baseUrl: "some_base_url/"});
+        inlineScript
+            .inline(doc, { baseUrl: "some_base_url/" })
+            .then(function () {
+                expect(ajaxSpy).toHaveBeenCalledWith("externalScript.js", {
+                    baseUrl: "some_base_url/",
+                });
 
-            done();
-        });
+                done();
+            });
     });
 
     it("should favour explicit baseUrl over document.baseURI when loading linked JS", function (done) {
@@ -179,20 +210,27 @@ describe("JS inline", function () {
         expect(doc.baseURI).not.toBeNull();
         expect(doc.baseURI).not.toEqual("about:blank");
 
-        inlineScript.inline(doc, {baseUrl: "some_base_url/"}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith("some.js", {baseUrl: "some_base_url/"});
+        inlineScript
+            .inline(doc, { baseUrl: "some_base_url/" })
+            .then(function () {
+                expect(ajaxSpy).toHaveBeenCalledWith("some.js", {
+                    baseUrl: "some_base_url/",
+                });
 
-            done();
-        });
+                done();
+            });
     });
 
     it("should circumvent caching if requested", function (done) {
         doc.head.appendChild(anExternalScript());
 
-        inlineScript.inline(doc, {cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
-                cache: 'none'
-            }));
+        inlineScript.inline(doc, { cache: "none" }).then(function () {
+            expect(ajaxSpy).toHaveBeenCalledWith(
+                jasmine.any(String),
+                jasmine.objectContaining({
+                    cache: "none",
+                })
+            );
 
             done();
         });
@@ -203,9 +241,12 @@ describe("JS inline", function () {
 
         inlineScript.inline(doc, {}).then(function () {
             expect(ajaxSpy).toHaveBeenCalled();
-            expect(ajaxSpy).not.toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
-                cache: 'none'
-            }));
+            expect(ajaxSpy).not.toHaveBeenCalledWith(
+                jasmine.any(String),
+                jasmine.objectContaining({
+                    cache: "none",
+                })
+            );
 
             done();
         });
@@ -228,11 +269,16 @@ describe("JS inline", function () {
             doc.head.appendChild(brokenJsScript);
 
             inlineScript.inline(doc, {}).then(function (errors) {
-                expect(errors[0]).toEqual(jasmine.objectContaining({
-                    resourceType: "script",
-                    url: 'THEURL' + "a_document_that_doesnt_exist.js",
-                    msg: "Unable to load script " + 'THEURL' + "a_document_that_doesnt_exist.js"
-                }));
+                expect(errors[0]).toEqual(
+                    jasmine.objectContaining({
+                        resourceType: "script",
+                        url: "THEURL" + "a_document_that_doesnt_exist.js",
+                        msg:
+                            "Unable to load script " +
+                            "THEURL" +
+                            "a_document_that_doesnt_exist.js",
+                    })
+                );
 
                 done();
             });
@@ -254,7 +300,10 @@ describe("JS inline", function () {
             doc.head.appendChild(anotherBrokenJsScript);
 
             inlineScript.inline(doc, {}).then(function (errors) {
-                expect(errors).toEqual([jasmine.any(Object), jasmine.any(Object)]);
+                expect(errors).toEqual([
+                    jasmine.any(Object),
+                    jasmine.any(Object),
+                ]);
                 expect(errors[0]).not.toEqual(errors[1]);
 
                 done();
@@ -271,5 +320,4 @@ describe("JS inline", function () {
             });
         });
     });
-
 });

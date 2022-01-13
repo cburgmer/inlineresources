@@ -1,26 +1,31 @@
 "use strict";
 
-var inline = require('../../src/inline'),
-    inlineCss = require('../../src/inlineCss'),
-    util = require('../../src/util'),
-    testHelper = require('../testHelper');
-
+var inline = require("../../src/inline"),
+    inlineCss = require("../../src/inlineCss"),
+    util = require("../../src/util"),
+    testHelper = require("../testHelper");
 
 describe("Inline CSS links", function () {
-    var doc, joinUrlSpy, ajaxSpy,
-        adjustPathsOfCssResourcesSpy, loadCSSImportsForRulesSpy, loadAndInlineCSSResourcesForRulesSpy,
+    var doc,
+        joinUrlSpy,
+        ajaxSpy,
+        adjustPathsOfCssResourcesSpy,
+        loadCSSImportsForRulesSpy,
+        loadAndInlineCSSResourcesForRulesSpy,
         ajaxUrlMocks = {};
 
     var setupAjaxMock = function () {
         ajaxSpy = spyOn(util, "ajax").and.callFake(function (url, options) {
-            if (ajaxUrlMocks[url + ' ' + options.baseUrl] !== undefined) {
-                return Promise.resolve(ajaxUrlMocks[url + ' ' + options.baseUrl]);
-            // try matching without base url
+            if (ajaxUrlMocks[url + " " + options.baseUrl] !== undefined) {
+                return Promise.resolve(
+                    ajaxUrlMocks[url + " " + options.baseUrl]
+                );
+                // try matching without base url
             } else if (ajaxUrlMocks[url] !== undefined) {
                 return Promise.resolve(ajaxUrlMocks[url]);
             } else {
                 return Promise.reject({
-                    url: 'THEURL' + url
+                    url: "THEURL" + url,
                 });
             }
         });
@@ -30,7 +35,7 @@ describe("Inline CSS links", function () {
         var url = arguments[0],
             baseUrl = arguments.length > 2 ? arguments[1] : null,
             content = arguments.length > 2 ? arguments[2] : arguments[1],
-            urlKey = baseUrl === null ? url : url + ' ' + baseUrl;
+            urlKey = baseUrl === null ? url : url + " " + baseUrl;
 
         ajaxUrlMocks[urlKey] = content;
     };
@@ -60,15 +65,28 @@ describe("Inline CSS links", function () {
         doc = document.implementation.createHTMLDocument("");
 
         joinUrlSpy = spyOn(util, "joinUrl");
-        adjustPathsOfCssResourcesSpy = spyOn(inlineCss, 'adjustPathsOfCssResources');
-        loadCSSImportsForRulesSpy = spyOn(inlineCss, 'loadCSSImportsForRules').and.returnValue(fulfilled({
-            hasChanges: false,
-            errors: []
-        }));
-        loadAndInlineCSSResourcesForRulesSpy = spyOn(inlineCss, 'loadAndInlineCSSResourcesForRules').and.returnValue(fulfilled({
-            hasChanges: false,
-            errors: []
-        }));
+        adjustPathsOfCssResourcesSpy = spyOn(
+            inlineCss,
+            "adjustPathsOfCssResources"
+        );
+        loadCSSImportsForRulesSpy = spyOn(
+            inlineCss,
+            "loadCSSImportsForRules"
+        ).and.returnValue(
+            fulfilled({
+                hasChanges: false,
+                errors: [],
+            })
+        );
+        loadAndInlineCSSResourcesForRulesSpy = spyOn(
+            inlineCss,
+            "loadAndInlineCSSResourcesForRules"
+        ).and.returnValue(
+            fulfilled({
+                hasChanges: false,
+                errors: [],
+            })
+        );
         setupAjaxMock();
     });
 
@@ -100,7 +118,9 @@ describe("Inline CSS links", function () {
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("style").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
+            expect(
+                doc.head.getElementsByTagName("style")[0].textContent
+            ).toEqual("p { font-size: 14px; }");
             expect(doc.head.getElementsByTagName("link").length).toEqual(0);
 
             done();
@@ -109,18 +129,23 @@ describe("Inline CSS links", function () {
 
     it("should inline linked CSS without a type", function (done) {
         var noTypeCssLink = window.document.createElement("link");
-        noTypeCssLink.href = 'yet_another.css';
+        noTypeCssLink.href = "yet_another.css";
         noTypeCssLink.rel = "stylesheet";
 
         doc.head.appendChild(noTypeCssLink);
 
         mockAjaxUrl(noTypeCssLink.href, "p { font-size: 14px; }");
         // href will return absolute path, attributes.href.value relative one in Chrome
-        mockAjaxUrl(noTypeCssLink.attributes.href.value, "p { font-size: 14px; }");
+        mockAjaxUrl(
+            noTypeCssLink.attributes.href.value,
+            "p { font-size: 14px; }"
+        );
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("style").length).toEqual(1);
-            expect(doc.head.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
+            expect(
+                doc.head.getElementsByTagName("style")[0].textContent
+            ).toEqual("p { font-size: 14px; }");
             expect(doc.head.getElementsByTagName("link").length).toEqual(0);
 
             done();
@@ -128,7 +153,10 @@ describe("Inline CSS links", function () {
     });
 
     it("should inline multiple linked CSS and keep order", function (done) {
-        var anotherCssLink = aCssLinkWith("url/another.css", "a { text-decoration: none; }"),
+        var anotherCssLink = aCssLinkWith(
+                "url/another.css",
+                "a { text-decoration: none; }"
+            ),
             inlineCss = window.document.createElement("style");
 
         inlineCss.type = "text/css";
@@ -140,9 +168,15 @@ describe("Inline CSS links", function () {
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(doc.head.getElementsByTagName("style").length).toEqual(3);
-            expect(doc.head.getElementsByTagName("style")[0].textContent.trim()).toEqual("p { font-size: 14px; }");
-            expect(doc.head.getElementsByTagName("style")[1].textContent.trim()).toEqual("span { margin: 0; }");
-            expect(doc.head.getElementsByTagName("style")[2].textContent.trim()).toEqual("a { text-decoration: none; }");
+            expect(
+                doc.head.getElementsByTagName("style")[0].textContent.trim()
+            ).toEqual("p { font-size: 14px; }");
+            expect(
+                doc.head.getElementsByTagName("style")[1].textContent.trim()
+            ).toEqual("span { margin: 0; }");
+            expect(
+                doc.head.getElementsByTagName("style")[2].textContent.trim()
+            ).toEqual("a { text-decoration: none; }");
             expect(doc.head.getElementsByTagName("link").length).toEqual(0);
 
             done();
@@ -167,7 +201,9 @@ describe("Inline CSS links", function () {
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(loadCSSImportsForRulesSpy).toHaveBeenCalled();
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[0][0].cssText).toMatch(/p \{\s*font-size: 14px;\s*\}/);
+            expect(
+                loadCSSImportsForRulesSpy.calls.mostRecent().args[0][0].cssText
+            ).toMatch(/p \{\s*font-size: 14px;\s*\}/);
 
             done();
         });
@@ -178,67 +214,113 @@ describe("Inline CSS links", function () {
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
             expect(loadAndInlineCSSResourcesForRulesSpy).toHaveBeenCalled();
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[0][0].cssText).toMatch(/p \{\s*font-size: 14px;\s*\}/);
+            expect(
+                loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent()
+                    .args[0][0].cssText
+            ).toMatch(/p \{\s*font-size: 14px;\s*\}/);
 
             done();
         });
     });
 
     it("should respect the document's baseURI when loading linked CSS", function (done) {
-        var getDocumentBaseUrlSpy = spyOn(util, 'getDocumentBaseUrl').and.callThrough();
+        var getDocumentBaseUrlSpy = spyOn(
+            util,
+            "getDocumentBaseUrl"
+        ).and.callThrough();
 
-        testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {
-            mockAjaxUrl("some.css", "p { font-size: 14px; }");
+        testHelper
+            .loadHTMLDocumentFixture("externalCSS.html")
+            .then(function (doc) {
+                mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-            inline.loadAndInlineCssLinks(doc, {}).then(function () {
-                expect(doc.getElementsByTagName("style").length).toEqual(1);
-                expect(doc.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
-                expect(doc.getElementsByTagName("link").length).toEqual(0);
+                inline.loadAndInlineCssLinks(doc, {}).then(function () {
+                    expect(doc.getElementsByTagName("style").length).toEqual(1);
+                    expect(
+                        doc.getElementsByTagName("style")[0].textContent
+                    ).toEqual("p { font-size: 14px; }");
+                    expect(doc.getElementsByTagName("link").length).toEqual(0);
 
-                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
-                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(doc.baseURI);
-                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(doc.baseURI);
-                expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
+                    expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(
+                        doc.baseURI
+                    );
+                    expect(
+                        loadCSSImportsForRulesSpy.calls.mostRecent().args[2]
+                            .baseUrl
+                    ).toEqual(doc.baseURI);
+                    expect(
+                        loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent()
+                            .args[1].baseUrl
+                    ).toEqual(doc.baseURI);
+                    expect(getDocumentBaseUrlSpy).toHaveBeenCalledWith(doc);
 
-                done();
+                    done();
+                });
             });
-        });
     });
 
     it("should respect optional baseUrl when loading linked CSS", function (done) {
         mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-        testHelper.loadHTMLDocumentFixtureWithoutBaseURI("externalCSS.html").then(function (doc) {
-            inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
-                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+        testHelper
+            .loadHTMLDocumentFixtureWithoutBaseURI("externalCSS.html")
+            .then(function (doc) {
+                inline
+                    .loadAndInlineCssLinks(doc, {
+                        baseUrl: testHelper.fixturesPath,
+                    })
+                    .then(function () {
+                        expect(
+                            ajaxSpy.calls.mostRecent().args[1].baseUrl
+                        ).toEqual(testHelper.fixturesPath);
 
-                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
-                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+                        expect(
+                            loadCSSImportsForRulesSpy.calls.mostRecent().args[2]
+                                .baseUrl
+                        ).toEqual(testHelper.fixturesPath);
+                        expect(
+                            loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent()
+                                .args[1].baseUrl
+                        ).toEqual(testHelper.fixturesPath);
 
-                done();
+                        done();
+                    });
             });
-        });
     });
 
     it("should favour explicit baseUrl over document.baseURI when loading linked CSS", function (done) {
         var baseUrl = testHelper.fixturesPath;
 
-        testHelper.loadHTMLDocumentFixture("externalCSS.html").then(function (doc) {
-            expect(doc.baseURI).not.toBeNull();
-            expect(doc.baseURI).not.toEqual("about:blank");
-            expect(doc.baseURI).not.toEqual(baseUrl);
+        testHelper
+            .loadHTMLDocumentFixture("externalCSS.html")
+            .then(function (doc) {
+                expect(doc.baseURI).not.toBeNull();
+                expect(doc.baseURI).not.toEqual("about:blank");
+                expect(doc.baseURI).not.toEqual(baseUrl);
 
-            mockAjaxUrl("some.css", "p { font-size: 14px; }");
+                mockAjaxUrl("some.css", "p { font-size: 14px; }");
 
-            inline.loadAndInlineCssLinks(doc, {baseUrl: testHelper.fixturesPath}).then(function () {
-                expect(ajaxSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+                inline
+                    .loadAndInlineCssLinks(doc, {
+                        baseUrl: testHelper.fixturesPath,
+                    })
+                    .then(function () {
+                        expect(
+                            ajaxSpy.calls.mostRecent().args[1].baseUrl
+                        ).toEqual(testHelper.fixturesPath);
 
-                expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].baseUrl).toEqual(testHelper.fixturesPath);
-                expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].baseUrl).toEqual(testHelper.fixturesPath);
+                        expect(
+                            loadCSSImportsForRulesSpy.calls.mostRecent().args[2]
+                                .baseUrl
+                        ).toEqual(testHelper.fixturesPath);
+                        expect(
+                            loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent()
+                                .args[1].baseUrl
+                        ).toEqual(testHelper.fixturesPath);
 
-                done();
+                        done();
+                    });
             });
-        });
     });
 
     it("should map resource paths relative to the stylesheet", function (done) {
@@ -251,28 +333,44 @@ describe("Inline CSS links", function () {
 
         doc.head.appendChild(cssWithRelativeResource);
 
-        mockAjaxUrl("below/some.css", "some_url/",
+        mockAjaxUrl(
+            "below/some.css",
+            "some_url/",
             'div { background-image: url("../green.png"); }\n' +
-            '@font-face { font-family: "test font"; src: url("fake.woff"); }');
+                '@font-face { font-family: "test font"; src: url("fake.woff"); }'
+        );
 
-        inline.loadAndInlineCssLinks(doc, {baseUrl: "some_url/"}).then(function () {
-            expect(adjustPathsOfCssResourcesSpy).toHaveBeenCalledWith("below/some.css", jasmine.any(Object));
+        inline
+            .loadAndInlineCssLinks(doc, { baseUrl: "some_url/" })
+            .then(function () {
+                expect(adjustPathsOfCssResourcesSpy).toHaveBeenCalledWith(
+                    "below/some.css",
+                    jasmine.any(Object)
+                );
 
-            done();
-        });
+                done();
+            });
     });
 
     it("should circumvent caching if requested", function (done) {
         var cssLink = aCssLink();
         doc.head.appendChild(cssLink);
 
-        inline.loadAndInlineCssLinks(doc, {cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, jasmine.objectContaining({
-                cache: 'none'
-            }));
+        inline.loadAndInlineCssLinks(doc, { cache: "none" }).then(function () {
+            expect(ajaxSpy).toHaveBeenCalledWith(
+                cssLink.attributes.href.value,
+                jasmine.objectContaining({
+                    cache: "none",
+                })
+            );
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache).toEqual('none');
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].cache).toEqual('none');
+            expect(
+                loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache
+            ).toEqual("none");
+            expect(
+                loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1]
+                    .cache
+            ).toEqual("none");
 
             done();
         });
@@ -283,13 +381,24 @@ describe("Inline CSS links", function () {
         doc.head.appendChild(cssLink);
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalledWith(cssLink.attributes.href.value, jasmine.any(Object));
-            expect(ajaxSpy).not.toHaveBeenCalledWith(jasmine.any(String), jasmine.objectContaining({
-                cache: 'none'
-            }));
+            expect(ajaxSpy).toHaveBeenCalledWith(
+                cssLink.attributes.href.value,
+                jasmine.any(Object)
+            );
+            expect(ajaxSpy).not.toHaveBeenCalledWith(
+                jasmine.any(String),
+                jasmine.objectContaining({
+                    cache: "none",
+                })
+            );
 
-            expect(loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache).not.toBe(false);
-            expect(loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1].cache).not.toBe(false);
+            expect(
+                loadCSSImportsForRulesSpy.calls.mostRecent().args[2].cache
+            ).not.toBe(false);
+            expect(
+                loadAndInlineCSSResourcesForRulesSpy.calls.mostRecent().args[1]
+                    .cache
+            ).not.toBe(false);
 
             done();
         });
@@ -302,27 +411,37 @@ describe("Inline CSS links", function () {
         doc = document.implementation.createHTMLDocument("");
         doc.head.appendChild(aCssLink());
 
-        inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalled();
+        inline
+            .loadAndInlineCssLinks(doc, { cacheBucket: cacheBucket })
+            .then(function () {
+                expect(ajaxSpy).toHaveBeenCalled();
 
-            ajaxSpy.calls.reset();
-            loadCSSImportsForRulesSpy.calls.reset();
-            loadAndInlineCSSResourcesForRulesSpy.calls.reset();
+                ajaxSpy.calls.reset();
+                loadCSSImportsForRulesSpy.calls.reset();
+                loadAndInlineCSSResourcesForRulesSpy.calls.reset();
 
-            // second call
-            doc = document.implementation.createHTMLDocument("");
-            doc.head.appendChild(aCssLink());
+                // second call
+                doc = document.implementation.createHTMLDocument("");
+                doc.head.appendChild(aCssLink());
 
-            inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
-                expect(ajaxSpy).not.toHaveBeenCalled();
-                expect(loadCSSImportsForRulesSpy).not.toHaveBeenCalled();
-                expect(loadAndInlineCSSResourcesForRulesSpy).not.toHaveBeenCalled();
+                inline
+                    .loadAndInlineCssLinks(doc, { cacheBucket: cacheBucket })
+                    .then(function () {
+                        expect(ajaxSpy).not.toHaveBeenCalled();
+                        expect(
+                            loadCSSImportsForRulesSpy
+                        ).not.toHaveBeenCalled();
+                        expect(
+                            loadAndInlineCSSResourcesForRulesSpy
+                        ).not.toHaveBeenCalled();
 
-                expect(doc.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
+                        expect(
+                            doc.getElementsByTagName("style")[0].textContent
+                        ).toEqual("p { font-size: 14px; }");
 
-                done();
+                        done();
+                    });
             });
-        });
     });
 
     it("should cache inlined content for different pages if baseUrl is the same", function (done) {
@@ -334,25 +453,35 @@ describe("Inline CSS links", function () {
         doc = testHelper.readDocumentFixture("empty1.html");
         doc.getElementsByTagName("head")[0].appendChild(aCssLink());
 
-        inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
-            ajaxSpy.calls.reset();
-            loadCSSImportsForRulesSpy.calls.reset();
-            loadAndInlineCSSResourcesForRulesSpy.calls.reset();
+        inline
+            .loadAndInlineCssLinks(doc, { cacheBucket: cacheBucket })
+            .then(function () {
+                ajaxSpy.calls.reset();
+                loadCSSImportsForRulesSpy.calls.reset();
+                loadAndInlineCSSResourcesForRulesSpy.calls.reset();
 
-            // second call
-            doc = testHelper.readDocumentFixture("empty2.html"); // use a document with different url, but same baseUrl
-            doc.getElementsByTagName("head")[0].appendChild(aCssLink());
+                // second call
+                doc = testHelper.readDocumentFixture("empty2.html"); // use a document with different url, but same baseUrl
+                doc.getElementsByTagName("head")[0].appendChild(aCssLink());
 
-            inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
-                expect(ajaxSpy).not.toHaveBeenCalled();
-                expect(loadCSSImportsForRulesSpy).not.toHaveBeenCalled();
-                expect(loadAndInlineCSSResourcesForRulesSpy).not.toHaveBeenCalled();
+                inline
+                    .loadAndInlineCssLinks(doc, { cacheBucket: cacheBucket })
+                    .then(function () {
+                        expect(ajaxSpy).not.toHaveBeenCalled();
+                        expect(
+                            loadCSSImportsForRulesSpy
+                        ).not.toHaveBeenCalled();
+                        expect(
+                            loadAndInlineCSSResourcesForRulesSpy
+                        ).not.toHaveBeenCalled();
 
-                expect(doc.getElementsByTagName("style")[0].textContent).toEqual("p { font-size: 14px; }");
+                        expect(
+                            doc.getElementsByTagName("style")[0].textContent
+                        ).toEqual("p { font-size: 14px; }");
 
-                done();
+                        done();
+                    });
             });
-        });
     });
 
     it("should not cache inlined content if caching turned off", function (done) {
@@ -362,21 +491,31 @@ describe("Inline CSS links", function () {
         doc = document.implementation.createHTMLDocument("");
         doc.head.appendChild(aCssLink());
 
-        inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket, cache: 'none'}).then(function () {
-            expect(ajaxSpy).toHaveBeenCalled();
-
-            ajaxSpy.calls.reset();
-
-            // second call
-            doc = document.implementation.createHTMLDocument("");
-            doc.head.appendChild(aCssLink());
-
-            inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket, cache: 'none'}).then(function () {
+        inline
+            .loadAndInlineCssLinks(doc, {
+                cacheBucket: cacheBucket,
+                cache: "none",
+            })
+            .then(function () {
                 expect(ajaxSpy).toHaveBeenCalled();
 
-                done();
+                ajaxSpy.calls.reset();
+
+                // second call
+                doc = document.implementation.createHTMLDocument("");
+                doc.head.appendChild(aCssLink());
+
+                inline
+                    .loadAndInlineCssLinks(doc, {
+                        cacheBucket: cacheBucket,
+                        cache: "none",
+                    })
+                    .then(function () {
+                        expect(ajaxSpy).toHaveBeenCalled();
+
+                        done();
+                    });
             });
-        });
     });
 
     describe("error handling", function () {
@@ -389,7 +528,8 @@ describe("Inline CSS links", function () {
             brokenCssLink.type = "text/css";
 
             anotherBrokenCssLink = window.document.createElement("link");
-            anotherBrokenCssLink.href = "another_document_that_doesnt_exist.css";
+            anotherBrokenCssLink.href =
+                "another_document_that_doesnt_exist.css";
             anotherBrokenCssLink.rel = "stylesheet";
             anotherBrokenCssLink.type = "text/css";
 
@@ -400,11 +540,16 @@ describe("Inline CSS links", function () {
             doc.head.appendChild(brokenCssLink);
 
             inline.loadAndInlineCssLinks(doc, {}).then(function (errors) {
-                expect(errors).toEqual([{
-                    resourceType: "stylesheet",
-                    url: "THEURL" + "a_document_that_doesnt_exist.css",
-                    msg: "Unable to load stylesheet " + "THEURL" + "a_document_that_doesnt_exist.css"
-                }]);
+                expect(errors).toEqual([
+                    {
+                        resourceType: "stylesheet",
+                        url: "THEURL" + "a_document_that_doesnt_exist.css",
+                        msg:
+                            "Unable to load stylesheet " +
+                            "THEURL" +
+                            "a_document_that_doesnt_exist.css",
+                    },
+                ]);
 
                 done();
             });
@@ -415,11 +560,13 @@ describe("Inline CSS links", function () {
             doc.head.appendChild(aCssLink());
 
             inline.loadAndInlineCssLinks(doc, {}).then(function (errors) {
-                expect(errors).toEqual([{
-                    resourceType: "stylesheet",
-                    url: "THEURL" + "a_document_that_doesnt_exist.css",
-                    msg: jasmine.any(String)
-                }]);
+                expect(errors).toEqual([
+                    {
+                        resourceType: "stylesheet",
+                        url: "THEURL" + "a_document_that_doesnt_exist.css",
+                        msg: jasmine.any(String),
+                    },
+                ]);
 
                 done();
             });
@@ -430,7 +577,10 @@ describe("Inline CSS links", function () {
             doc.head.appendChild(anotherBrokenCssLink);
 
             inline.loadAndInlineCssLinks(doc, {}).then(function (errors) {
-                expect(errors).toEqual([jasmine.any(Object), jasmine.any(Object)]);
+                expect(errors).toEqual([
+                    jasmine.any(Object),
+                    jasmine.any(Object),
+                ]);
                 expect(errors[0]).not.toEqual(errors[1]);
 
                 done();
@@ -440,17 +590,24 @@ describe("Inline CSS links", function () {
         it("should report errors from inlining resources", function (done) {
             doc.head.appendChild(aCssLink());
 
-            loadCSSImportsForRulesSpy.and.returnValue(fulfilled({
-                hasChanges: false,
-                errors: ["import inline error"]
-            }));
-            loadAndInlineCSSResourcesForRulesSpy.and.returnValue(fulfilled({
-                hasChanges: false,
-                errors: ["resource inline error"]
-            }));
+            loadCSSImportsForRulesSpy.and.returnValue(
+                fulfilled({
+                    hasChanges: false,
+                    errors: ["import inline error"],
+                })
+            );
+            loadAndInlineCSSResourcesForRulesSpy.and.returnValue(
+                fulfilled({
+                    hasChanges: false,
+                    errors: ["resource inline error"],
+                })
+            );
 
             inline.loadAndInlineCssLinks(doc, {}).then(function (errors) {
-                expect(errors).toEqual(["import inline error", "resource inline error"]);
+                expect(errors).toEqual([
+                    "import inline error",
+                    "resource inline error",
+                ]);
 
                 done();
             });
@@ -469,27 +626,34 @@ describe("Inline CSS links", function () {
         it("should cache errors alongside if a cache bucket is given", function (done) {
             var cacheBucket = {};
 
-            loadCSSImportsForRulesSpy.and.returnValue(fulfilled({
-                hasChanges: false,
-                errors: ["import inline error"]
-            }));
+            loadCSSImportsForRulesSpy.and.returnValue(
+                fulfilled({
+                    hasChanges: false,
+                    errors: ["import inline error"],
+                })
+            );
 
             // first call
             doc = document.implementation.createHTMLDocument("");
             doc.head.appendChild(aCssLink());
 
-            inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function () {
+            inline
+                .loadAndInlineCssLinks(doc, { cacheBucket: cacheBucket })
+                .then(function () {
+                    // second call
+                    doc = document.implementation.createHTMLDocument("");
+                    doc.head.appendChild(aCssLink());
 
-                // second call
-                doc = document.implementation.createHTMLDocument("");
-                doc.head.appendChild(aCssLink());
+                    inline
+                        .loadAndInlineCssLinks(doc, {
+                            cacheBucket: cacheBucket,
+                        })
+                        .then(function (errors) {
+                            expect(errors).toEqual(["import inline error"]);
 
-                inline.loadAndInlineCssLinks(doc, {cacheBucket: cacheBucket}).then(function (errors) {
-                    expect(errors).toEqual(["import inline error"]);
-
-                    done();
+                            done();
+                        });
                 });
-            });
         });
     });
 });

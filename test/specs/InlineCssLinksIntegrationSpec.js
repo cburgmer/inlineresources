@@ -1,12 +1,12 @@
 "use strict";
 
-var inline = require('../../src/inline'),
-    inlineCss = require('../../src/inlineCss'),
-    util = require('../../src/util');
-
+var inline = require("../../src/inline"),
+    inlineCss = require("../../src/inlineCss"),
+    util = require("../../src/util");
 
 describe("Inline CSS content (integration)", function () {
-    var doc, ajaxSpyUrlMap = {};
+    var doc,
+        ajaxSpyUrlMap = {};
 
     beforeEach(function () {
         doc = document.implementation.createHTMLDocument("");
@@ -36,17 +36,20 @@ describe("Inline CSS content (integration)", function () {
     it("should correctly inline a font as second rule with CSSOM fallback", function (done) {
         mockAjaxWithSuccess({
             url: "some.css",
-            respondWith: 'p { font-size: 14px; } @font-face { font-family: "test font"; src: url("fake.woff"); }'
+            respondWith:
+                'p { font-size: 14px; } @font-face { font-family: "test font"; src: url("fake.woff"); }',
         });
         mockAjaxWithSuccess({
             url: "fake.woff",
-            respondWith: "this is not a font"
+            respondWith: "this is not a font",
         });
 
         appendStylesheetLink(doc, "some.css");
 
         inline.loadAndInlineCssLinks(doc, {}).then(function () {
-            expect(doc.head.getElementsByTagName("style")[0].textContent).toMatch(
+            expect(
+                doc.head.getElementsByTagName("style")[0].textContent
+            ).toMatch(
                 /p\s*\{\s*font-size:\s*14px;\s*\}\s*@font-face\s*\{\s*font-family:\s*["']test font["'];\s*src:\s*url\("?data:font\/woff;base64,dGhpcyBpcyBub3QgYSBmb250"?\);\s*\}/
             );
 
