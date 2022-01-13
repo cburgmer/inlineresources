@@ -93,7 +93,9 @@ describe("Image and image input inline", function () {
     });
 
     it("should finish if no images found", function (done) {
-        inlineImage.inline(doc, {}).then(done);
+        inlineImage.inline(doc, {}).then(function () {
+            done();
+        });
     });
 
     it("should not touch an already inlined image", function (done) {

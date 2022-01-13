@@ -614,7 +614,11 @@ describe("Inline CSS content", function () {
         });
 
         it("should work with empty content", function (done) {
-            inlineCss.loadAndInlineCSSResourcesForRules([], {}).then(done);
+            inlineCss
+                .loadAndInlineCSSResourcesForRules([], {})
+                .then(function () {
+                    done();
+                });
         });
 
         describe("on background-image", function () {

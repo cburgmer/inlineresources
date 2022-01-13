@@ -127,7 +127,9 @@ describe("Inline utilities function", function () {
         });
 
         it("should fail correctly", function (done) {
-            util.ajax("non_existing_url.html", {}).catch(done);
+            util.ajax("non_existing_url.html", {}).catch(function () {
+                done();
+            });
         });
 
         it("should include msg and url in error", function (done) {
