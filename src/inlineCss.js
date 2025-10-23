@@ -82,7 +82,7 @@ var findExternalFontFaceUrls = function (parsedFontFaceSources) {
     return sourceIndices;
 };
 
-exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
+exports.adjustPathsOfCssResources = function (baseUrl, cssRules, options) {
     var backgroundRules = findBackgroundImageRules(cssRules),
         backgroundDeclarations = findBackgroundDeclarations(backgroundRules),
         change = false;
@@ -138,7 +138,11 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
             cssSupport.changeFontFaceRuleSrc(
                 cssRules,
                 rule,
-                fontFaceSrcValueParser.serialize(parsedFontFaceSources)
+                fontFaceSrcValueParser.serialize(
+                    parsedFontFaceSources,
+                    options
+                ),
+                options
             );
 
             change = true;
@@ -148,7 +152,12 @@ exports.adjustPathsOfCssResources = function (baseUrl, cssRules) {
         var cssUrl = rule.href,
             url = util.joinUrl(baseUrl, cssUrl);
 
-        cssSupport.exchangeRule(cssRules, rule, "@import url(" + url + ");");
+        cssSupport.exchangeRule(
+            cssRules,
+            rule,
+            "@import url(" + url + ");",
+            options
+        );
 
         change = true;
     });
@@ -191,7 +200,7 @@ var loadAndInlineCSSImport = function (
 
     return util.ajax(url, options).then(
         function (cssText) {
-            var externalCssRules = cssSupport.rulesForCssText(cssText);
+            var externalCssRules = cssSupport.rulesForCssText(cssText, options);
 
             // Recursively follow @import statements
             return exports
@@ -201,7 +210,11 @@ var loadAndInlineCSSImport = function (
                     options
                 )
                 .then(function (result) {
-                    exports.adjustPathsOfCssResources(url, externalCssRules);
+                    exports.adjustPathsOfCssResources(
+                        url,
+                        externalCssRules,
+                        options
+                    );
 
                     substituteRule(cssRules, rule, externalCssRules);
 
@@ -390,7 +403,8 @@ var iterateOverRulesAndInlineFontFace = function (cssRules, options) {
                         cssSupport.changeFontFaceRuleSrc(
                             cssRules,
                             rule,
-                            result.srcDeclarationValue
+                            result.srcDeclarationValue,
+                            options
                         );
 
                         hasChanges = true;
