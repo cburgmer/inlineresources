@@ -45,7 +45,7 @@ var requestExternalsForStylesheet = function (
     alreadyLoadedCssUrls,
     options
 ) {
-    var cssRules = cssSupport.rulesForCssText(styleContent);
+    var cssRules = cssSupport.rulesForCssText(styleContent, options);
 
     return inlineCss
         .loadCSSImportsForRules(cssRules, alreadyLoadedCssUrls, options)
@@ -150,7 +150,7 @@ var requestStylesheetAndInlineResources = function (url, options) {
     return util
         .ajax(url, options)
         .then(function (content) {
-            var cssRules = cssSupport.rulesForCssText(content);
+            var cssRules = cssSupport.rulesForCssText(content, options);
 
             return {
                 content: content,
@@ -159,7 +159,11 @@ var requestStylesheetAndInlineResources = function (url, options) {
         })
         .then(function (result) {
             var hasChangesFromPathAdjustment =
-                inlineCss.adjustPathsOfCssResources(url, result.cssRules);
+                inlineCss.adjustPathsOfCssResources(
+                    url,
+                    result.cssRules,
+                    options
+                );
 
             return {
                 content: result.content,

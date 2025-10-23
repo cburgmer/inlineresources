@@ -345,7 +345,8 @@ describe("Inline CSS links", function () {
             .then(function () {
                 expect(adjustPathsOfCssResourcesSpy).toHaveBeenCalledWith(
                     "below/some.css",
-                    jasmine.any(Object)
+                    jasmine.any(Object),
+                    undefined
                 );
 
                 done();

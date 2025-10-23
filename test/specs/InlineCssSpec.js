@@ -442,7 +442,8 @@ describe("Inline CSS content", function () {
             inlineCss.loadCSSImportsForRules(rules, [], {}).then(function () {
                 expect(adjustPathsOfCssResourcesSpy).toHaveBeenCalledWith(
                     "url_base/that.css",
-                    jasmine.any(Object)
+                    jasmine.any(Object),
+                    undefined
                 );
                 expect(
                     adjustPathsOfCssResourcesSpy.calls
