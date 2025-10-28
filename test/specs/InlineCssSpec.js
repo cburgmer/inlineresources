@@ -443,7 +443,7 @@ describe("Inline CSS content", function () {
                 expect(adjustPathsOfCssResourcesSpy).toHaveBeenCalledWith(
                     "url_base/that.css",
                     jasmine.any(Object),
-                    undefined
+                    {}
                 );
                 expect(
                     adjustPathsOfCssResourcesSpy.calls
