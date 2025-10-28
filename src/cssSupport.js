@@ -24,8 +24,6 @@ exports.rulesForCssText = function (styleContent, options) {
 
     if (options && options.nonce) {
         styleElement.nonce = options.nonce;
-    } else if (options && options.integrity) {
-        styleElement.setAttribute("integrity", options.integrity);
     }
 
     // the style will only be parsed once it is added to a document
