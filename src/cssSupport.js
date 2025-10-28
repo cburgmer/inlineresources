@@ -22,9 +22,9 @@ exports.rulesForCssText = function (styleContent, options) {
 
     styleElement.textContent = styleContent;
 
-    if (options.nonce) {
+    if (options && options.nonce) {
         styleElement.nonce = options.nonce;
-    } else if (options.integrity) {
+    } else if (options && options.integrity) {
         styleElement.setAttribute("integrity", options.integrity);
     }
 
