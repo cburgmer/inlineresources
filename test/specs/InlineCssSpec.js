@@ -1087,7 +1087,7 @@ describe("Inline CSS content", function () {
                     });
             });
 
-            it("should ignore an invalid source together with a valid one", function (done) {
+            it("should skip over an invalid source together with a valid one", function (done) {
                 var rules = parseRules(
                     '@font-face { font-family: "test font"; src: "invalid url", url("fake.woff"); }'
                 );
@@ -1097,7 +1097,11 @@ describe("Inline CSS content", function () {
                 inlineCss
                     .loadAndInlineCSSResourcesForRules(rules, {})
                     .then(function (result) {
-                        expect(result.hasChanges).toBe(false);
+                        expect(result.hasChanges).toBe(true);
+                        expectFontFaceUrlToMatch(
+                            rules[0],
+                            "data:font/woff;base64,dGhpcyBpcyBub3QgYSBmb250"
+                        );
 
                         done();
                     });
