@@ -50,7 +50,7 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^4.0.1",
     "prettier": "^2.5.1",
-    "puppeteer": "^19.6.2",
+    "puppeteer": "^24.29.1",
     "xmlserializer": "^0.6.0"
   },
   "prettier": {
