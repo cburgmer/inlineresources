@@ -128,7 +128,7 @@ exports.loadAndInlineStyles = function (doc, options) {
 
 /* CSS link inlining */
 
-var substituteLinkWithInlineStyle = function (oldLinkNode, styleContent) {
+var substituteLinkWithInlineStyle = function (oldLinkNode, styleContent, options) {
     var parent = oldLinkNode.parentNode,
         styleNode;
 
@@ -136,6 +136,11 @@ var substituteLinkWithInlineStyle = function (oldLinkNode, styleContent) {
     if (styleContent) {
         styleNode = oldLinkNode.ownerDocument.createElement("style");
         styleNode.type = "text/css";
+
+        if (options && options.nonce) {
+            styleNode.nonce = options.nonce;
+        }
+
         styleNode.appendChild(
             oldLinkNode.ownerDocument.createTextNode(styleContent)
         );
@@ -251,7 +256,7 @@ exports.loadAndInlineCssLinks = function (doc, options) {
         links.map(function (link) {
             return loadLinkedCSS(link, options).then(
                 function (result) {
-                    substituteLinkWithInlineStyle(link, result.content + "\n");
+                    substituteLinkWithInlineStyle(link, result.content + "\n", options);
 
                     errors = errors.concat(result.errors);
                 },
